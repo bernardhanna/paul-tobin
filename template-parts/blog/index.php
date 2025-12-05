@@ -542,13 +542,11 @@ function cardVisible(card) {
 
   return matchesCategory && matchesSearch;
 }
-
 // apply to all cards, then toggle clear button
 function applyFilter() {
   cards.forEach(card => {
     card.style.display = cardVisible(card) ? '' : 'none';
   });
-
   // Show clearFilters if we're not default
   const needsClear = (activeFilter !== 'all') || (searchTerm !== '');
   if (needsClear) {
