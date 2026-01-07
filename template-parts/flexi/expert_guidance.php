@@ -73,13 +73,13 @@ if (have_rows('padding_settings')) {
             <article class="flex flex-col gap-8 items-start max-md:gap-6 max-sm:gap-5">
                 <div class="flex flex-col gap-2.5 items-start self-stretch">
                     <?php if (!empty($left_heading)): ?>
-                    <<?php echo esc_attr($left_heading_tag); ?> class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-primary max-sm:text-xl">
+                    <<?php echo esc_attr($left_heading_tag); ?> class="text-[#0A1119] font-secondary text-[24px] font-semibold leading-[26px] tracking-[-0.16px]">
                         <?php echo esc_html($left_heading); ?>
                     </<?php echo esc_attr($left_heading_tag); ?>>
                     <?php endif; ?>
 
                     <?php if (!empty($left_content)): ?>
-                    <div class="self-stretch text-base tracking-normal leading-7 text-black wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
+                    <div class="text-black font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
                         <?php echo wp_kses_post($left_content); ?>
                     </div>
                     <?php endif; ?>
@@ -119,13 +119,13 @@ if (have_rows('padding_settings')) {
 
                 <div class="flex flex-col gap-2.5 items-start self-stretch max-md:flex-col max-md:gap-8 max-sm:gap-6">
                     <?php if (!empty($right_heading)): ?>
-                    <<?php echo esc_attr($right_heading_tag); ?> class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-primary max-sm:text-xl">
+                    <<?php echo esc_attr($right_heading_tag); ?> class="text-[#0A1119] font-secondary text-[24px] font-semibold leading-[26px] tracking-[-0.16px]">
                         <?php echo esc_html($right_heading); ?>
                     </<?php echo esc_attr($right_heading_tag); ?>>
                     <?php endif; ?>
 
                     <?php if (!empty($right_content)): ?>
-                    <div class="self-stretch text-base tracking-normal leading-7 text-black wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
+                    <div class="text-black font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
                         <?php echo wp_kses_post($right_content); ?>
                     </div>
                     <?php endif; ?>
