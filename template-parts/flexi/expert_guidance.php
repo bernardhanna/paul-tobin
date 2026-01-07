@@ -79,7 +79,7 @@ if (have_rows('padding_settings')) {
                     <?php endif; ?>
 
                     <?php if (!empty($left_content)): ?>
-                    <div class="text-black font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
+                    <div class="text-black text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6 font-primary">
                         <?php echo wp_kses_post($left_content); ?>
                     </div>
                     <?php endif; ?>
@@ -102,7 +102,7 @@ if (have_rows('padding_settings')) {
                 role="presentation"
                 aria-hidden="true"
             >
-                <div class="self-stretch w-1 shrink-0 bg-slate-300"></div>
+                <div class="self-stretch w-full md:w-1 shrink-0 bg-[#E0E0E0] md:h-full"></div>
             </div>
 
             <!-- Right Content Block -->
@@ -125,7 +125,7 @@ if (have_rows('padding_settings')) {
                     <?php endif; ?>
 
                     <?php if (!empty($right_content)): ?>
-                    <div class="text-black font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6">
+                    <div class="text-black  text-[16px] font-normal leading-[26px] tracking-[0] wp_editor max-md:flex-col max-md:gap-8 max-sm:gap-6 font-primary">
                         <?php echo wp_kses_post($right_content); ?>
                     </div>
                     <?php endif; ?>
@@ -138,7 +138,7 @@ if (have_rows('padding_settings')) {
         <div class="mt-12">
             <a
                 href="<?php echo esc_url($cta_button['url']); ?>"
-                class="flex gap-2.5 justify-center items-center px-6 py-3 h-11 text-sm font-semibold tracking-normal leading-6 whitespace-nowrap transition-all duration-300 w-fit bg-slate-900 text-slate-50 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:w-full max-sm:h-12 btn"
+                class="xl:min-w-[325px] font-primary flex gap-2.5 justify-center items-center px-6 py-3 h-11 text-sm font-semibold tracking-normal leading-[22px] whitespace-nowrap transition-all duration-300 w-fit bg-slate-900 text-slate-50 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:w-full max-sm:h-12 btn"
                 target="<?php echo esc_attr($cta_button['target'] ?? '_self'); ?>"
                 aria-label="<?php echo esc_attr($cta_button['title']); ?>"
             >

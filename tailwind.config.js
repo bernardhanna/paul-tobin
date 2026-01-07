@@ -23,7 +23,7 @@ module.exports = {
           50: '#EEF0E7',
         },
         secondary: {
-          DEFAULT: '#fff',
+          DEFAULT: '#F9FAFB',
           light: '#E9A777',
           dark: '#DE7C34',
           200: '#F0C5A5',

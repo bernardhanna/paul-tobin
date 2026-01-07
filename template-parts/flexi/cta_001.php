@@ -36,7 +36,7 @@ $section_id = 'cta-' . uniqid();
                     <?php if (!empty($heading)): ?>
                         <<?php echo esc_attr($heading_tag); ?>
                             id="<?php echo esc_attr($section_id); ?>-heading"
-                            class="text-3xl font-semibold tracking-normal leading-10 text-gray-50 font-secondary max-md:max-w-full"
+                            class="text-[#F9FAFB] font-secondary text-3xl font-semibold leading-10 tracking-[-0.16px] max-md:max-w-full"
                         >
                             <?php echo esc_html($heading); ?>
                         </<?php echo esc_attr($heading_tag); ?>>
@@ -54,25 +54,21 @@ $section_id = 'cta-' . uniqid();
                     <?php endif; ?>
 
                     <?php if (!empty($description)): ?>
-                        <div class="mt-6 text-base tracking-normal leading-7 text-gray-50 font-primary max-md:max-w-full wp_editor">
+                        <div class="mt-6 text-[#F9FAFB] font-primary text-base font-normal leading-[26px] tracking-normal max-md:max-w-full wp_editor">
                             <?php echo wp_kses_post($description); ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
-                    <div class="flex-1 gap-6 self-stretch my-auto text-sm font-semibold tracking-normal leading-loose bg-[#F9FAFB] border-4 border-solid shrink basis-0 border-primary text-primary">
-                        <div class="flex gap-2.5 justify-center items-center px-7 w-full bg-gray-50 min-h-11 max-md:px-5">
                             <a
                                 href="<?php echo esc_url($button['url']); ?>"
-                                class="self-stretch my-auto text-sm tracking-normal leading-6 whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:bg-slate-100"
+                                class="self-stretch my-auto font-primary text-sm font-semibold leading-[22px] tracking-normal  whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary bg-secondary hover:bg- hover:bg-transparent hover:border hover:border-white border-solid border-primary border h-[44px] flex items-center justify-center px-7 hover:text-secondary"
                                 target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                                 aria-label="<?php echo esc_attr($button['title']); ?>"
                             >
                                 <?php echo esc_html($button['title']); ?>
                             </a>
-                        </div>
-                    </div>
                 <?php endif; ?>
             </div>
         </div>

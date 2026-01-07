@@ -56,8 +56,7 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
 ?>
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="flex overflow-hidden relative bg-gray-50"
-    style="<?php echo $background_color ? 'background-color:' . esc_attr($background_color) . ';' : ''; ?>"
+    class="flex overflow-hidden relative bg-[#F9FAFB]"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
     <div class="flex flex-col items-center w-full mx-auto py-20  max-lg:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
@@ -67,16 +66,20 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                 <div class="flex flex-col gap-6 items-center mb-12">
                     <<?php echo tag_escape($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
-                        class="font-serif text-3xl font-semibold text-center md:text-4xl text-text-dark"
+                        class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]"
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo tag_escape($heading_tag); ?>>
-                    <div class="flex gap-1" role="presentation" aria-hidden="true">
-                        <div class="w-2 h-1 bg-primary-blue"></div>
-                        <div class="w-2 h-1 bg-primary-orange"></div>
-                        <div class="w-2 h-1 bg-primary-green"></div>
-                        <div class="w-2 h-1 bg-primary-gray"></div>
-                    </div>
+ <!-- Decorative Color Bars -->
+                <div
+                    class="flex justify-between items-start w-[71px] max-md:flex-col max-md:gap-8 max-sm:gap-6"
+                    role="presentation"
+                    aria-hidden="true"
+                >
+                    <div class="mr-0.5 bg-orange-500 flex-1 h-[5px]"></div>
+                    <div class="mr-0.5 bg-sky-500 flex-1 h-[5px] max-md:flex-col max-md:gap-8 max-sm:gap-6"></div>
+                    <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                </div>
                 </div>
             <?php endif; ?>
 
@@ -107,23 +110,23 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                             <?php foreach ($testimonials as $t) : ?>
                                 <article class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10">
                                     <!-- Big decorative quote -->
-                                    <div class="absolute -top-2 right-8 font-sans text-8xl font-bold leading-none opacity-40 md:text-9xl text-bg-medium" aria-hidden="true">"</div>
+                                    <div class="absolute -top-2 right-8 text-[#D4D4D4]  text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40 text-bg-medium" aria-hidden="true"><i class="fa-solid fa-quote-right"></i></div>
 
                                     <div class="flex relative z-10 flex-col gap-4">
                                         <?php if (!empty($t['name'])) : ?>
-                                            <h3 class="font-serif text-4xl leading-tight md:text-5xl lg:text-6xl text-text-dark">
+                                            <span class="text-[#0A1119] font-secondary text-6xl font-normal leading-[56px] tracking-[-0.16px]">
                                                 <?php echo esc_html($t['name']); ?>
-                                            </h3>
+                                            </span>
                                         <?php endif; ?>
 
                                         <?php if (!empty($t['title'])) : ?>
-                                            <p class="font-sans text-base font-semibold tracking-wide text-text-dark">
+                                            <p class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
                                                 <?php echo esc_html($t['title']); ?>
                                             </p>
                                         <?php endif; ?>
 
                                         <?php if (!empty($t['testimonial'])) : ?>
-                                            <p class="mt-2 font-sans text-base leading-relaxed text-black">
+                                            <p class="mt-2 text-base font-normal tracking-normal leading-6 text-black font-primary">
                                                 <?php echo wp_kses_post($t['testimonial']); ?>
                                             </p>
                                         <?php endif; ?>
