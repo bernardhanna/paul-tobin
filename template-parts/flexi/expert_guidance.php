@@ -34,8 +34,7 @@ if (have_rows('padding_settings')) {
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="relative flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
-    style="background-color: <?php echo esc_attr($background_color); ?>;"
+    class="relative flex overflow-hidden bg-[#EDEDED] <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
     role="region"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >

@@ -28,7 +28,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
     aria-labelledby="<?php echo esc_attr($section_id); ?>_heading"
 >
     <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
-        <div class="gap-12 py-12 my-auto w-full lg:py-20 max-md:px-5 max-md:max-w-full">
+        <div class="gap-12 py-12 my-auto w-full lg:py-20 max-md:max-w-full">
             <?php if (!empty($heading)): ?>
                 <header class="w-full text-3xl font-semibold tracking-normal leading-none text-center text-primary max-md:max-w-full">
                     <div class="flex flex-col gap-6 items-center w-full max-md:max-w-full">
@@ -59,7 +59,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                         $card_id        = $section_id . '_card_' . ($index + 1);
                     ?>
                     <article
-                        class="flex flex-col p-8 h-full bg-[#F9FAFB] max-md:px-5"
+                        class="flex flex-col p-8 h-full bg-[#EDEDED] max-md:px-5"
                         role="listitem"
                         aria-labelledby="<?php echo esc_attr($card_id); ?>_heading"
                     >
@@ -77,7 +77,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                                     >
                                         <?php echo esc_html($action_word); ?>
                                     </span>
-                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[110%] h-2 relative -top-[15px] mx-auto z-0"></div>
+                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[110%] h-2 relative md:-top-[15px] mx-auto z-0"></div>
                                 </div>
 
                                 <p class="tracking-normal leading-7 text-primary font-secondary">

@@ -96,6 +96,20 @@ if (!empty($background_color) || !empty($text_color)) {
     <div class="<?php echo esc_attr($inner_wrapper_classes); ?>">
         <div class="mx-auto w-full max-w-7xl">
             <div class="flex flex-col gap-8 items-start md:flex-row md:gap-12 max-xl:px-5">
+                <div class="flex flex-col gap-6 md:hidden">
+                        <<?php echo tag_escape($heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]">
+                            <?php echo esc_html($heading_text_fallback); ?>
+                        </<?php echo tag_escape($heading_tag); ?>>
+
+                        <?php if ($show_divider) : ?>
+                            <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                                <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                                <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                                <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                                <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 <div class="flex-shrink-0 w-full md:w-1/2  lg:w-[41%]">
                     <?php if (!empty($image_url)) : ?>
                         <img
@@ -112,7 +126,7 @@ if (!empty($background_color) || !empty($text_color)) {
                 </div>
 
                 <div class="flex flex-col gap-6 w-full md:w-1/2 lg:w-[59%]">
-                    <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-6 max-md:hidden">
                         <<?php echo tag_escape($heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]">
                             <?php echo esc_html($heading_text_fallback); ?>
                         </<?php echo tag_escape($heading_tag); ?>>

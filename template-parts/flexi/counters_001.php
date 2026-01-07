@@ -41,7 +41,7 @@ if (have_rows('counters')) {
     x-data="countersSection()"
     x-intersect.once="startCounters()"
 >
-    <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 py-20 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
+    <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 py-10 md:py-20 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
 
         <header class="flex flex-col gap-6 items-center self-stretch">
             <?php if (!empty($heading)): ?>
@@ -76,7 +76,7 @@ if (have_rows('counters')) {
                         <div class="flex flex-col gap-4 justify-center items-center self-stretch">
                             <div class="flex justify-center items-center pt-4 border-b-8 border-solid" style="border-color: <?php echo esc_attr($this_border); ?>;">
                                 <div
-                                    class="text-7xl font-bold tracking-normal text-center leading-[92px] text-primary max-md:text-6xl max-md:leading-[70px] max-sm:text-5xl max-sm:leading-[56px]"
+                                    class="lg:text-7xl font-bold tracking-normal text-center lg:leading-[92px] text-primary text-[40px] md:leading-[70px] leading-[56px]"
                                     x-text="displayNumbers[<?php echo (int)$index; ?>] + '<?php echo esc_js($safe_suffix); ?>'"
                                     aria-live="polite"
                                     aria-label="<?php echo esc_attr('Counter showing ' . $safe_number . $safe_suffix); ?>"
@@ -86,7 +86,7 @@ if (have_rows('counters')) {
                             </div>
 
                             <?php if (!empty($counter['title'])): ?>
-                                <h3 class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-center font-secondary text-primary max-md:text-xl max-md:leading-6 max-sm:text-lg max-sm:leading-6">
+                                <h3 class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-center font-secondary text-primary text-[24px] max-lg:text-2xl max-lg:font-semibold max-lg:leading-[26px] max-lg:tracking-[-0.16px]">
                                     <?php echo esc_html($counter['title']); ?>
                                 </h3>
                             <?php endif; ?>

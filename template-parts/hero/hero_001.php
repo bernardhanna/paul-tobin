@@ -140,26 +140,96 @@ switch ($content_box_position) {
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="mt-[4.5rem] relative flex overflow-hidden bg-center bg-no-repeat bg-cover h-[665px] max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+    class="mt-[4.5rem] relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover h-[665px] max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
     style="<?php echo esc_attr($background_style); ?>"
     role="banner"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
+    <?php
+    // Build a mobile-friendly (inline) video version (no absolute positioning)
+    $video_mobile = '';
+    if ($background_type === 'video') {
+        if ($background_video_type === 'local' && $background_video_file) {
+            $video_url  = wp_get_attachment_url($background_video_file);
+            $poster_url = $video_poster ? wp_get_attachment_image_url($video_poster, 'full') : '';
+            $video_mobile = '
+                <video
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    class="object-cover w-full h-full"
+                    ' . ($poster_url ? 'poster="' . esc_url($poster_url) . '"' : '') . '
+                    aria-hidden="true"
+                >
+                    <source src="' . esc_url($video_url) . '" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            ';
+        } elseif ($background_video_type === 'youtube' && $background_video_youtube) {
+            preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $background_video_youtube, $m);
+            $youtube_id = $m[1] ?? '';
+            if ($youtube_id) {
+                $video_mobile = '
+                    <iframe
+                        src="https://www.youtube.com/embed/' . esc_attr($youtube_id) . '?autoplay=1&mute=1&loop=1&playlist=' . esc_attr($youtube_id) . '&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+                        class="w-full h-full"
+                        frameborder="0"
+                        allow="autoplay; encrypted-media"
+                        allowfullscreen
+                        aria-hidden="true"
+                        title="Background video"
+                    ></iframe>
+                ';
+            }
+        } elseif ($background_video_type === 'vimeo' && $background_video_vimeo) {
+            preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/', $background_video_vimeo, $m);
+            $vimeo_id = $m[3] ?? '';
+            if ($vimeo_id) {
+                $video_mobile = '
+                    <iframe
+                        src="https://player.vimeo.com/video/' . esc_attr($vimeo_id) . '?autoplay=1&muted=1&loop=1&background=1&controls=0"
+                        class="w-full h-full"
+                        frameborder="0"
+                        allow="autoplay; fullscreen"
+                        allowfullscreen
+                        aria-hidden="true"
+                        title="Background video"
+                    ></iframe>
+                ';
+            }
+        }
+    }
+    ?>
+
+    <!-- Desktop/Larger: background video & overlay -->
     <?php if ($video_background): ?>
-        <?php echo $video_background; ?>
+        <div class="hidden absolute inset-0 md:block" aria-hidden="true">
+            <?php echo $video_background; // already absolute/object-cover inside ?>
+        </div>
     <?php endif; ?>
 
     <?php if ($overlay_enabled && $overlay_style): ?>
         <div
-            class="absolute inset-0 z-10"
+            class="hidden absolute inset-0 z-10 md:block"
             style="<?php echo esc_attr($overlay_style); ?>"
             aria-hidden="true"
         ></div>
     <?php endif; ?>
 
+    <!-- Mobile/Tablet (<= md): inline video above the content box -->
+    <?php if (!empty($video_mobile)) : ?>
+        <div class="relative z-20 w-full md:hidden">
+            <div class="w-full h-[320px]">
+                <?php echo $video_mobile; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Content wrapper -->
     <div class="relative z-20 flex max-w-container w-full mx-auto max-md:p-0 <?php echo esc_attr($position_classes); ?>">
-        <div class=w-full">
-            <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 m-[2rem] pt-[1rem]"
+        <div class="w-full">
+            <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 md:m-[2rem] pt-[1rem]"
                 style="<?php echo esc_attr($content_box_style); ?>">
 
                 <?php if (!empty($heading)): ?>
