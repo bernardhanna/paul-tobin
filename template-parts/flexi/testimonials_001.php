@@ -108,7 +108,16 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                             aria-live="polite"
                         >
                             <?php foreach ($testimonials as $t) : ?>
-                                <article class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10">
+                             <article
+  class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10 border border-neutral-200
+         before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2
+         before:w-0 before:h-0 before:border-l-[20px] before:border-r-[20px] before:border-b-[20px]
+         before:border-l-transparent before:border-r-transparent before:border-b-white
+         before:-top-[20px] before:z-10
+         after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2
+         after:w-0 after:h-0 after:border-l-[22px] after:border-r-[22px] after:border-b-[22px]
+         after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
+         after:-top-[22px] after:z-0">
                                     <!-- Big decorative quote -->
                                     <div class="absolute -top-2 right-8 text-[#D4D4D4]  text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40 text-bg-medium" aria-hidden="true"><i class="fa-solid fa-quote-right"></i></div>
 
@@ -214,4 +223,9 @@ jQuery(function($){
 .testimonials-slider .slick-track { display: flex; }
 .testimonials-slider .slick-slide { height: auto; }
 .testimonials-slider .slick-slide > div { height: 100%; }
+/* Make room for the notch without showing extra slides */
+.testimonials-slider .slick-list {
+  padding-top: 28px; /* ~ notch height incl. border */
+  overflow: hidden;  /* keep other slides hidden */
+}
 </style>
