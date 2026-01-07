@@ -85,14 +85,14 @@ $copyright_tpl = get_field('copyright_text', 'option') ?: '© {year} Paul Tobin 
 $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 ?>
 
-<footer class="flex overflow-hidden relative bg-gray-50" role="contentinfo" aria-label="Site footer">
+<div class="flex overflow-hidden relative bg-gray-50" role="contentinfo" aria-label="Site footer">
   <div class="flex flex-col gap-12 justify-center items-center px-8 pt-20 pb-12 w-full max-md:px-6 max-md:pt-12 max-md:pb-8 max-sm:gap-8 max-sm:px-4 max-sm:pt-8 max-sm:pb-6">
 
     <!-- Main Footer Content -->
-    <div class="flex justify-between items-start w-full max-w-[1200px] max-md:flex-col max-md:gap-8 max-md:items-start max-sm:gap-6">
+    <div class="grid w-full max-w-[1200px] grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
 
       <!-- Logo + Slogan + Logos -->
-      <div class="flex flex-col gap-6 items-start w-[211px] max-md:w-full max-md:max-w-[400px]">
+      <div class="flex flex-col gap-6 items-start w-full">
 
         <!-- Footer logo (option) or custom_logo or fallback -->
         <div class="flex items-center">
@@ -114,7 +114,7 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 
         <!-- Company Slogan -->
         <?php if (!empty($company_slogan)) : ?>
-          <p class="text-sm tracking-normal leading-5 text-primary max-sm:text-sm max-sm:leading-5">
+          <p class="text-[#0A1119] font-primary text-sm font-normal leading-5 tracking-[0.08px]">
             <?php echo esc_html($company_slogan); ?>
           </p>
         <?php endif; ?>
@@ -149,7 +149,7 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
                   $pl_target = matrix_link_target($logo_link);
                   echo '<div class="flex flex-col items-center w-20 max-sm:w-[60px]">';
                   if ($pl_url) echo '<a href="' . esc_url($pl_url) . '" target="' . esc_attr($pl_target) . '" rel="noopener">';
-                  echo matrix_render_image($logo_id, 'thumbnail', 'Partner logo', ['class' => 'w-10 h-10 object-contain']);
+                  echo matrix_render_image($logo_id, 'thumbnail', 'Partner logo', ['class' => 'object-contain']);
                   if ($pl_url) echo '</a>';
                   echo '</div>';
               }
@@ -159,10 +159,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </div>
 
       <!-- About us -->
-      <nav class="flex flex-col gap-5 items-start max-md:w-full" aria-labelledby="about-us-heading">
-        <h3 id="about-us-heading" class="text-base font-semibold tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">
+      <nav class="flex flex-col gap-5 items-start max-md:w-full relative xl:left-[3.5rem]" aria-labelledby="about-us-heading">
+        <span id="about-us-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col1_heading); ?>
-        </h3>
+        </span>
         <div class="flex flex-col gap-3 justify-center items-start">
           <?php
           wp_nav_menu([
@@ -172,10 +172,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
             'fallback_cb'    => function() {
               $default_items = ['Why us', 'Awards & Certification', 'Journal', 'Kind words'];
               foreach ($default_items as $item) {
-                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">' . esc_html($item) . '</div></div>';
+                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">' . esc_html($item) . '</div></div>';
               }
             },
-            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">',
+            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">',
             'link_after'  => '</div></div>',
           ]);
           ?>
@@ -183,10 +183,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </nav>
 
       <!-- Quick links -->
-      <nav class="flex flex-col gap-5 items-start max-md:w-full" aria-labelledby="quick-links-heading">
-        <h3 id="quick-links-heading" class="text-base font-semibold tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">
+      <nav class="flex flex-col gap-5 items-start max-md:w-full relative xl:left-[3.5rem]" aria-labelledby="quick-links-heading">
+        <span id="quick-links-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col2_heading); ?>
-        </h3>
+        </span>
         <div class="flex flex-col gap-3 justify-center items-start">
           <?php
           wp_nav_menu([
@@ -196,10 +196,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
             'fallback_cb'    => function() {
               $default_items = ['Rent', 'Buy', 'Sell'];
               foreach ($default_items as $item) {
-                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">' . esc_html($item) . '</div></div>';
+                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">' . esc_html($item) . '</div></div>';
               }
             },
-            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">',
+            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">',
             'link_after'  => '</div></div>',
           ]);
           ?>
@@ -208,9 +208,9 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 
       <!-- Homeowners -->
       <nav class="flex flex-col gap-5 items-start max-md:w-full" aria-labelledby="homeowners-heading">
-        <h3 id="homeowners-heading" class="text-base font-semibold tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">
+        <span id="homeowners-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col3_heading); ?>
-        </h3>
+        </span>
         <div class="flex flex-col gap-3 justify-center items-start">
           <?php
           wp_nav_menu([
@@ -220,10 +220,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
             'fallback_cb'    => function() {
               $default_items = ['Property management', 'Estate management', 'Refurbishment & Interiors', 'Property valuations', 'Landlords', 'Vendors', 'Private clients'];
               foreach ($default_items as $item) {
-                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">' . esc_html($item) . '</div></div>';
+                echo '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">' . esc_html($item) . '</div></div>';
               }
             },
-            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-sm tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">',
+            'link_before' => '<div class="flex flex-col gap-2.5 items-start px-0 py-1"><div class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline">',
             'link_after'  => '</div></div>',
           ]);
           ?>
@@ -231,10 +231,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </nav>
 
       <!-- Get in touch -->
-      <div class="flex flex-col gap-5 items-start max-md:w-full">
-        <h3 class="text-base font-semibold tracking-normal leading-6 text-primary max-sm:text-sm max-sm:leading-5">Get in touch</h3>
+      <div class="flex flex-col gap-5 items-start max-md:w-full relative xl:left-[1.5rem]">
+        <span class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">Get in touch</span>
 
-        <div class="flex flex-col gap-3 justify-center items-start w-full">
+        <div class="flex flex-col gap-3.5 justify-center items-start w-full">
           <!-- Phone -->
           <?php if (!empty($phone_number)): ?>
             <div class="flex gap-2 items-center">
@@ -296,10 +296,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
                   href="<?php echo esc_url($url); ?>"
                   target="<?php echo esc_attr($target); ?>"
                   rel="noopener"
-                  class="flex flex-col shrink-0 gap-2.5 justify-center items-center w-8 h-8 rounded-[32px] max-sm:w-7 max-sm:h-7 hover:bg-[#F9FAFB] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 btn"
+                  class="flex flex-col shrink-0 gap-2.5 justify-center items-center w-8 h-8 rounded-[32px] max-sm:w-7 max-sm:h-7 hover:opacity-50 bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 btn"
                   aria-label="<?php echo esc_attr($label); ?>"
                 >
-                  <?php echo matrix_render_image($icon, 'thumbnail', $label, ['class' => 'w-[18px] h-[18px] flex-shrink-0']); ?>
+                  <?php echo matrix_render_image($icon, 'thumbnail', $label, ['class' => 'w-full h-full flex-shrink-0']); ?>
                 </a>
               <?php endforeach; ?>
             </nav>
@@ -343,10 +343,10 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
           wp_nav_menu([
             'theme_location' => $menu_legal,
             'container'      => false,
-            'menu_class'     => 'flex gap-3 items-center',
+            'menu_class'     => 'flex gap-3 items-center text-[#0A1119] font-primary text-sm font-normal leading-[22px]  tracking-normal',
             'fallback_cb'    => function() {
               echo '<a href="#" class="text-sm tracking-normal leading-6 text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">Cookie policy</a>';
-              echo '<span class="text-sm tracking-normal leading-5 text-slate-300" aria-hidden="true">|</span>';
+              echo '<span class="text-[#0A1119] font-primary text-sm font-normal leading-[22px] tracking-normal hover:underline" aria-hidden="true">|</span>';
               echo '<a href="#" class="text-sm tracking-normal leading-6 text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">Privacy policy</a>';
             },
             // Keep simple links; no link_before/after wrappers here
@@ -356,6 +356,6 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </div>
     </div>
   </div>
-</footer>
+</div>
 
 <?php wp_footer(); ?>

@@ -68,11 +68,11 @@ if ($primary_navigation->isNotEmpty()) {
             </a>
 
             <?php if (!empty($item->children)) : ?>
-              <ul class="absolute left-0 hidden space-y-2 border-b-2 border-[#F68D2E] bg-white group-hover:block min-w-[200px] z-50">
+              <ul class="absolute left-0 hidden space-y-2 border-b-2 border-primary bg-white group-hover:block min-w-[200px] z-50">
                 <?php foreach ($item->children as $child) : ?>
                   <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?> hover:bg-secondary">
                     <a href="<?php echo esc_url($child->url); ?>"
-                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] hover:text-white">
+                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] ">
                       <?php echo esc_html($child->label); ?>
                     </a>
                   </li>
@@ -85,7 +85,7 @@ if ($primary_navigation->isNotEmpty()) {
     <?php endif; ?>
 
     <!-- CENTER: Logo (centered) -->
-    <a href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center">
+    <a style="z-index: 99999999;" href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center">
       <?php if ($logo_url) : ?>
         <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($logo_alt); ?>" />
       <?php else : ?>
@@ -112,11 +112,11 @@ if ($primary_navigation->isNotEmpty()) {
             </a>
 
             <?php if (!empty($item->children)) : ?>
-              <ul class="absolute left-0 hidden space-y-2 border-b-2 border-[#F68D2E] bg-white group-hover:block min-w-[200px] z-50">
+              <ul class="absolute left-0 hidden space-y-2 border-b-2 border-primary bg-white group-hover:block min-w-[200px] z-50">
                 <?php foreach ($item->children as $child) : ?>
                   <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?> hover:bg-secondary">
                     <a href="<?php echo esc_url($child->url); ?>"
-                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] hover:text-white">
+                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] ">
                       <?php echo esc_html($child->label); ?>
                     </a>
                   </li>
