@@ -47,7 +47,7 @@ if ($primary_navigation->isNotEmpty()) {
   class="py-4 bg-white"
   x-effect="isOpen ? document.body.style.overflow = 'hidden' : document.body.style.overflow = ''"
 >
-  <nav class="flex justify-between items-center w-full mx-auto max-w-[1168px] px-5 lg:px-0">
+  <nav class="flex justify-between items-center w-full mx-auto max-w-[1168px] px-5 xl:px-0">
 
     <!-- LEFT: Primary (first half) -->
     <?php if (!empty($left_menu_items)) : ?>

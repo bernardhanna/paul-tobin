@@ -27,7 +27,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
     style="background-color: <?php echo esc_attr($background_color); ?>;"
     aria-labelledby="<?php echo esc_attr($section_id); ?>_heading"
 >
-    <div class="flex flex-col items-center w-full mx-auto max-w-container max-lg:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
+    <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
         <div class="gap-12 py-12 my-auto w-full lg:py-20 max-md:px-5 max-md:max-w-full">
             <?php if (!empty($heading)): ?>
                 <header class="w-full text-3xl font-semibold tracking-normal leading-none text-center text-primary max-md:max-w-full">

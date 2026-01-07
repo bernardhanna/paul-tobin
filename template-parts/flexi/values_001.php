@@ -77,7 +77,7 @@ $div_colors = [
 
 // Compose dynamic classes
 $section_classes = trim('relative flex overflow-hidden');
-$inner_wrapper_classes = trim('flex flex-col items-center w-full mx-auto max-w-container py-20 max-lg:px-5 ' . implode(' ', $padding_classes));
+$inner_wrapper_classes = trim('flex flex-col items-center w-full mx-auto max-w-container py-20 max-xl:px-5 ' . implode(' ', $padding_classes));
 
 // Section style (colors)
 $section_style = '';
@@ -95,8 +95,8 @@ if (!empty($background_color) || !empty($text_color)) {
 <section id="<?php echo esc_attr($section_id); ?>" class="<?php echo esc_attr($section_classes); ?> <?php echo esc_attr($section_border_radius ? $section_border_radius : ''); ?>" <?php echo $section_style; ?>>
     <div class="<?php echo esc_attr($inner_wrapper_classes); ?>">
         <div class="mx-auto w-full max-w-7xl">
-            <div class="flex flex-col gap-8 items-start lg:flex-row md:gap-12">
-                <div class="flex-shrink-0 w-full lg:w-[41%]">
+            <div class="flex flex-col gap-8 items-start md:flex-row md:gap-12 max-xl:px-5">
+                <div class="flex-shrink-0 w-full md:w-1/2  lg:w-[41%]">
                     <?php if (!empty($image_url)) : ?>
                         <img
                             src="<?php echo esc_url($image_url); ?>"
@@ -106,12 +106,12 @@ if (!empty($background_color) || !empty($text_color)) {
                             title="<?php echo esc_attr($image_title); ?>"
                             loading="lazy"
                             decoding="async"
-                            class="w-full h-auto max-w-md lg:max-w-none object-cover <?php echo esc_attr($image_border_radius ? $image_border_radius : 'rounded-none'); ?>"
+                            class="w-full h-auto max-w-md lg:max-w-none object-contain lg:object-cover max-h-[480px] <?php echo esc_attr($image_border_radius ? $image_border_radius : 'rounded-none'); ?>"
                         />
                     <?php endif; ?>
                 </div>
 
-                <div class="flex flex-col gap-6 w-full lg:w-[59%]">
+                <div class="flex flex-col gap-6 w-full md:w-1/2 lg:w-[59%]">
                     <div class="flex flex-col gap-6">
                         <<?php echo tag_escape($heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]">
                             <?php echo esc_html($heading_text_fallback); ?>
@@ -128,7 +128,7 @@ if (!empty($background_color) || !empty($text_color)) {
                     </div>
 
                     <?php if (!empty($intro_rich_text)) : ?>
-                        <div class="text-black font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
+                        <div class="text-black max-lg:hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
                             <?php
                             // Intro is WYSIWYG -> allow safe HTML output
                             echo wp_kses_post($intro_rich_text);
@@ -137,7 +137,7 @@ if (!empty($background_color) || !empty($text_color)) {
                     <?php endif; ?>
 
                     <?php if (!empty($features) && is_array($features)) : ?>
-                        <div class="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 md:gap-8">
+                        <div class="grid grid-cols-1 gap-6 mt-2 lg:grid-cols-2 md:gap-8">
                             <?php foreach ($features as $feature) :
                                 $bar_color = isset($feature['bar_color']) ? $feature['bar_color'] : '#1D4ED8';
                                 $feature_heading = isset($feature['feature_heading']) ? $feature['feature_heading'] : '';

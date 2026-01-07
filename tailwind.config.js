@@ -89,7 +89,7 @@ module.exports = {
         'mob': '575px',
         'sm': '640px',
         'md': '768px',
-         tab: '998px',
+        'tab': '1024px',
         'lg': '1200px',
         'xl': '1280px',
         'xxl': '1440px',

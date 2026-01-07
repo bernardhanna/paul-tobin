@@ -39,7 +39,7 @@ if (have_rows('padding_settings')) {
     role="region"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center pt-20 pb-20 mx-auto w-full max-w-container max-lg:px-6">
+    <div class="flex flex-col items-center pt-20 pb-20 mx-auto w-full max-w-container max-xl:px-6">
 
         <!-- Main Heading Section -->
         <?php if (!empty($heading)): ?>

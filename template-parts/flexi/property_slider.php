@@ -66,7 +66,7 @@ $next_id    = $slider_id . '-next';
   id="<?php echo esc_attr($section_id); ?>"
   class="relative bg-white flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
 >
-  <div class="flex flex-col items-center pt-[5rem] pb-[5rem] mx-auto w-full max-w-container max-lg:px-5">
+  <div class="flex flex-col items-center pt-[5rem] pb-[5rem] mx-auto w-full max-w-container max-xl:px-5">
 
     <?php if (!empty($section_heading)): ?>
       <header class="gap-6 w-full text-3xl font-semibold tracking-normal leading-none text-center text-primary max-md:max-w-full">

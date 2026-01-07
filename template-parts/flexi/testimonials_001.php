@@ -59,7 +59,7 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
     class="flex overflow-hidden relative bg-[#F9FAFB]"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center w-full mx-auto py-20  max-lg:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
+    <div class="flex flex-col items-center w-full mx-auto py-20  max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
 
         <div class="mx-auto w-full max-w-7xl">
             <?php if (!empty($heading)) : ?>
@@ -182,14 +182,14 @@ jQuery(function($){
   var $slider = $('#<?php echo esc_js($section_id); ?>-slider');
   if ($slider.length && !$slider.hasClass('slick-initialized')) {
     $slider.slick({
-      slidesToShow: 2,
+      slidesToShow: 2,              // default (above 1085px)
       slidesToScroll: 1,
       arrows: false,
       dots: false,
       infinite: true,
       autoplay: false,
       responsive: [
-        { breakpoint: 768, settings: { slidesToShow: 1, slidesToScroll: 1 } }
+        { breakpoint: 1085, settings: { slidesToShow: 1, slidesToScroll: 1 } }
       ],
       accessibility: true,
       pauseOnHover: true,
@@ -207,6 +207,7 @@ jQuery(function($){
   });
 });
 </script>
+
 
 <style>
 /* keep cards equal height within slick rows */

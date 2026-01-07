@@ -19,7 +19,7 @@ $padding_bottom = $not_found_settings['padding_bottom'] ?? 'pb-10';
   style="background-color: <?php echo esc_attr($bg_color); ?>; color: <?php echo esc_attr($text_color); ?>;">
 
       <div
-        class="flex flex-col items-center pt-5 pb-5 mx-auto w-full xl:flex-row max-lg:px-5"
+        class="flex flex-col items-center pt-5 pb-5 mx-auto w-full xl:flex-row max-xl:px-5"
       >
    
           <figure
