@@ -29,7 +29,7 @@ $section_id = 'cta-' . uniqid();
     role="region"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center pt-5 pb-5 mx-auto w-full max-w-container max-lg:px-5">
+    <div class="flex flex-col items-center mx-auto w-full max-w-container max-lg:px-5">
         <div class="flex gap-12 justify-center items-center p-20 w-full max-md:px-5">
             <div class="flex flex-col md:flex-row  gap-16 items-center self-stretch my-auto w-full max-w-[911px]">
                 <div class="gap-6 self-stretch my-auto text-gray-50 w-full max-w-[700px] max-md:max-w-full">
