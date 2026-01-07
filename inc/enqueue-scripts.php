@@ -110,7 +110,7 @@ wp_add_inline_script(
 
   // Register optional third-parties
   wp_register_style('font-awesome','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',[],null);
-  wp_register_style('hamburgers-css','https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.2.1/hamburgers.min.css',[],'1.2.1');
+
   wp_register_script('flowbite','https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js',['alpine'],'1.6.5',true);
   wp_register_style('slick-css','https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css',[],'1.8.1');
   wp_register_script('slick-js','https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js',['jquery'],'1.8.1',true);

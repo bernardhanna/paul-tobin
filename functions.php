@@ -23,13 +23,13 @@ function matrix_starter_setup()
     add_image_size('hero-large', 1280, 800, true);
     add_image_size('hero-xlarge', 1600, 900, true);
     add_image_size('hero-xxlarge', 1920, 1080, true);
-    register_nav_menus(array(
-        'primary' => esc_html__('Primary Menu', 'matrix-starter'),
-        'Footer One' => esc_html__('Footer One Menu', 'matrix-starter'),
-        'Footer Two' => esc_html__('Footer Two Menu', 'matrix-starter'),
-        'Footer Three' => esc_html__('Footer Three Menu', 'matrix-starter'),
-        'copyright' => esc_html__('Copyright Menu', 'matrix-starter'),
-    ));
+    register_nav_menus( array(
+    'primary'      => esc_html__( 'Primary Menu', 'matrix-starter' ),
+    'footer_one'   => esc_html__( 'Footer One Menu', 'matrix-starter' ),
+    'footer_two'   => esc_html__( 'Footer Two Menu', 'matrix-starter' ),
+    'footer_three' => esc_html__( 'Footer Three Menu', 'matrix-starter' ),
+    'copyright'    => esc_html__( 'Copyright Menu', 'matrix-starter' ),
+    ) );
 }
 add_action('after_setup_theme', 'matrix_starter_setup');
 

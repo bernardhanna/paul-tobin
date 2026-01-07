@@ -310,7 +310,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
       <button
           type="button"
           id="clear-filters"
-          class="flex gap-2 items-center px-4 py-2 bg-gray-200 rounded cursor-pointer h-[42px] w-fit whitespace-nowrap hover:bg-hover hover:text-hover hidden btn"
+          class="flex gap-2 items-center px-4 py-2 bg-[#F9FAFB] rounded cursor-pointer h-[42px] w-fit whitespace-nowrap hover:bg-hover hover:text-hover hidden btn"
           aria-label="Clear filters"
         >
         <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -370,7 +370,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                     />
                   <?php else : ?>
                     <div
-                      class="bg-gray-200 w-[425px] min-w-60 max-md:max-w-full flex items-center justify-center text-gray-500"
+                      class="bg-[#F9FAFB] w-[425px] min-w-60 max-md:max-w-full flex items-center justify-center text-gray-500"
                       style="aspect-ratio: 0.79;"
                       aria-label="No image available for <?php the_title_attribute(); ?>"
                     >

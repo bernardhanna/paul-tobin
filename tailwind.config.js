@@ -10,12 +10,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ['Lato', 'sans-serif'],
-        secondary: ['Poppins', 'sans-serif'],
+        primary: ['Montserrat', 'sans-serif'],
+        secondary: ['Playfair', 'serif'],
       },
       colors: {
         primary: {
-          DEFAULT: '#ED1C24',
+          DEFAULT: '#0A1119',
           light: '#9AA770',
           dark: '#788941',
           200: '#BBC4A0',
@@ -83,7 +83,7 @@ module.exports = {
         'container': '1280px',
       },
       maxWidth: {
-        'container': '1139px',
+        'container': '1120px',
         'xxs': '320px',
         'xs': '480px',
         'mob': '575px',
