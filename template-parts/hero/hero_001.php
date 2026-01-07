@@ -157,48 +157,50 @@ switch ($content_box_position) {
         ></div>
     <?php endif; ?>
 
-    <div class="relative z-20 flex max-w-container max-md:p-0 <?php echo esc_attr($position_classes); ?>">
-        <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 m-[2rem] pt-[1rem]"
-             style="<?php echo esc_attr($content_box_style); ?>">
+    <div class="relative z-20 flex max-w-container w-full mx-auto max-md:p-0 <?php echo esc_attr($position_classes); ?>">
+        <div class=w-full">
+            <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 m-[2rem] pt-[1rem]"
+                style="<?php echo esc_attr($content_box_style); ?>">
 
-            <?php if (!empty($heading)): ?>
-                <<?php echo esc_attr($heading_tag); ?>
-                    id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="text-[#0A1119] font-secondary text-[40px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
+                <?php if (!empty($heading)): ?>
+                    <<?php echo esc_attr($heading_tag); ?>
+                        id="<?php echo esc_attr($section_id); ?>-heading"
+                        class="text-[#0A1119] font-secondary text-[40px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
+                    >
+                        <?php echo esc_html($heading); ?>
+                    </<?php echo esc_attr($heading_tag); ?>>
+                <?php endif; ?>
+
+                <div
+                    class="flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]"
+                    role="presentation"
+                    aria-hidden="true"
                 >
-                    <?php echo esc_html($heading); ?>
-                </<?php echo esc_attr($heading_tag); ?>>
-            <?php endif; ?>
-
-            <div
-                class="flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]"
-                role="presentation"
-                aria-hidden="true"
-            >
-                <div class="bg-[#EF7B10] flex-1 h-[5px]"></div>
-                <div class="bg-[#0098D8] flex-1 h-[5px]"></div>
-                <div class="bg-[#B6C0C0] flex-1 h-[5px]"></div>
-                <div class="bg-[#74AF27] flex-1 h-[5px]"></div>
-            </div>
-
-            <?php if (!empty($description)): ?>
-                <div class="font-primary w-full text-base tracking-normal leading-7 text-gray-700 max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
-                    <?php echo wp_kses_post($description); ?>
+                    <div class="bg-[#EF7B10] flex-1 h-[5px]"></div>
+                    <div class="bg-[#0098D8] flex-1 h-[5px]"></div>
+                    <div class="bg-[#B6C0C0] flex-1 h-[5px]"></div>
+                    <div class="bg-[#74AF27] flex-1 h-[5px]"></div>
                 </div>
-            <?php endif; ?>
 
-            <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
-                <a
-                    href="<?php echo esc_url($button['url']); ?>"
-                    class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-slate-900 text-slate-50 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:h-12 btn"
-                    target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
-                    aria-label="<?php echo esc_attr($button['title']); ?>"
-                >
-                    <span class="text-sm font-semibold tracking-normal leading-6">
-                        <?php echo esc_html($button['title']); ?>
-                    </span>
-                </a>
-            <?php endif; ?>
+                <?php if (!empty($description)): ?>
+                    <div class="font-primary w-full text-base tracking-normal leading-7 text-gray-700 max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
+                        <?php echo wp_kses_post($description); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
+                    <a
+                        href="<?php echo esc_url($button['url']); ?>"
+                        class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-slate-900 text-slate-50 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:h-12 btn"
+                        target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
+                        aria-label="<?php echo esc_attr($button['title']); ?>"
+                    >
+                        <span class="text-sm font-semibold tracking-normal leading-6">
+                            <?php echo esc_html($button['title']); ?>
+                        </span>
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </section>
