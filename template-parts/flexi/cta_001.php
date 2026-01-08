@@ -30,8 +30,8 @@ $section_id = 'cta-' . uniqid();
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
     <div class="flex flex-col items-center mx-auto w-full max-w-container max-xl:px-5">
-        <div class="flex gap-12 justify-center items-center p-20 w-full max-md:px-5">
-            <div class="flex flex-col md:flex-row  gap-16 items-center self-stretch my-auto w-full max-w-[911px]">
+        <div class="flex gap-12 justify-center items-center p-20 w-full max-md:py-8 max-md:px-5">
+            <div class="flex flex-col md:flex-row  gap-8 md:gap-16 items-center self-stretch my-auto w-full max-w-[911px]">
                 <div class="gap-6 self-stretch my-auto text-gray-50 w-full max-w-[700px] max-md:max-w-full">
                     <?php if (!empty($heading)): ?>
                         <<?php echo esc_attr($heading_tag); ?>
@@ -63,7 +63,7 @@ $section_id = 'cta-' . uniqid();
                 <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
                             <a
                                 href="<?php echo esc_url($button['url']); ?>"
-                                class="self-stretch my-auto font-primary text-sm font-semibold leading-[22px] tracking-normal  whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary bg-secondary hover:bg- hover:bg-transparent hover:border hover:border-white border-solid border-primary border h-[44px] flex items-center justify-center px-7 hover:text-secondary"
+                                class="self-stretch my-auto font-primary text-sm font-semibold leading-[22px] tracking-normal  whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary bg-secondary hover:bg- hover:bg-transparent hover:border hover:border-white border-solid border-primary border h-[44px] flex items-center justify-center px-7 hover:text-secondary max-md:w-full"
                                 target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                                 aria-label="<?php echo esc_attr($button['title']); ?>"
                             >

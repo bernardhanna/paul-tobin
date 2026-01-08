@@ -38,7 +38,7 @@ if (have_rows('padding_settings')) {
     role="region"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center pt-20 pb-20 mx-auto w-full max-w-container max-xl:px-6">
+    <div class="flex flex-col items-center py-20 mx-auto w-full max-md:py-8 max-w-container max-xl:px-6">
 
         <!-- Main Heading Section -->
         <?php if (!empty($heading)): ?>
@@ -46,19 +46,16 @@ if (have_rows('padding_settings')) {
             <div class="flex flex-col gap-6 items-center self-stretch">
                 <<?php echo esc_attr($heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]"
+                    class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-md:text-left"
                 >
                     <?php echo esc_html($heading); ?>
                 </<?php echo esc_attr($heading_tag); ?>>
 
                 <!-- Decorative Color Bars -->
-                <div
-                    class="flex justify-between items-start w-[71px] max-md:flex-col max-md:gap-8 max-sm:gap-6"
-                    role="presentation"
-                    aria-hidden="true"
-                >
-                    <div class="mr-0.5 bg-orange-500 flex-1 h-[5px]"></div>
-                    <div class="mr-0.5 bg-sky-500 flex-1 h-[5px] max-md:flex-col max-md:gap-8 max-sm:gap-6"></div>
+                <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px] max-md:mr-auto" role="presentation" aria-hidden="true">
+                    <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                    <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
                     <div class="bg-lime-600 flex-1 h-[5px]"></div>
                 </div>
             </div>
@@ -88,7 +85,7 @@ if (have_rows('padding_settings')) {
                 <div class="self-stretch">
                     <?php echo wp_get_attachment_image($left_image, 'full', false, [
                         'alt' => esc_attr($left_image_alt),
-                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] rounded',
+                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] md:rounded',
                         'loading' => 'lazy'
                     ]); ?>
                 </div>
@@ -105,12 +102,12 @@ if (have_rows('padding_settings')) {
             </div>
 
             <!-- Right Content Block -->
-            <article class="flex flex-col gap-8 items-start max-md:gap-6 max-sm:gap-5">
+            <article class="flex flex-col gap-8 items-start max-md:flex-col-reverse max-md:gap-6 max-sm:gap-5">
                 <?php if ($right_image): ?>
                 <div class="self-stretch">
                     <?php echo wp_get_attachment_image($right_image, 'full', false, [
                         'alt' => esc_attr($right_image_alt),
-                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] rounded',
+                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] md:rounded',
                         'loading' => 'lazy'
                     ]); ?>
                 </div>

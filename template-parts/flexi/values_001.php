@@ -77,7 +77,7 @@ $div_colors = [
 
 // Compose dynamic classes
 $section_classes = trim('relative flex overflow-hidden');
-$inner_wrapper_classes = trim('flex flex-col items-center w-full mx-auto max-w-container py-20 max-xl:px-5 ' . implode(' ', $padding_classes));
+$inner_wrapper_classes = trim('flex flex-col items-center w-full mx-auto max-w-container py-8 md:py-20 max-xl:px-5 ' . implode(' ', $padding_classes));
 
 // Section style (colors)
 $section_style = '';
@@ -95,9 +95,9 @@ if (!empty($background_color) || !empty($text_color)) {
 <section id="<?php echo esc_attr($section_id); ?>" class="<?php echo esc_attr($section_classes); ?> <?php echo esc_attr($section_border_radius ? $section_border_radius : ''); ?>" <?php echo $section_style; ?>>
     <div class="<?php echo esc_attr($inner_wrapper_classes); ?>">
         <div class="mx-auto w-full max-w-7xl">
-            <div class="flex flex-col gap-8 items-start md:flex-row md:gap-12 max-xl:px-5">
-                <div class="flex flex-col gap-6 md:hidden">
-                        <<?php echo tag_escape($heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]">
+            <div class="flex flex-col gap-8 items-start md:flex-row md:gap-12">
+                <div class="flex flex-col gap-6 text-left md:hidden">
+                        <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
                             <?php echo esc_html($heading_text_fallback); ?>
                         </<?php echo tag_escape($heading_tag); ?>>
 
@@ -127,7 +127,7 @@ if (!empty($background_color) || !empty($text_color)) {
 
                 <div class="flex flex-col gap-6 w-full md:w-1/2 lg:w-[59%]">
                     <div class="flex flex-col gap-6 max-md:hidden">
-                        <<?php echo tag_escape($heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]">
+                        <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
                             <?php echo esc_html($heading_text_fallback); ?>
                         </<?php echo tag_escape($heading_tag); ?>>
 

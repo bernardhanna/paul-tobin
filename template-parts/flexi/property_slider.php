@@ -1,8 +1,6 @@
 <?php
 // =========================================================
 // Flexi Block: Property Slider (full updated)
-// - Single set of arrows (outside slides) to avoid Slick cloning issues
-// - All slider CSS is scoped with the section ID
 // =========================================================
 
 // ACF fields
@@ -13,7 +11,7 @@ $background_color       = get_sub_field('background_color') ?: '#FFFFFF';
 $selected_properties    = get_sub_field('selected_properties');
 $auto_select_properties = get_sub_field('auto_select_properties');
 $number_of_properties   = (int) get_sub_field('number_of_properties');
-$property_order         = get_sub_field('property_order'); // 'latest' (default), 'oldest', 'random'
+$property_order         = get_sub_field('property_order'); // 'latest', 'oldest', 'random'
 
 // Padding settings
 $padding_classes = [];
@@ -57,7 +55,7 @@ $slide_count = is_array($properties) ? count($properties) : 0;
 
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
-$slider_id  = $section_id; // same for clarity
+$slider_id  = $section_id;
 $prev_id    = $slider_id . '-prev';
 $next_id    = $slider_id . '-next';
 ?>
@@ -66,12 +64,12 @@ $next_id    = $slider_id . '-next';
   id="<?php echo esc_attr($section_id); ?>"
   class="relative bg-white flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
 >
-  <div class="flex flex-col items-center pt-[5rem] pb-[5rem] mx-auto w-full max-w-container max-xl:px-5">
+  <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5">
 
     <?php if (!empty($section_heading)): ?>
-      <header class="gap-6 w-full text-3xl font-semibold tracking-normal leading-none text-center text-primary max-md:max-w-full">
+      <header class="gap-6 w-full text-3xl font-semibold tracking-normal leading-none text-left md:text-center text-primary max-md:max-w-full">
         <div class="flex flex-col gap-6 items-start w-full max-md:max-w-full">
-          <<?php echo esc_attr($section_heading_tag); ?> class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px] max-md:max-w-full">
+          <<?php echo esc_attr($section_heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left md:text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-md:max-w-full">
             <?php echo esc_html($section_heading); ?>
           </<?php echo esc_attr($section_heading_tag); ?>>
           <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
@@ -85,7 +83,7 @@ $next_id    = $slider_id . '-next';
     <?php endif; ?>
 
     <?php if (!empty($properties)): ?>
-      <div class="relative mt-12 w-full max-md:mt-10 max-md:max-w-full">
+      <div class="relative mt-12 w-full max-md:mt-5 max-md:max-w-full">
         <!-- Slider -->
         <div class="property-slider" role="region" aria-roledescription="carousel" aria-label="Property showcase">
           <?php foreach ($properties as $property):
@@ -105,10 +103,10 @@ $next_id    = $slider_id . '-next';
             $image_alt       = $property_image ? (get_post_meta($property_image, '_wp_attachment_image_alt', true) ?: $property_title) : $property_title;
           ?>
             <article class="property-slide">
-              <div class="flex overflow-hidden relative flex-col p-8 w-full min-h-[723px] max-md:px-5 max-md:max-w-full justify-between">
+              <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px]  max-md:max-w-full justify-between">
 
                 <?php if ($property_image): ?>
-                  <div class="absolute inset-0 w-full h-full">
+                  <div class="relative inset-0 w-full h-full max-md:order-0 md:absolute">
                     <?php echo wp_get_attachment_image($property_image, 'full', false, [
                       'alt'     => esc_attr($image_alt),
                       'class'   => 'object-cover w-full h-full',
@@ -117,7 +115,7 @@ $next_id    = $slider_id . '-next';
                   </div>
                 <?php endif; ?>
 
-                <div class="relative p-8 max-w-full text-base leading-7 bg-[#F9FAFB] w-[417px] max-md:px-5">
+                <div class="max-md:order-2  relative p-8 max-w-full text-base leading-7 bg-[#F9FAFB] w-full md:w-[417px] max-md:px-5">
                   <h4 class="text-[#0A1119] text-2xl font-semibold leading-[26px] tracking-[-0.16px] font-secondary">
                     <?php echo esc_html($property_title); ?>
                   </h4>
@@ -137,7 +135,7 @@ $next_id    = $slider_id . '-next';
                   </a>
                 </div>
 
-                <footer class="flex relative flex-wrap gap-10 justify-between items-center px-8 py-4 mt-80 w-full bg-primary max-md:px-5 max-md:mt-10 max-md:max-w-full">
+                <div class="flex relative flex-wrap gap-10 justify-between items-center px-8 py-4 mt-80 w-full max-md:order-1 bg-primary max-md:px-5 max-md:mt-0 max-md:max-w-full">
                   <div class="flex gap-10 items-center self-stretch my-auto text-base font-semibold tracking-normal text-gray-50 whitespace-nowrap">
                     <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($property_type); ?></span>
 
@@ -159,32 +157,57 @@ $next_id    = $slider_id . '-next';
                       <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($area); ?></span>
                     <?php endif; ?>
                   </div>
-                </footer>
+
+                  <!-- DISPLAY ON MOBILE THE SLIDE ARROWS HERE -->
+                  <div class="flex gap-4 ml-auto md:hidden">
+                    <button
+                      type="button"
+                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                      aria-label="Previous property"
+                      data-mobile-prev="<?php echo esc_attr($slider_id); ?>">
+                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect width="40" height="40" fill="#F9FAFB"/>
+                        <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                      aria-label="Next property"
+                      data-mobile-next="<?php echo esc_attr($slider_id); ?>">
+                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect width="40" height="40" fill="#F9FAFB"/>
+                        <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- /mobile arrows -->
+                </div>
               </div>
             </article>
           <?php endforeach; ?>
         </div>
 
         <?php if ($slide_count > 1): ?>
-          <!-- Single, persistent nav (outside slides so it never gets cloned) -->
-          <nav class="flex absolute right-[3rem] bottom-[2.4rem] z-40 gap-4 justify-end items-center"
+          <!-- Desktop nav only (keep as the official prev/next for Slick) -->
+          <nav class="max-md:hidden flex absolute right-[3rem] bottom-[2.4rem] z-40 gap-4 justify-end items-center"
                aria-label="Property navigation">
             <button id="<?php echo esc_attr($prev_id); ?>"
                     type="button"
                     class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                     aria-label="Previous property">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="40" height="40" fill="#F9FAFB"/>
-                    <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect width="40" height="40" fill="#F9FAFB"/>
+                <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+              </svg>
             </button>
 
             <button id="<?php echo esc_attr($next_id); ?>"
                     type="button"
                     class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                     aria-label="Next property">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <rect width="40" height="40" fill="#F9FAFB"/>
                 <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -213,8 +236,8 @@ jQuery(function ($) {
     autoplay: false,
     slidesToShow: 1,
     slidesToScroll: 1,
-    prevArrow: $prev,
-    nextArrow: $next,
+    prevArrow: $prev,     // desktop arrows (persist)
+    nextArrow: $next,     // desktop arrows (persist)
     accessibility: true,
     focusOnSelect: false,
     pauseOnHover: true,
@@ -227,17 +250,35 @@ jQuery(function ($) {
     opts.fade     = true;
     opts.infinite = true;
   } else {
-    opts.fade     = false;              // safer for 1–2 slides
-    opts.infinite = (slideCount > 1);   // allow back/fwd with 2 slides
+    opts.fade     = false;
+    opts.infinite = (slideCount > 1);
   }
 
   $slider.slick(opts);
 
-  // Hide/disable arrows when only 1 slide
+  // If only 1 slide, disable all arrows
   if (slideCount < 2) {
     $prev.prop('disabled', true).addClass('opacity-50 pointer-events-none');
     $next.prop('disabled', true).addClass('opacity-50 pointer-events-none');
   }
+
+  // Delegated handlers for MOBILE arrows inside slides (work even on clones)
+  $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    e.preventDefault();
+    $slider.slick('slickPrev');
+  });
+  $scope.on('click', '[data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    e.preventDefault();
+    $slider.slick('slickNext');
+  });
+
+  // Keyboard activation for mobile arrows
+  $scope.on('keydown', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      $(this).trigger('click');
+    }
+  });
 
   // Screen reader announcement
   $slider.on('afterChange', function (event, slick, currentSlide) {
@@ -251,7 +292,7 @@ jQuery(function ($) {
 </script>
 
 <style>
-/* All slider CSS scoped by the section ID */
+/* Scoped by section ID */
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-slide { outline: none; }
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-slide:focus {
   outline: 2px solid #3b82f6;
@@ -259,7 +300,5 @@ jQuery(function ($) {
 }
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
-
-/* Optional: ensure the nav stays above slide content */
 #<?php echo esc_attr($section_id); ?> nav[aria-label="Property navigation"] { z-index: 50; }
 </style>

@@ -90,15 +90,15 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 
     <!-- Main Footer Content -->
     <!-- Base: grid-cols-2 so we can do the special stacking at <=768 -->
-    <!-- md: keep 2 cols; tab: 4 cols with first col full-width; lg: 5 cols -->
-    <div class="grid w-full max-w-[1200px] grid-cols-2 gap-8 md:grid-cols-2 tab:grid-cols-4 lg:grid-cols-5">
+    <!-- md: keep 2 cols; md: 4 cols with first col full-width; lg: 5 cols -->
+    <div class="grid w-full max-w-[1200px] grid-cols-2 gap-8 md:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
 
       <!-- 1) Logo + Slogan + Logos -->
       <!-- Base: full width -> col-span-2 -->
       <!-- md: normal -> col-span-1 -->
-      <!-- tab: full width across 4 cols -> col-span-4 -->
+      <!-- md: full width across 4 cols -> col-span-4 -->
       <!-- lg: normal -> col-span-1 -->
-      <div class="flex flex-col col-span-2 gap-6 items-start w-full md:col-span-1 tab:col-span-4 lg:col-span-1">
+      <div class="flex flex-col col-span-2 gap-6 items-start w-full md:col-span-1 md:col-span-4 lg:col-span-1">
 
         <!-- Footer logo (option) or custom_logo or fallback -->
         <div class="flex items-center">
@@ -218,7 +218,7 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       <!-- 4) Homeowners -->
       <!-- Base: full width -> col-span-2 -->
       <!-- md+: normal -> col-span-1 -->
-      <nav class="flex flex-col col-span-2 gap-5 items-start md:col-span-1 max-md:w-full" aria-labelledby="homeowners-heading">
+      <nav class="flex flex-col col-span-2 gap-5 items-start md:col-span-1 max-md:w-full max-md:py-[2.5rem]" aria-labelledby="homeowners-heading">
         <span id="homeowners-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col3_heading); ?>
         </span>

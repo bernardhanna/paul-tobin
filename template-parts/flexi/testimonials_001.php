@@ -1,12 +1,12 @@
 <?php
 $section_id = 'testimonials_' . uniqid();
 
-$heading              = get_sub_field('heading');
-$heading_tag          = get_sub_field('heading_tag');
-$testimonial_source   = get_sub_field('testimonial_source');
-$manual_testimonials  = get_sub_field('manual_testimonials');
+$heading                = get_sub_field('heading');
+$heading_tag            = get_sub_field('heading_tag');
+$testimonial_source     = get_sub_field('testimonial_source');
+$manual_testimonials    = get_sub_field('manual_testimonials');
 $number_of_testimonials = get_sub_field('number_of_testimonials') ?: 6;
-$background_color     = get_sub_field('background_color');
+$background_color       = get_sub_field('background_color');
 
 // Build padding classes from repeater (attach to inner wrapper per spec)
 $padding_classes = [];
@@ -32,11 +32,11 @@ if ($testimonial_source === 'manual' && $manual_testimonials) {
     $testimonials = $manual_testimonials;
 } else {
     $posts = get_posts([
-        'post_type'      => 'testimonial',
-        'posts_per_page' => $number_of_testimonials,
-        'post_status'    => 'publish',
-        'orderby'        => 'date',
-        'order'          => 'DESC',
+        'post_type'        => 'testimonial',
+        'posts_per_page'   => $number_of_testimonials,
+        'post_status'      => 'publish',
+        'orderby'          => 'date',
+        'order'            => 'DESC',
         'suppress_filters' => false,
     ]);
     foreach ($posts as $post) {
@@ -59,25 +59,22 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
     class="flex overflow-hidden relative bg-[#F9FAFB]"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center w-full mx-auto py-20  max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
+    <div class="flex flex-col items-center w-full mx-auto py-8 md:py-20 max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
 
         <div class="mx-auto w-full max-w-7xl">
             <?php if (!empty($heading)) : ?>
                 <div class="flex flex-col gap-6 items-center mb-12">
                     <<?php echo tag_escape($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
-                        class="text-[#0A1119] text-left font-secondary text-[32px] font-semibold leading-[40px] tracking-[-0.16px]"
+                        class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8"
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo tag_escape($heading_tag); ?>>
- <!-- Decorative Color Bars -->
-                <div
-                    class="flex justify-between items-start w-[71px] max-md:flex-col max-md:gap-8 max-sm:gap-6"
-                    role="presentation"
-                    aria-hidden="true"
-                >
-                    <div class="mr-0.5 bg-orange-500 flex-1 h-[5px]"></div>
-                    <div class="mr-0.5 bg-sky-500 flex-1 h-[5px] max-md:flex-col max-md:gap-8 max-sm:gap-6"></div>
+                    <!-- Decorative Color Bars -->
+                <div class="flex gap-0.5 justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                    <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                    <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
                     <div class="bg-lime-600 flex-1 h-[5px]"></div>
                 </div>
                 </div>
@@ -108,39 +105,66 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                             aria-live="polite"
                         >
                             <?php foreach ($testimonials as $t) : ?>
-                             <article
-  class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10 border border-neutral-200
-         before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2
-         before:w-0 before:h-0 before:border-l-[20px] before:border-r-[20px] before:border-b-[20px]
-         before:border-l-transparent before:border-r-transparent before:border-b-white
-         before:-top-[20px] before:z-10
-         after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2
-         after:w-0 after:h-0 after:border-l-[22px] after:border-r-[22px] after:border-b-[22px]
-         after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
-         after:-top-[22px] after:z-0">
-                                    <!-- Big decorative quote -->
-                                    <div class="absolute -top-2 right-8 text-[#D4D4D4]  text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40 text-bg-medium" aria-hidden="true"><i class="fa-solid fa-quote-right"></i></div>
+                                <!-- Wrapper makes arrows a sibling of the quote (not inside), but part of the same slide -->
+                                <div class="flex flex-col h-full">
+                                    <article
+                                        class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10 border border-neutral-200
+                                               before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2
+                                               before:w-0 before:h-0 before:border-l-[20px] before:border-r-[20px] before:border-b-[20px]
+                                               before:border-l-transparent before:border-r-transparent before:border-b-white
+                                               before:-top-[20px] before:z-10
+                                               after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2
+                                               after:w-0 after:h-0 after:border-l-[22px] after:border-r-[22px] after:border-b-[22px]
+                                               after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
+                                               after:-top-[22px] after:z-0">
+                                        <!-- Big decorative quote -->
+                                        <div class="absolute -top-2 right-8 text-[#D4D4D4] text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40 text-bg-medium" aria-hidden="true"><i class="fa-solid fa-quote-right"></i></div>
 
-                                    <div class="flex relative z-10 flex-col gap-4">
-                                        <?php if (!empty($t['name'])) : ?>
-                                            <span class="text-[#0A1119] font-secondary text-6xl font-normal leading-[56px] tracking-[-0.16px]">
-                                                <?php echo esc_html($t['name']); ?>
-                                            </span>
-                                        <?php endif; ?>
+                                        <div class="flex relative z-10 flex-col gap-4">
+                                            <?php if (!empty($t['name'])) : ?>
+                                                <span class="text-[#0A1119] font-secondary text-6xl font-normal leading-[56px] tracking-[-0.16px]">
+                                                    <?php echo esc_html($t['name']); ?>
+                                                </span>
+                                            <?php endif; ?>
 
-                                        <?php if (!empty($t['title'])) : ?>
-                                            <p class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
-                                                <?php echo esc_html($t['title']); ?>
-                                            </p>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t['title'])) : ?>
+                                                <p class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
+                                                    <?php echo esc_html($t['title']); ?>
+                                                </p>
+                                            <?php endif; ?>
 
-                                        <?php if (!empty($t['testimonial'])) : ?>
-                                            <p class="mt-2 text-base font-normal tracking-normal leading-6 text-black font-primary">
-                                                <?php echo wp_kses_post($t['testimonial']); ?>
-                                            </p>
-                                        <?php endif; ?>
+                                            <?php if (!empty($t['testimonial'])) : ?>
+                                                <p class="mt-2 text-base font-normal tracking-normal leading-6 text-black font-primary">
+                                                    <?php echo wp_kses_post($t['testimonial']); ?>
+                                                </p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
+
+                                    <!-- Mobile arrows BELOW the quote (not inside), md and below -->
+                                    <div class="flex gap-4 justify-center mt-6 md:hidden">
+                                        <button
+                                            aria-label="Previous testimonial"
+                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
+                                            data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
+                                            type="button"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path d="M9.83337 3.33335L5.16671 8.00002L9.83337 12.6667" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </button>
+                                        <button
+                                            aria-label="Next testimonial"
+                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
+                                            data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
+                                            type="button"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path d="M6.16666 12.6666L10.8333 7.99998L6.16666 3.33331" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </button>
                                     </div>
-                                </article>
+                                </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -149,30 +173,6 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                     <button
                         aria-label="Next testimonial"
                         class="hidden flex-shrink-0 justify-center items-center w-10 h-10 bg-gray-800 transition-colors md:flex bg-text-dark hover:bg-gray-800"
-                        data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
-                        type="button"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M6.16666 12.6666L10.8333 7.99998L6.16666 3.33331" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Mobile arrows -->
-                <div class="flex gap-4 justify-center mt-8 md:hidden">
-                    <button
-                        aria-label="Previous testimonial"
-                        class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
-                        data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
-                        type="button"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M9.83337 3.33335L5.16671 8.00002L9.83337 12.6667" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
-                        </svg>
-                    </button>
-                    <button
-                        aria-label="Next testimonial"
-                        class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
                         data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
                         type="button"
                     >
@@ -216,7 +216,6 @@ jQuery(function($){
   });
 });
 </script>
-
 
 <style>
 /* keep cards equal height within slick rows */
