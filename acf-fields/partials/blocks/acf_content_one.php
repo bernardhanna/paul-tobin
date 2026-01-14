@@ -2,21 +2,21 @@
 
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-$cta_001 = new FieldsBuilder('cta_001', [
-    'label' => 'CTA Section',
+$content_one = new FieldsBuilder('content_one', [
+    'label' => 'Content Block One',
 ]);
 
-$cta_001
+$content_one
     ->addTab('Content', ['label' => 'Content'])
     ->addText('heading', [
         'label' => 'Heading Text',
-        'instructions' => 'Enter the main heading text for the CTA section.',
-        'default_value' => 'Why don\'t find out what we can do for you?',
+        'instructions' => 'Enter the main heading text for this section.',
+        'default_value' => 'Lorem ipsum dolor sit amet lorem consectetur sed.',
         'required' => 1,
     ])
     ->addSelect('heading_tag', [
         'label' => 'Heading Tag',
-        'instructions' => 'Select the HTML tag for the heading.',
+        'instructions' => 'Select the appropriate HTML heading tag for SEO and accessibility.',
         'choices' => [
             'h1' => 'H1',
             'h2' => 'H2',
@@ -31,25 +31,27 @@ $cta_001
         'required' => 1,
     ])
     ->addWysiwyg('description', [
-        'label' => 'Description',
-        'instructions' => 'Enter the description text that appears below the heading.',
-        'default_value' => 'From refurbishment and tenant sourcing to management, rent collection, sales, and tax agent services, all handled for you.',
+        'label' => 'Description Content',
+        'instructions' => 'Add the main description content for this section.',
+        'default_value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
         'media_upload' => 0,
         'tabs' => 'all',
         'toolbar' => 'full',
+        'required' => 1,
     ])
     ->addLink('button', [
         'label' => 'Call to Action Button',
-        'instructions' => 'Configure the CTA button link and text.',
+        'instructions' => 'Add a call to action button link.',
         'return_format' => 'array',
-        'required' => 1,
+        'required' => 0,
     ])
 
     ->addTab('Design', ['label' => 'Design'])
     ->addColorPicker('background_color', [
         'label' => 'Background Color',
-        'instructions' => 'Set the background color for the CTA section.',
-        'default_value' => '#020617',
+        'instructions' => 'Set the background color for this section.',
+        'default_value' => '#E5E7EB',
+        'required' => 1,
     ])
 
     ->addTab('Layout', ['label' => 'Layout'])
@@ -57,6 +59,8 @@ $cta_001
         'label' => 'Padding Settings',
         'instructions' => 'Customize padding for different screen sizes.',
         'button_label' => 'Add Screen Size Padding',
+        'min' => 0,
+        'max' => 10,
         'layout' => 'table',
     ])
     ->addSelect('screen_size', [
@@ -71,7 +75,7 @@ $cta_001
             'lg' => 'Large',
             'xl' => 'Extra Large',
             'xxl' => 'XXL',
-            'ultrawide' => 'Ultrawide',
+            'ultrawide' => 'Ultra Wide',
         ],
         'required' => 1,
     ])
@@ -83,6 +87,7 @@ $cta_001
         'step' => 0.1,
         'append' => 'rem',
         'default_value' => 5,
+        'required' => 1,
     ])
     ->addNumber('padding_bottom', [
         'label' => 'Padding Bottom',
@@ -92,7 +97,8 @@ $cta_001
         'step' => 0.1,
         'append' => 'rem',
         'default_value' => 5,
+        'required' => 1,
     ])
     ->endRepeater();
 
-return $cta_001;
+return $content_one;

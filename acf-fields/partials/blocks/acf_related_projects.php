@@ -2,16 +2,17 @@
 
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-$solutions_001 = new FieldsBuilder('solutions_001', [
-    'label' => 'Our Solutions (rent. sell. buy)',
+$related_projects = new FieldsBuilder('related_projects', [
+    'label' => 'Related Projects',
 ]);
 
-$solutions_001
+$related_projects
     ->addTab('Content', ['label' => 'Content'])
     ->addText('heading', [
         'label' => 'Section Heading',
-        'instructions' => 'Enter the main heading for the solutions section.',
-        'default_value' => 'Our solutions',
+        'instructions' => 'Enter the main heading for the related projects section.',
+        'default_value' => 'Related projects',
+        'required' => 1,
     ])
     ->addSelect('heading_tag', [
         'label' => 'Heading Tag',
@@ -27,32 +28,34 @@ $solutions_001
             'span' => 'Span',
         ],
         'default_value' => 'h2',
+        'required' => 1,
     ])
-    ->addRepeater('solutions', [
-        'label' => 'Solution Cards',
-        'instructions' => 'Add solution cards for rent, sell, buy, etc.',
-        'button_label' => 'Add Solution',
+    ->addRepeater('projects', [
+        'label' => 'Projects',
+        'instructions' => 'Add related projects to display in the section.',
+        'button_label' => 'Add Project',
         'min' => 1,
-        'max' => 3,
+        'max' => 6,
         'layout' => 'block',
     ])
-        ->addText('action_word', [
-            'label' => 'Action Word',
-            'instructions' => 'Enter the main action word (e.g., rent, sell, buy).',
-            'placeholder' => 'rent',
+        ->addText('project_name', [
+            'label' => 'Project Name',
+            'instructions' => 'Enter the name of the project.',
+            'required' => 1,
+            'default_value' => 'House name',
         ])
-        ->addWysiwyg('description', [
-            'label' => 'Description',
-            'instructions' => 'Enter the description text for this solution.',
-            'default_value' => 'Not only do we give you a realistic valuation of your property, we also know how best to present your property to the marketplace.',
-            'media_upload' => 0,
-            'tabs' => 'all',
-            'toolbar' => 'full',
+        ->addText('project_type', [
+            'label' => 'Project Type',
+            'instructions' => 'Enter the type or category of the project.',
+            'required' => 1,
+            'default_value' => 'Residential',
         ])
-        ->addLink('button_link', [
-            'label' => 'Button Link',
-            'instructions' => 'Add a link for the solution button.',
-            'return_format' => 'array',
+        ->addImage('project_image', [
+            'label' => 'Project Image',
+            'instructions' => 'Upload an image for the project background.',
+            'return_format' => 'id',
+            'preview_size' => 'medium',
+            'library' => 'all',
         ])
     ->endRepeater()
 
@@ -68,20 +71,23 @@ $solutions_001
         'label' => 'Padding Settings',
         'instructions' => 'Customize padding for different screen sizes.',
         'button_label' => 'Add Screen Size Padding',
+        'layout' => 'table',
     ])
         ->addSelect('screen_size', [
             'label' => 'Screen Size',
+            'instructions' => 'Select the screen size for this padding setting.',
             'choices' => [
-                'xxs' => 'xxs',
-                'xs' => 'xs',
-                'mob' => 'mob',
-                'sm' => 'sm',
-                'md' => 'md',
-                'lg' => 'lg',
-                'xl' => 'xl',
-                'xxl' => 'xxl',
-                'ultrawide' => 'ultrawide',
+                'xxs' => 'XXS',
+                'xs' => 'XS',
+                'mob' => 'Mobile',
+                'sm' => 'Small',
+                'md' => 'Medium',
+                'lg' => 'Large',
+                'xl' => 'XL',
+                'xxl' => 'XXL',
+                'ultrawide' => 'Ultrawide',
             ],
+            'required' => 1,
         ])
         ->addNumber('padding_top', [
             'label' => 'Padding Top',
@@ -103,4 +109,4 @@ $solutions_001
         ])
     ->endRepeater();
 
-return $solutions_001;
+return $related_projects;

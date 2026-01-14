@@ -2,21 +2,21 @@
 
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-$cta_001 = new FieldsBuilder('cta_001', [
-    'label' => 'CTA Section',
+$content_two = new FieldsBuilder('content_two', [
+    'label' => 'Content Two - About Us Section',
 ]);
 
-$cta_001
+$content_two
     ->addTab('Content', ['label' => 'Content'])
     ->addText('heading', [
         'label' => 'Heading Text',
-        'instructions' => 'Enter the main heading text for the CTA section.',
-        'default_value' => 'Why don\'t find out what we can do for you?',
+        'instructions' => 'Enter the main heading for this section.',
+        'default_value' => 'We are all about our clients',
         'required' => 1,
     ])
     ->addSelect('heading_tag', [
         'label' => 'Heading Tag',
-        'instructions' => 'Select the HTML tag for the heading.',
+        'instructions' => 'Select the appropriate HTML heading tag for SEO and accessibility.',
         'choices' => [
             'h1' => 'H1',
             'h2' => 'H2',
@@ -30,26 +30,35 @@ $cta_001
         'default_value' => 'h2',
         'required' => 1,
     ])
-    ->addWysiwyg('description', [
-        'label' => 'Description',
-        'instructions' => 'Enter the description text that appears below the heading.',
-        'default_value' => 'From refurbishment and tenant sourcing to management, rent collection, sales, and tax agent services, all handled for you.',
+    ->addWysiwyg('content', [
+        'label' => 'Content Text',
+        'instructions' => 'Enter the main content text for this section.',
+        'default_value' => '<p>At Paul Tobin Estate Agents, we specialise in helping non-resident landlords and those emigrating manage, sell, or let their Irish properties with ease and confidence. With over 19 years of experience, we provide a highly personalised and boutique service, ensuring every client gets the attention they deserve: quality, tailored solutions.</p>',
         'media_upload' => 0,
         'tabs' => 'all',
         'toolbar' => 'full',
-    ])
-    ->addLink('button', [
-        'label' => 'Call to Action Button',
-        'instructions' => 'Configure the CTA button link and text.',
-        'return_format' => 'array',
         'required' => 1,
+    ])
+    ->addImage('image', [
+        'label' => 'Section Image',
+        'instructions' => 'Upload an image for this section. Recommended size: 1072px width.',
+        'return_format' => 'id',
+        'preview_size' => 'medium',
+        'library' => 'all',
+        'required' => 1,
+    ])
+    ->addTrueFalse('show_decorative_bars', [
+        'label' => 'Show Decorative Color Bars',
+        'instructions' => 'Toggle to show or hide the decorative color bars under the heading.',
+        'default_value' => 1,
+        'ui' => 1,
     ])
 
     ->addTab('Design', ['label' => 'Design'])
     ->addColorPicker('background_color', [
         'label' => 'Background Color',
-        'instructions' => 'Set the background color for the CTA section.',
-        'default_value' => '#020617',
+        'instructions' => 'Choose the background color for this section.',
+        'default_value' => '#e5e5e5',
     ])
 
     ->addTab('Layout', ['label' => 'Layout'])
@@ -58,19 +67,21 @@ $cta_001
         'instructions' => 'Customize padding for different screen sizes.',
         'button_label' => 'Add Screen Size Padding',
         'layout' => 'table',
+        'min' => 0,
+        'max' => 10,
     ])
     ->addSelect('screen_size', [
         'label' => 'Screen Size',
         'instructions' => 'Select the screen size for this padding setting.',
         'choices' => [
-            'xxs' => 'XXS',
-            'xs' => 'XS',
+            'xxs' => 'XXS (Extra Extra Small)',
+            'xs' => 'XS (Extra Small)',
             'mob' => 'Mobile',
-            'sm' => 'Small',
-            'md' => 'Medium',
-            'lg' => 'Large',
-            'xl' => 'Extra Large',
-            'xxl' => 'XXL',
+            'sm' => 'SM (Small)',
+            'md' => 'MD (Medium)',
+            'lg' => 'LG (Large)',
+            'xl' => 'XL (Extra Large)',
+            'xxl' => 'XXL (Extra Extra Large)',
             'ultrawide' => 'Ultrawide',
         ],
         'required' => 1,
@@ -95,4 +106,4 @@ $cta_001
     ])
     ->endRepeater();
 
-return $cta_001;
+return $content_two;

@@ -51,7 +51,7 @@ if (have_rows('counters')) {
                     </<?php echo esc_attr($heading_tag); ?>>
 
                     <div
-                        class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px]"
+                        class="flex   justify-between items-start w-[71px] max-sm:w-[60px]"
                         role="presentation"
                         aria-hidden="true"
                     >

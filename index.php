@@ -145,7 +145,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
               } elseif (is_post_type_archive('Blog')) {
                 echo 'Blog';
               } elseif ($is_blog_home) {
-                echo 'What\'s new at The tyre care';
+                echo 'What\'s new at Paul Tobin';
               }
               echo '</span></li>';
               ?>

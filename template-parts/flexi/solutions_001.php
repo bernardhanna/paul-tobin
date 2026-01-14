@@ -1,21 +1,35 @@
 <?php
-$heading = get_sub_field('heading');
-$heading_tag = get_sub_field('heading_tag');
-$decorative_image = get_sub_field('decorative_image');
-$decorative_image_alt = get_post_meta($decorative_image, '_wp_attachment_image_alt', true) ?: 'Decorative underline';
-$solutions = get_sub_field('solutions');
-$background_color = get_sub_field('background_color');
+$heading            = get_sub_field('heading');
+$heading_tag        = get_sub_field('heading_tag');
+$decorative_image   = get_sub_field('decorative_image');
+$decorative_image_alt = $decorative_image ? (get_post_meta($decorative_image, '_wp_attachment_image_alt', true) ?: 'Decorative underline') : '';
+$solutions          = get_sub_field('solutions');
+$background_color   = get_sub_field('background_color');
 
+// Padding classes on inner container
 $padding_classes = [];
 if (have_rows('padding_settings')) {
     while (have_rows('padding_settings')) {
         the_row();
-        $screen_size   = get_sub_field('screen_size');
-        $padding_top   = get_sub_field('padding_top');
-        $padding_bottom= get_sub_field('padding_bottom');
+        $screen_size    = get_sub_field('screen_size');
+        $padding_top    = get_sub_field('padding_top');
+        $padding_bottom = get_sub_field('padding_bottom');
         $padding_classes[] = "{$screen_size}:pt-[{$padding_top}rem]";
         $padding_classes[] = "{$screen_size}:pb-[{$padding_bottom}rem]";
     }
+}
+
+// Enforce max 3 items in case legacy content had more
+if (is_array($solutions)) {
+    $solutions = array_slice($solutions, 0, 3);
+}
+
+// Fixed underline/band colors by index
+$fixed_colors = ['#0ea5e9', '#74af27', '#ef7b10'];
+
+$allowed_tags = ['h1','h2','h3','h4','h5','h6','p','span'];
+if (!in_array($heading_tag, $allowed_tags, true)) {
+    $heading_tag = 'h2';
 }
 
 $section_id = 'solutions_' . wp_rand(1000, 9999);
@@ -39,12 +53,22 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                             <?php echo esc_html($heading); ?>
                         </<?php echo esc_attr($heading_tag); ?>>
 
-                            <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                        <?php if ($decorative_image): ?>
+                            <figure class="w-[71px] max-sm:w-[60px]" aria-hidden="true">
+                                <?php echo wp_get_attachment_image($decorative_image, 'medium', false, [
+                                    'alt'   => esc_attr($decorative_image_alt),
+                                    'class' => 'w-full h-auto',
+                                    'loading' => 'lazy',
+                                ]); ?>
+                            </figure>
+                        <?php else: ?>
+                            <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                                 <div class="bg-orange-500 flex-1 h-[5px]"></div>
                                 <div class="bg-sky-500 flex-1 h-[5px]"></div>
                                 <div class="bg-slate-300 flex-1 h-[5px]"></div>
                                 <div class="bg-lime-600 flex-1 h-[5px]"></div>
                             </div>
+                        <?php endif; ?>
                     </div>
                 </header>
             <?php endif; ?>
@@ -52,11 +76,11 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
             <?php if ($solutions && is_array($solutions)): ?>
                 <div class="grid grid-cols-1 gap-8 items-stretch mt-12 w-full md:grid-cols-3 max-md:mt-10 max-md:max-w-full" role="list">
                     <?php foreach ($solutions as $index => $solution):
-                        $action_word    = $solution['action_word'] ?? '';
-                        $description    = $solution['description'] ?? '';
-                        $button_link    = $solution['button_link'] ?? '';
-                        $underline_color= $solution['underline_color'] ?? '#0ea5e9';
-                        $card_id        = $section_id . '_card_' . ($index + 1);
+                        $action_word = $solution['action_word'] ?? '';
+                        $description = $solution['description'] ?? '';
+                        $button_link = $solution['button_link'] ?? '';
+                        $underline_color = $fixed_colors[$index] ?? $fixed_colors[0];
+                        $card_id = $section_id . '_card_' . ($index + 1);
                     ?>
                     <article
                         class="flex flex-col p-8 h-full bg-[#EDEDED] max-md:px-5"
@@ -69,8 +93,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                                     I want to
                                 </p>
 
-                                <div class="flex flex-col justify-center items-center text-7xl font-bold leading-none whitespace-nowrap max-md:text-4xl"
-                                    >
+                                <div class="flex flex-col justify-center items-center text-7xl font-bold leading-none whitespace-nowrap max-md:text-4xl">
                                     <span
                                         id="<?php echo esc_attr($card_id); ?>_heading"
                                         class="self-stretch my-auto text-7xl font-primary tracking-normal leading-[92px] text-primary z-10 max-md:text-4xl"

@@ -52,7 +52,7 @@ if (have_rows('padding_settings')) {
                 </<?php echo esc_attr($heading_tag); ?>>
 
                 <!-- Decorative Color Bars -->
-                <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px] max-md:mr-auto" role="presentation" aria-hidden="true">
+                <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px] max-md:mr-auto" role="presentation" aria-hidden="true">
                     <div class="bg-orange-500 flex-1 h-[5px]"></div>
                     <div class="bg-sky-500 flex-1 h-[5px]"></div>
                     <div class="bg-slate-300 flex-1 h-[5px]"></div>

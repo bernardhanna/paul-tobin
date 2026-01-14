@@ -64,7 +64,7 @@ $next_id    = $slider_id . '-next';
   id="<?php echo esc_attr($section_id); ?>"
   class="relative bg-white flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
 >
-  <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5">
+  <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5 max-md:pb-8">
 
     <?php if (!empty($section_heading)): ?>
       <header class="gap-6 w-full text-3xl font-semibold tracking-normal leading-none text-left md:text-center text-primary max-md:max-w-full">
@@ -72,7 +72,7 @@ $next_id    = $slider_id . '-next';
           <<?php echo esc_attr($section_heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left md:text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-md:max-w-full">
             <?php echo esc_html($section_heading); ?>
           </<?php echo esc_attr($section_heading_tag); ?>>
-          <div class="flex gap-0.5 justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+          <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
             <div class="bg-orange-500 flex-1 h-[5px]"></div>
             <div class="bg-sky-500 flex-1 h-[5px]"></div>
             <div class="bg-slate-300 flex-1 h-[5px]"></div>
@@ -115,7 +115,7 @@ $next_id    = $slider_id . '-next';
                   </div>
                 <?php endif; ?>
 
-                <div class="max-md:order-2  relative p-8 max-w-full text-base leading-7 bg-[#F9FAFB] w-full md:w-[417px] max-md:px-5">
+                <div class="max-md:order-2  relative p-8 max-w-full text-base leading-7 bg-[#F9FAFB] max-md:bg-[#EDEDED]  w-full md:w-[417px] max-md:px-5">
                   <h4 class="text-[#0A1119] text-2xl font-semibold leading-[26px] tracking-[-0.16px] font-secondary">
                     <?php echo esc_html($property_title); ?>
                   </h4>

@@ -43,36 +43,6 @@ $values_001
             'ui' => 1,
             'default_value' => 1,
         ])
-        ->addGroup('divider_colors', [
-            'label' => 'Divider Colors',
-            'instructions' => 'Set the 4 small divider bar colors.',
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'show_divider',
-                        'operator' => '==',
-                        'value' => '1',
-                    ],
-                ],
-            ],
-        ])
-            ->addColorPicker('color_1', [
-                'label' => 'Color 1',
-                'default_value' => '#1D4ED8',
-            ])
-            ->addColorPicker('color_2', [
-                'label' => 'Color 2',
-                'default_value' => '#F97316',
-            ])
-            ->addColorPicker('color_3', [
-                'label' => 'Color 3',
-                'default_value' => '#10B981',
-            ])
-            ->addColorPicker('color_4', [
-                'label' => 'Color 4',
-                'default_value' => '#6B7280',
-            ])
-        ->endGroup()
         ->addWysiwyg('intro_rich_text', [
             'label' => 'Intro Copy',
             'instructions' => 'Intro paragraph content.',
@@ -87,10 +57,6 @@ $values_001
             'layout' => 'block',
             'button_label' => 'Add Feature',
         ])
-            ->addColorPicker('bar_color', [
-                'label' => 'Left Bar Color',
-                'default_value' => '#1D4ED8',
-            ])
             ->addText('feature_heading', [
                 'label' => 'Feature Heading',
                 'default_value' => 'Boutique practice',

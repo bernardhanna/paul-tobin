@@ -155,6 +155,7 @@ $fields
     // Copyright with {year}
     ->addText('copyright_text', [
         'label'         => 'Copyright Text',
+        'new_lines'    => '',
         'instructions'  => 'Use {year} to auto-insert the current year.',
         'default_value' => '© {year} Paul Tobin Estate Agents. All rights reserved.',
     ]);

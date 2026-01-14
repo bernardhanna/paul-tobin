@@ -6,7 +6,7 @@ $heading_tag            = get_sub_field('heading_tag');
 $testimonial_source     = get_sub_field('testimonial_source');
 $manual_testimonials    = get_sub_field('manual_testimonials');
 $number_of_testimonials = get_sub_field('number_of_testimonials') ?: 6;
-$background_color       = get_sub_field('background_color');
+$background_color       = get_sub_field('background_color'); // hex or rgba from ACF
 
 // Build padding classes from repeater (attach to inner wrapper per spec)
 $padding_classes = [];
@@ -53,11 +53,15 @@ $allowed_heading_tags = ['h1','h2','h3','h4','h5','h6','span','p'];
 if (!in_array($heading_tag, $allowed_heading_tags, true)) {
     $heading_tag = 'h2';
 }
+
+// Build bg style (use ACF value, fallback to previous #F9FAFB)
+$bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';';
 ?>
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="flex overflow-hidden relative bg-[#F9FAFB]"
+    class="flex overflow-hidden relative"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
+    style="<?php echo $bg_style; ?>"
 >
     <div class="flex flex-col items-center w-full mx-auto py-8 md:py-20 max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
 
@@ -70,13 +74,13 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo tag_escape($heading_tag); ?>>
-                    <!-- Decorative Color Bars -->
-                <div class="flex gap-0.5 justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
-                    <div class="bg-orange-500 flex-1 h-[5px]"></div>
-                    <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
-                    <div class="bg-lime-600 flex-1 h-[5px]"></div>
-                </div>
+
+                    <div class="flex   justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                        <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                        <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                        <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                        <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                    </div>
                 </div>
             <?php endif; ?>
 
@@ -105,10 +109,9 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                             aria-live="polite"
                         >
                             <?php foreach ($testimonials as $t) : ?>
-                                <!-- Wrapper makes arrows a sibling of the quote (not inside), but part of the same slide -->
                                 <div class="flex flex-col h-full">
                                     <article
-                                        class="relative flex-1 p-8 bg-white rounded-lg shadow-sm md:p-10 border border-neutral-200
+                                        class="relative flex-1 p-8 bg-white  shadow-sm md:p-10 border border-neutral-200
                                                before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2
                                                before:w-0 before:h-0 before:border-l-[20px] before:border-r-[20px] before:border-b-[20px]
                                                before:border-l-transparent before:border-r-transparent before:border-b-white
@@ -117,8 +120,9 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                                                after:w-0 after:h-0 after:border-l-[22px] after:border-r-[22px] after:border-b-[22px]
                                                after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
                                                after:-top-[22px] after:z-0">
-                                        <!-- Big decorative quote -->
-                                        <div class="absolute -top-2 right-8 text-[#D4D4D4] text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40 text-bg-medium" aria-hidden="true"><i class="fa-solid fa-quote-right"></i></div>
+                                        <div class="absolute -top-2 right-8 text-[#D4D4D4] text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40" aria-hidden="true">
+                                            <i class="fa-solid fa-quote-right"></i>
+                                        </div>
 
                                         <div class="flex relative z-10 flex-col gap-4">
                                             <?php if (!empty($t['name'])) : ?>
@@ -141,7 +145,7 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
                                         </div>
                                     </article>
 
-                                    <!-- Mobile arrows BELOW the quote (not inside), md and below -->
+                                    <!-- Mobile arrows -->
                                     <div class="flex gap-4 justify-center mt-6 md:hidden">
                                         <button
                                             aria-label="Previous testimonial"
@@ -191,7 +195,7 @@ jQuery(function($){
   var $slider = $('#<?php echo esc_js($section_id); ?>-slider');
   if ($slider.length && !$slider.hasClass('slick-initialized')) {
     $slider.slick({
-      slidesToShow: 2,              // default (above 1085px)
+      slidesToShow: 2, // desktop
       slidesToScroll: 1,
       arrows: false,
       dots: false,
@@ -206,11 +210,9 @@ jQuery(function($){
     });
   }
 
-  // Arrow bindings
   $('[data-slick-prev="#<?php echo esc_js($section_id); ?>-slider"]').on('click', function(){ $slider.slick('slickPrev'); });
   $('[data-slick-next="#<?php echo esc_js($section_id); ?>-slider"]').on('click', function(){ $slider.slick('slickNext'); });
 
-  // Keyboard activation for arrows
   $('[data-slick-prev="#<?php echo esc_js($section_id); ?>-slider"], [data-slick-next="#<?php echo esc_js($section_id); ?>-slider"]').on('keydown', function(e){
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $(this).click(); }
   });
@@ -218,13 +220,11 @@ jQuery(function($){
 </script>
 
 <style>
-/* keep cards equal height within slick rows */
 .testimonials-slider .slick-track { display: flex; }
 .testimonials-slider .slick-slide { height: auto; }
 .testimonials-slider .slick-slide > div { height: 100%; }
-/* Make room for the notch without showing extra slides */
 .testimonials-slider .slick-list {
-  padding-top: 28px; /* ~ notch height incl. border */
-  overflow: hidden;  /* keep other slides hidden */
+  padding-top: 28px;
+  overflow: hidden;
 }
 </style>

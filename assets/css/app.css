@@ -1653,7 +1653,7 @@ aside .wc-block-product-categories-list-item {
 
   /* ===== Form fields ===== */
   .tw-checkout .woocommerce form .form-row { @apply mb-3; }
-  .tw-checkout .woocommerce form .form-row label { @apply block mb-0 text-sm font-medium font-bold text-gray-700; }
+  .tw-checkout .woocommerce form .form-row label { @apply block mb-0 text-sm font-bold text-gray-700; }
   .tw-checkout .woocommerce form .form-row .input-text,
   .tw-checkout .woocommerce form .form-row select,
   .tw-checkout .woocommerce form .form-row textarea {

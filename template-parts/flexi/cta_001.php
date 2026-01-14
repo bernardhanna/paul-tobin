@@ -41,17 +41,16 @@ $section_id = 'cta-' . uniqid();
                             <?php echo esc_html($heading); ?>
                         </<?php echo esc_attr($heading_tag); ?>>
                     <?php endif; ?>
-
-                    <?php if ($decorative_image): ?>
-                        <div class="mt-6">
-                            <?php echo wp_get_attachment_image($decorative_image, 'full', false, [
-                                'alt' => esc_attr($decorative_image_alt),
-                                'class' => 'object-contain aspect-[14.29] w-[71px]',
-                                'role' => 'presentation',
-                                'aria-hidden' => 'true'
-                            ]); ?>
+                        
+                    <div class="mt-6">
+                        <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                        <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                        <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                        <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                        <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                    </div>
                         </div>
-                    <?php endif; ?>
+               
 
                     <?php if (!empty($description)): ?>
                         <div class="mt-6 text-[#F9FAFB] font-primary text-base font-normal leading-[26px] tracking-normal max-md:max-w-full wp_editor">

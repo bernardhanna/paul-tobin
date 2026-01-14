@@ -83,7 +83,7 @@ module.exports = {
         'container': '1280px',
       },
       maxWidth: {
-        'container': '1120px',
+        'container': '70rem',
         'xxs': '320px',
         'xs': '480px',
         'mob': '575px',
@@ -121,8 +121,7 @@ module.exports = {
       sm: '640px',
       md: '768px',
       tab: '993px', 
-      ipad: '1084px',
-      lg: '1100px',
+      lg: '1084px',
       xl: '1280px',
       xxl: '1440px',
       ultrawide: '1920px',

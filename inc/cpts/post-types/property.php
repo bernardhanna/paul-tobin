@@ -35,7 +35,7 @@ add_action('init', function () {
         'property_status',
         'property',
         [
-            'hierarchical'    => false,
+            'hierarchical'    => true,
             'show_ui'         => true,
             'show_in_rest'    => true,
             'show_admin_column'=> true,

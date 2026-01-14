@@ -56,7 +56,7 @@ if ($primary_navigation->isNotEmpty()) {
         <?php foreach ($left_menu_items as $index => $item) : ?>
           <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
             <a href="<?php echo esc_url($item->url); ?>"
-               class="gap-2.5 self-stretch my-auto whitespace-nowrap text-[#1d2838] hover:text-[#025a70] text-base font-normal leading-normal flex items-center capitalize <?php echo $item->active ? 'active-item' : ''; ?>">
+               class="gap-2.5 self-stretch my-auto whitespace-nowrap text-[#1d2838] hover:text-[#025a70] text-base font-[500] leading-normal flex items-center capitalize <?php echo $item->active ? 'active-item' : ''; ?>">
               <?php echo esc_html($item->label); ?>
               <?php if (!empty($item->children)) : ?>
                 <span class="ml-[2px]">
@@ -72,7 +72,7 @@ if ($primary_navigation->isNotEmpty()) {
                 <?php foreach ($item->children as $child) : ?>
                   <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?> hover:bg-secondary">
                     <a href="<?php echo esc_url($child->url); ?>"
-                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] ">
+                       class="block px-4 py-2 text-sm font-[500] leading-normal text-[#1d2838] ">
                       <?php echo esc_html($child->label); ?>
                     </a>
                   </li>
@@ -100,7 +100,7 @@ if ($primary_navigation->isNotEmpty()) {
         <?php foreach ($right_menu_items as $index => $item) : ?>
           <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
             <a href="<?php echo esc_url($item->url); ?>"
-               class="gap-2.5 self-stretch my-auto whitespace-nowrap text-[#1d2838] hover:text-[#025a70] text-base font-normal leading-normal flex items-center capitalize <?php echo $item->active ? 'active-item' : ''; ?>">
+               class="gap-2.5 self-stretch my-auto whitespace-nowrap text-[#1d2838] hover:text-[#025a70] text-base font-[500] leading-normal flex items-center capitalize <?php echo $item->active ? 'active-item' : ''; ?>">
               <?php echo esc_html($item->label); ?>
               <?php if (!empty($item->children)) : ?>
                 <span class="ml-[2px]">
@@ -116,7 +116,7 @@ if ($primary_navigation->isNotEmpty()) {
                 <?php foreach ($item->children as $child) : ?>
                   <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?> hover:bg-secondary">
                     <a href="<?php echo esc_url($child->url); ?>"
-                       class="block px-4 py-2 text-sm font-normal leading-normal text-[#1d2838] ">
+                       class="block px-4 py-2 text-sm font-[500] leading-normal text-[#1d2838] ">
                       <?php echo esc_html($child->label); ?>
                     </a>
                   </li>
@@ -136,7 +136,7 @@ if ($primary_navigation->isNotEmpty()) {
       <div class="hidden gap-4 pl-4 lg:flex">
         <?php if ($phone_number) : ?>
           <a href="tel:<?php echo esc_attr(preg_replace('/[^+\d]/', '', $phone_number)); ?>"
-             class="text-[#1d2838] hover:text-[#025a70] text-base font-normal flex items-center">
+             class="text-[#1d2838] hover:text-[#025a70] text-base font-[500] flex items-center">
             <?php echo esc_html($phone_number); ?>
           </a>
         <?php endif; ?>
