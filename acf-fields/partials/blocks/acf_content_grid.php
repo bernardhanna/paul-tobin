@@ -54,7 +54,7 @@ $content_grid
                 'min'          => 1,
                 'max'          => 12,
             ])
-                ->addWysiwyg('content', [
+                ->addText('content', [
                     'label'         => 'Item Content',
                     'instructions'  => 'Enter the content for this grid item.',
                     'default_value' => '<p>We can refurbish and dress your property for market</p>',

@@ -51,7 +51,7 @@ $clamp = function ($val, $min, $max) {
             <header class="mb-12 w-full text-left max-md:mb-8">
                 <<?php echo esc_attr($heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="mb-6 text-3xl font-semibold tracking-normal leading-10 text-slate-950"
+                    class="mb-6 text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8"
                 >
                     <?php echo esc_html($heading); ?>
                 </<?php echo esc_attr($heading_tag); ?>>
@@ -104,7 +104,7 @@ $clamp = function ($val, $min, $max) {
                                 style="background-color: <?php echo esc_attr($item_bg); ?>;"
                             >
                                 <?php if (!empty($item_content)): ?>
-                                    <div class="text-2xl font-semibold tracking-normal leading-7 text-center text-slate-950 wp_editor">
+                                    <div class="text-center font-secondary  font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119] wp_editor">
                                         <?php echo wp_kses_post($item_content); ?>
                                     </div>
                                 <?php endif; ?>
