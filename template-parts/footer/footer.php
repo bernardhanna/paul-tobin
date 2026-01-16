@@ -86,19 +86,15 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 ?>
 
 <div class="flex overflow-hidden relative bg-gray-50" role="contentinfo" aria-label="Site footer">
-  <div class="flex flex-col gap-12 justify-center items-center px-8 pt-20 pb-12 w-full max-md:px-6 max-md:pt-12 max-md:pb-8 max-sm:gap-8 max-sm:px-4 max-sm:pt-8 max-sm:pb-6">
+  <div class="flex flex-col gap-5 justify-center items-center px-8 pt-20 pb-12 w-full max-md:px-5 md:gap-12 max-sm:gap-8 max-sm:px-4 max-sm:pt-8 max-sm:pb-6">
 
     <!-- Main Footer Content -->
-    <!-- Base: grid-cols-2 so we can do the special stacking at <=768 -->
-    <!-- md: keep 2 cols; md: 4 cols with first col full-width; lg: 5 cols -->
-    <div class="grid w-full max-w-[1200px] grid-cols-2 gap-8 md:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+    <!-- Base: grid-cols-2 (stack for very small); sm: 4 cols; lg: 5 cols -->
+    <div class="grid w-full max-w-[1200px] grid-cols-2 md:gap-8 sm:grid-cols-4 lg:grid-cols-5">
 
       <!-- 1) Logo + Slogan + Logos -->
-      <!-- Base: full width -> col-span-2 -->
-      <!-- md: normal -> col-span-1 -->
-      <!-- md: full width across 4 cols -> col-span-4 -->
-      <!-- lg: normal -> col-span-1 -->
-      <div class="flex flex-col col-span-2 gap-6 items-start w-full md:col-span-1 md:col-span-4 lg:col-span-1">
+      <!-- Base: full width -> col-span-2; sm: full width across 4 -> col-span-4; lg: normal -> col-span-1 -->
+      <div class="flex flex-col col-span-2 gap-6 items-start w-full sm:col-span-4 lg:col-span-1 max-md:pb-8">
 
         <!-- Footer logo (option) or custom_logo or fallback -->
         <div class="flex items-center">
@@ -165,9 +161,8 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </div>
 
       <!-- 2) About us -->
-      <!-- Base: half width (col-span-1) so it sits next to Quick links -->
-      <!-- md+: normal (col-span-1) -->
-      <nav class="col-span-1 md:col-span-1 flex flex-col gap-5 items-start max-md:w-full relative xl:left-[3.5rem]" aria-labelledby="about-us-heading">
+      <!-- Base: half width (col-span-1); sm+: normal (col-span-1) -->
+      <nav class="col-span-1 sm:col-span-1 flex flex-col gap-5 items-start max-sm:w-full relative xl:left-[3.5rem]" aria-labelledby="about-us-heading">
         <span id="about-us-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col1_heading); ?>
         </span>
@@ -191,8 +186,7 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </nav>
 
       <!-- 3) Quick links -->
-      <!-- Base: half width (col-span-1) sitting next to About us -->
-      <nav class="col-span-1 md:col-span-1 flex flex-col gap-5 items-start max-md:w-full relative xl:left-[3.5rem]" aria-labelledby="quick-links-heading">
+      <nav class="col-span-1 sm:col-span-1 flex flex-col gap-5 items-start max-sm:w-full relative xl:left-[3.5rem]" aria-labelledby="quick-links-heading">
         <span id="quick-links-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col2_heading); ?>
         </span>
@@ -216,9 +210,8 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </nav>
 
       <!-- 4) Homeowners -->
-      <!-- Base: full width -> col-span-2 -->
-      <!-- md+: normal -> col-span-1 -->
-      <nav class="flex flex-col col-span-2 gap-5 items-start md:col-span-1 max-md:w-full max-md:py-[2.5rem]" aria-labelledby="homeowners-heading">
+      <!-- Base: full width -> col-span-2; sm+: normal -> col-span-1 -->
+      <nav class="flex flex-col col-span-2 gap-5 items-start sm:col-span-1 max-sm:w-full max-sm:py-[2.5rem]" aria-labelledby="homeowners-heading">
         <span id="homeowners-heading" class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
           <?php echo esc_html($col3_heading); ?>
         </span>
@@ -242,9 +235,8 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
       </nav>
 
       <!-- 5) Get in touch -->
-      <!-- Base: full width -> col-span-2 -->
-      <!-- md+: normal -> col-span-1 -->
-      <div class="col-span-2 md:col-span-1 flex flex-col gap-5 items-start max-md:w-full relative xl:left-[1.5rem]">
+      <!-- Base: full width -> col-span-2; sm+: normal -> col-span-1 -->
+      <div class="col-span-2 sm:col-span-1 flex flex-col gap-5 items-start max-sm:w-full relative xl:left-[1.5rem]">
         <span class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">Get in touch</span>
 
         <div class="flex flex-col gap-3.5 justify-center items-start w-full">
@@ -341,17 +333,17 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 
     <!-- Bottom Bar -->
     <div class="flex flex-col items-center w-full max-w-[1200px]">
-      <div class="flex justify-between items-center pt-6 w-full border-t border-solid border-t-slate-300 max-md:flex-col max-md:gap-4 max-md:items-start">
+      <div class="flex justify-between items-center pt-6 w-full border-t border-solid border-t-slate-300 max-sm:flex-col max-sm:gap-4 max-sm:items-start">
 
         <!-- Left -->
-        <div class="flex flex-1 gap-6 items-center max-md:flex-col max-md:flex-none max-md:gap-2 max-md:items-start">
+        <div class="flex flex-1 gap-6 items-center max-sm:flex-col max-sm:flex-none max-sm:gap-2 max-sm:items-start">
           <div class="text-sm leading-5 text-stone-800 max-sm:text-xs max-sm:leading-5">
             <?php echo wp_kses_post($copyright_txt); ?>
           </div>
         </div>
 
         <!-- Right (Legal menu) -->
-        <nav class="flex gap-3 items-center max-md:self-start" aria-label="Legal links">
+        <nav class="flex gap-3 items-center max-sm:self-start" aria-label="Legal links">
           <?php
           wp_nav_menu([
             'theme_location' => $menu_legal,

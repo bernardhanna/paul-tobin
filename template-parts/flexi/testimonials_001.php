@@ -90,7 +90,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                     <!-- Prev (desktop) -->
                     <button
                         aria-label="Previous testimonial"
-                        class="hidden flex-shrink-0 justify-center items-center w-10 h-10 bg-gray-800 transition-colors md:flex bg-text-dark hover:bg-gray-800"
+                        class="hidden flex-shrink-0 justify-center items-center w-10 h-10 bg-[#0A1119] transition-colors md:flex bg-text-dark hover:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
                         type="button"
                     >
@@ -138,7 +138,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                             <?php endif; ?>
 
                                             <?php if (!empty($t['testimonial'])) : ?>
-                                                <p class="mt-2 text-base font-normal tracking-normal leading-6 text-black font-primary">
+                                                <p class="mt-2 text-base font-normal tracking-normal leading-6 text-[#0A1119] font-primary">
                                                     <?php echo wp_kses_post($t['testimonial']); ?>
                                                 </p>
                                             <?php endif; ?>
@@ -149,7 +149,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                     <div class="flex gap-4 justify-center mt-6 md:hidden">
                                         <button
                                             aria-label="Previous testimonial"
-                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
+                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
                                             data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
                                             type="button"
                                         >
@@ -159,7 +159,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                         </button>
                                         <button
                                             aria-label="Next testimonial"
-                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-gray-800"
+                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
                                             data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
                                             type="button"
                                         >
@@ -176,7 +176,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                     <!-- Next (desktop) -->
                     <button
                         aria-label="Next testimonial"
-                        class="hidden flex-shrink-0 justify-center items-center w-10 h-10 bg-gray-800 transition-colors md:flex bg-text-dark hover:bg-gray-800"
+                        class="hidden flex-shrink-0 justify-center items-center w-10 h-10 bg-[#0A1119] transition-colors md:flex bg-text-dark  hover:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
                         type="button"
                     >

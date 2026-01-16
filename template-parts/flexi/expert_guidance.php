@@ -134,7 +134,7 @@ if (have_rows('padding_settings')) {
         <div class="mt-12">
             <a
                 href="<?php echo esc_url($cta_button['url']); ?>"
-                class="xl:min-w-[325px] font-primary flex gap-2.5 justify-center items-center px-6 py-3 h-11 text-sm font-semibold tracking-normal leading-[22px] whitespace-nowrap transition-all duration-300 w-fit bg-slate-900 text-slate-50 hover:bg-slate-700 focus:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:w-full max-sm:h-12 btn"
+                class="xl:min-w-[325px] font-primary flex gap-2.5 justify-center items-center px-6 py-3 h-11 text-sm font-semibold tracking-normal leading-[22px] whitespace-nowrap transition-all duration-300 w-fit bg-slate-900 text-slate-50 hover:text-black  hover:bg-[#40BFF5] focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:w-full max-sm:h-12 btn"
                 target="<?php echo esc_attr($cta_button['target'] ?? '_self'); ?>"
                 aria-label="<?php echo esc_attr($cta_button['title']); ?>"
             >

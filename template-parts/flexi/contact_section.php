@@ -80,7 +80,7 @@ $section_id = 'contact-section-' . wp_rand(1000, 9999);
                     <?php if ($left_button && is_array($left_button) && isset($left_button['url'], $left_button['title'])): ?>
                         <a
                             href="<?php echo esc_url($left_button['url']); ?>"
-                            class="box-border flex gap-2.5 justify-center items-center px-2 py-0 h-11 whitespace-nowrap transition-colors duration-300 cursor-pointer max-md:w-full bg-slate-900 max-sm:h-12 btn w-fit hover:bg-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
+                            class="box-border flex gap-2.5 justify-center items-center px-2 py-0 h-11 whitespace-nowrap transition-colors duration-300 cursor-pointer max-md:w-full bg-slate-900 max-sm:h-12 btn w-fit hover:bg-[#40BFF5] focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
                             target="<?php echo esc_attr($left_button['target'] ?? '_self'); ?>"
                             aria-label="<?php echo esc_attr($left_button['title']); ?>"
                         >

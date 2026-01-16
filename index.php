@@ -309,7 +309,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
           <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M12 4.04102L4 12.041M4 4.04102L12 12.041" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
-          <span class="text-sm font-semibold leading-5 text-slate-700">Clear filters</span>
+          <span class="text-sm font-semibold leading-5 text- [#40BFF5]">Clear filters</span>
         </button>
       </div>
 

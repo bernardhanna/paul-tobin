@@ -41,6 +41,28 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
     style="background-color: <?php echo esc_attr($background_color); ?>;"
     aria-labelledby="<?php echo esc_attr($section_id); ?>_heading"
 >
+    <!-- Per-card background colors on hover/focus (only the card, not the button) -->
+    <style>
+      /* Card 1 */
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(1):hover,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(1):focus,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(1):focus-visible {
+        background-color: #D9F1FC !important;
+      }
+      /* Card 2 */
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(2):hover,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(2):focus,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(2):focus-visible {
+        background-color: #E0F4C5 !important;
+      }
+      /* Card 3 */
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(3):hover,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(3):focus,
+      #<?php echo esc_attr($section_id); ?> [role="list"] > *:nth-child(3):focus-visible {
+        background-color: #FFE5CC !important;
+      }
+    </style>
+
     <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
         <div class="gap-12 py-12 my-auto w-full lg:py-20 max-md:max-w-full">
             <?php if (!empty($heading)): ?>
@@ -76,16 +98,28 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
             <?php if ($solutions && is_array($solutions)): ?>
                 <div class="grid grid-cols-1 gap-8 items-stretch mt-12 w-full md:grid-cols-3 max-md:mt-10 max-md:max-w-full" role="list">
                     <?php foreach ($solutions as $index => $solution):
-                        $action_word = $solution['action_word'] ?? '';
-                        $description = $solution['description'] ?? '';
-                        $button_link = $solution['button_link'] ?? '';
+                        $action_word     = $solution['action_word'] ?? '';
+                        $description     = $solution['description'] ?? '';
+                        $button_link     = $solution['button_link'] ?? '';
                         $underline_color = $fixed_colors[$index] ?? $fixed_colors[0];
-                        $card_id = $section_id . '_card_' . ($index + 1);
+                        $card_id         = $section_id . '_card_' . ($index + 1);
+
+                        // Make entire card a link if ACF link exists
+                        $is_link_card  = (is_array($button_link) && !empty($button_link['url']) && !empty($button_link['title']));
+                        $wrapper_tag   = $is_link_card ? 'a' : 'article';
+                        $wrapper_attrs = '';
+                        if ($is_link_card) {
+                            $wrapper_attrs .= ' href="' . esc_url($button_link['url']) . '"';
+                            $wrapper_attrs .= ' target="' . esc_attr($button_link['target'] ?? '_self') . '"';
+                            $wrapper_attrs .= ' aria-label="' . esc_attr(trim(($button_link['title'] ?? '') . ' - ' . $action_word . ' property')) . '"';
+                            $wrapper_attrs .= ' title="' . esc_attr($button_link['title']) . '"';
+                        }
                     ?>
-                    <article
-                        class="flex flex-col p-8 h-full bg-[#EDEDED] max-md:px-5"
+                    <<?php echo $wrapper_tag; ?>
+                        class="group flex flex-col p-8 h-full bg-[#EDEDED] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary max-md:px-5"
                         role="listitem"
                         aria-labelledby="<?php echo esc_attr($card_id); ?>_heading"
+                        <?php echo $wrapper_attrs; ?>
                     >
                         <div class="flex flex-col justify-center w-full text-center">
                             <div class="flex flex-col items-center w-full text-2xl font-semibold tracking-normal leading-none text-primary">
@@ -115,19 +149,19 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                             <?php endif; ?>
                         </div>
 
-                        <?php if ($button_link && is_array($button_link) && isset($button_link['url'], $button_link['title'])): ?>
-                            <div class="flex justify-center mt-4">
-                                <a
-                                    href="<?php echo esc_url($button_link['url']); ?>"
-                                    class="flex justify-center items-center w-12 h-12 text-white border border-solid transition-colors duration-300 bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:bg-transparent border-primary hover:text-primary hover:border-primary"
-                                    target="<?php echo esc_attr($button_link['target'] ?? '_self'); ?>"
-                                    aria-label="<?php echo esc_attr($button_link['title'] . ' - ' . $action_word . ' property'); ?>"
-                                >
-                                    <span class="text-2xl fa-solid fa-plus" aria-hidden="true"></span>
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </article>
+                        <!-- Visual “button” (span) reacts to its own hover AND card hover; blue bg + black icon/text/border -->
+                        <div class="flex justify-center mt-4">
+                            <span
+                                class="flex justify-center items-center w-12 h-12 text-white border border-solid transition-colors duration-300 bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary border-primary
+                                       hover:bg-[#40BFF5] hover:text-black hover:border-black
+                                       group-hover:bg-[#40BFF5] group-hover:text-black group-hover:border-black"
+                                aria-hidden="true"
+                            >
+                                <span class="text-2xl transition-colors duration-300 fa-solid fa-plus group-hover:text-black hover:text-black" aria-hidden="true"></span>
+                            </span>
+                        </div>
+
+                    </<?php echo $wrapper_tag; ?>>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

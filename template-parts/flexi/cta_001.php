@@ -62,7 +62,7 @@ $section_id = 'cta-' . uniqid();
                 <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
                             <a
                                 href="<?php echo esc_url($button['url']); ?>"
-                                class="self-stretch my-auto font-primary text-sm font-semibold leading-[22px] tracking-normal  whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary bg-secondary hover:bg- hover:bg-transparent hover:border hover:border-white border-solid border-primary border h-[44px] flex items-center justify-center px-7 hover:text-secondary max-md:w-full"
+                                class="self-stretch my-auto font-primary text-sm font-semibold leading-[22px] tracking-normal  whitespace-nowrap transition-colors duration-200 text-primary w-fit btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary bg-secondary hover:bg-[#40BFF5] hover:border hover:border-[#40BFF5] border-solid border-primary border h-[44px] flex items-center justify-center px-7  max-md:w-full hover:text-black"
                                 target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                                 aria-label="<?php echo esc_attr($button['title']); ?>"
                             >

@@ -130,7 +130,7 @@ function property_grid_span_classes($index) {
     role="region"
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-    <div class="flex flex-col items-center mx-auto w-full max-w-[70rem] max-lg:px-5 lg:py-[4rem] py-[2.5rem]">
+    <div class="flex flex-col items-center mx-auto w-full max-w-[70rem] max-xl:px-5 lg:py-[4rem] py-[2.5rem]">
 
         <?php if (!empty($section_heading)): ?>
             <header class="py-12 w-full md:py-16 lg:py-20">

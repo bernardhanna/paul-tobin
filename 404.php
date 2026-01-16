@@ -45,7 +45,7 @@ $padding_bottom = $not_found_settings['padding_bottom'] ?? 'pb-10';
              <?php echo esc_html($title); ?>
             </h1>
             <div
-              class="mt-4 text-xl leading-snug text-slate-700 max-md:max-w-full"
+              class="mt-4 text-xl leading-snug text- [#40BFF5] max-md:max-w-full"
             >
              <?php echo wp_kses_post($text); ?>
             </div>
