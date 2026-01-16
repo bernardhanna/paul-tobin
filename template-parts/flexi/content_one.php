@@ -58,7 +58,7 @@ $section_id = 'content-one-' . wp_rand(1000, 9999);
                 <?php if ($button && is_array($button) && isset($button['url'], $button['title'])): ?>
                     <a
                         href="<?php echo esc_url($button['url']); ?>"
-                        class="box-border flex gap-2.5 justify-center items-center px-6 py-0 h-11 whitespace-nowrap transition-colors duration-300 cursor-pointer bg-slate-900 max-sm:px-5 max-sm:py-0 max-sm:w-full w-fit btn hover:text-black  hover:bg-[#40BFF5] focus:bg-[#40BFF5]"
+                        class="box-border flex gap-2.5 justify-center items-center px-6 py-0 h-11 whitespace-nowrap transition-colors duration-300 cursor-pointer bg-[#0A1119] max-sm:px-5 max-sm:py-0 max-sm:w-full w-fit btn hover:text-black  hover:bg-[#40BFF5] focus:bg-[#40BFF5]"
                         target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                         aria-label="<?php echo esc_attr($button['title']); ?>"
                     >

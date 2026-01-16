@@ -246,7 +246,7 @@ add_filter('body_class', function ($classes) {
 add_action('woocommerce_before_checkout_form', function () {
   if (!is_checkout()) return;
   echo '<div class="px-6 mx-auto max-w-[1140px]">';
-  echo '  <h1 class="text-3xl font-semibold text-slate-900">Checkout</h1>';
+  echo '  <h1 class="text-3xl font-semibold text-[#0A1119]">Checkout</h1>';
   echo '  <div class="mt-6">'; // keep structure simple; do columns in CSS
 }, 0);
 
@@ -261,7 +261,7 @@ add_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices',
 
 // Shipping heading
 add_action('woocommerce_before_checkout_shipping_form', function () {
-  echo '<h2 class="mb-4 text-xl font-medium text-slate-900">Shipping details</h2>';
+  echo '<h2 class="mb-4 text-xl font-medium text-[#0A1119]">Shipping details</h2>';
 }, 5);
 
 // Order review heading (wording)
@@ -441,7 +441,7 @@ add_action('wp_footer', function () {
 
 // 1) Output heading inside #order_review (right above the table)
 add_action('woocommerce_checkout_order_review', function () {
-    echo '<h3 class="mb-4 text-lg font-semibold tw-order-heading text-slate-900">Order summary</h3>';
+    echo '<h3 class="mb-4 text-lg font-semibold tw-order-heading text-[#0A1119]">Order summary</h3>';
 }, 5);
 
 // 2) Hide Woo’s default heading that sits outside #order_review

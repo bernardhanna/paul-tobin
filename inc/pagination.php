@@ -28,7 +28,7 @@ function my_custom_pagination()
       <li>
         <?php if (get_previous_posts_link()): ?>
           <a href="<?php echo esc_url(get_pagenum_link($current_page - 1)); ?>"
-            class="flex items-center my-auto text-slate-900"
+            class="flex items-center my-auto text-[#0A1119]"
             aria-label="Go to previous page">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
               <path d="M20 24L12 16L20 8" stroke="#025A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>

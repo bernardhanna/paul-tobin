@@ -6,13 +6,11 @@ $description  = get_sub_field('content');
 $grid_rows    = get_sub_field('grid_rows');
 $section_bg   = get_sub_field('background_color');
 
-// Whitelist heading tag
 $allowed_tags = ['h1','h2','h3','h4','h5','h6','p','span'];
 if (!in_array($heading_tag, $allowed_tags, true)) {
     $heading_tag = 'h2';
 }
 
-// ============== Padding classes (apply to inner container) ==============
 $padding_classes = [];
 if (have_rows('padding_settings')) {
     while (have_rows('padding_settings')) {
@@ -25,11 +23,9 @@ if (have_rows('padding_settings')) {
     }
 }
 
-// ============== Helpers ==============
 $section_id  = 'content-grid-' . uniqid();
 $has_heading = !empty($heading);
 
-// Safely clamp an integer
 $clamp = function ($val, $min, $max) {
     $v = (int) $val;
     if ($v < $min) $v = $min;
@@ -55,8 +51,7 @@ $clamp = function ($val, $min, $max) {
                 >
                     <?php echo esc_html($heading); ?>
                 </<?php echo esc_attr($heading_tag); ?>>
-                <!-- Decorative Color Bars -->
-                <div class="flex   justify-between mr-auto items-left w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                <div class="flex justify-between mr-auto items-left w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                     <div class="bg-orange-500 flex-1 h-[5px]"></div>
                     <div class="bg-sky-500 flex-1 h-[5px]"></div>
                     <div class="bg-slate-300 flex-1 h-[5px]"></div>
@@ -74,49 +69,52 @@ $clamp = function ($val, $min, $max) {
         <?php endif; ?>
 
         <?php if (!empty($grid_rows) && is_array($grid_rows)): ?>
-            <div class="flex flex-col gap-12 w-full">
+            <div class="flex flex-col gap-6 w-full">
                 <?php foreach ($grid_rows as $row_index => $row): ?>
                     <?php
                     $items = $row['items'] ?? [];
                     $count = is_array($items) ? count($items) : 0;
                     if ($count < 1) continue;
 
-                    // Columns per breakpoint
+                    // Default grid (your original logic)
                     $cols_md = $clamp(min($count, 3), 1, 12);
                     $cols_lg = $clamp($count, 1, 12);
-
                     $grid_classes = "grid grid-cols-1 md:grid-cols-{$cols_md} lg:grid-cols-{$cols_lg} gap-6 w-full";
+
+                    // Special case: exactly 3 items => 2 cols @ md/lg with last item full-width; 3 cols again @ xl+
+                    if ($count === 3) {
+                        $grid_classes = "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full";
+                    }
                     ?>
                     <div class="<?php echo esc_attr($grid_classes); ?>">
                         <?php foreach ($items as $i => $item): ?>
                             <?php
                             $item_content = $item['content'] ?? '';
                             $item_bg      = $item['item_background_color'] ?? '#E5E7EB';
-
-                            // Fixed palette select
                             $bar_color    = $item['bar_color'] ?? '#0098D8';
+                            $item_id      = $section_id . '-row-' . ($row_index + 1) . '-item-' . ($i + 1);
 
-                            $item_id = $section_id . '-row-' . ($row_index + 1) . '-item-' . ($i + 1);
+                            // Span rules: for 3-item rows, make the last item 100% @ md & lg; reset at xl
+                            $span_classes = ($count === 3 && $i === 2)
+                                ? 'md:col-span-2 lg:col-span-2 xl:col-span-1'
+                                : '';
                             ?>
                             <article
                                 id="<?php echo esc_attr($item_id); ?>"
-                                class="flex flex-col justify-center p-8 min-h-[200px] max-md:px-5"
+                                class="flex flex-col justify-center p-8 min-h-[8.75rem] max-md:px-5 <?php echo esc_attr($span_classes); ?>"
                                 style="background-color: <?php echo esc_attr($item_bg); ?>;"
                             >
                                 <?php if (!empty($item_content)): ?>
-                                    <div class="text-center font-secondary  font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119] wp_editor">
+                                    <div class="text-center font-secondary font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119] wp_editor max-w-[20rem] w-full mx-auto">
                                         <?php echo wp_kses_post($item_content); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <!-- Fixed-size decorative bar -->
                                 <div
                                     class="mx-auto mt-4 flex w-full max-w-[6.25rem] h-[0.625rem] justify-center items-center"
                                     role="presentation"
                                     aria-hidden="true"
-                                    style="
-                                        background-color: <?php echo esc_attr($bar_color); ?>;
-                                    "
+                                    style="background-color: <?php echo esc_attr($bar_color); ?>;"
                                 ></div>
                             </article>
                         <?php endforeach; ?>
@@ -125,5 +123,5 @@ $clamp = function ($val, $min, $max) {
             </div>
         <?php endif; ?>
 
-    </div> 
+    </div>
 </section>

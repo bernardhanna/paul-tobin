@@ -202,14 +202,14 @@ $position_classes = match ($content_box_position) {
                 </div>
 
                 <?php if (!empty($description)): ?>
-                    <div class="font-primary w-full text-base tracking-normal leading-7 text-gray-700 max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
+                    <div class="font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
                         <?php echo wp_kses_post($description); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($button['url']) && !empty($button['title'])): ?>
                     <a href="<?php echo esc_url($button['url']); ?>"
-                       class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-slate-900 text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 max-sm:px-5 max-sm:h-12 btn"
+                       class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn"
                        target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                        aria-label="<?php echo esc_attr($button['title']); ?>">
                         <span class="text-sm font-semibold tracking-normal leading-6"><?php echo esc_html($button['title']); ?></span>

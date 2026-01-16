@@ -120,12 +120,23 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                                after:w-0 after:h-0 after:border-l-[22px] after:border-r-[22px] after:border-b-[22px]
                                                after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
                                                after:-top-[22px] after:z-0">
-                                        <div class="absolute -top-2 right-8 text-[#D4D4D4] text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40" aria-hidden="true">
-                                            <i class="fa-solid fa-quote-right"></i>
-                                        </div>
 
                                         <div class="flex relative z-10 flex-col gap-4">
-                                            <?php if (!empty($t['name'])) : ?>
+
+                                            <?php if (!empty($t['testimonial'])) : ?>
+                                                <div class="flex flex-row">
+                                                    <p class="mt-2 text-base font-normal tracking-normal leading-6 text-[#0A1119] font-primary">
+                                                            <?php echo wp_kses_post($t['testimonial']); ?>
+                                                        </p>
+                                                    <div class="arelative -top-2 right-0 text-[#D4D4D4] text-[80px] font-bold leading-[92px] tracking-[-0.16px] opacity-40" aria-hidden="true">
+                                                       <svg width="35" height="28" viewBox="0 0 35 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M0.800195 27.2L6.0802 8L7.8402 15.28C5.54686 15.28 3.65353 14.6133 2.1602 13.28C0.720195 11.8933 0.000195324 10.0267 0.000195324 7.68C0.000195324 5.38666 0.746862 3.54666 2.2402 2.16C3.73353 0.719995 5.57353 -4.76837e-06 7.7602 -4.76837e-06C10.0002 -4.76837e-06 11.8402 0.719995 13.2802 2.16C14.7202 3.54666 15.4402 5.38666 15.4402 7.68C15.4402 8.37333 15.3869 9.06666 15.2802 9.76C15.2269 10.4 15.0402 11.1733 14.7202 12.08C14.4535 12.9867 14.0002 14.1867 13.3602 15.68L8.7202 27.2H0.800195ZM19.6802 27.2L24.9602 8L26.7202 15.28C24.4269 15.28 22.5335 14.6133 21.0402 13.28C19.6002 11.8933 18.8802 10.0267 18.8802 7.68C18.8802 5.38666 19.6269 3.54666 21.1202 2.16C22.6135 0.719995 24.4535 -4.76837e-06 26.6402 -4.76837e-06C28.8802 -4.76837e-06 30.7202 0.719995 32.1602 2.16C33.6002 3.54666 34.3202 5.38666 34.3202 7.68C34.3202 8.37333 34.2669 9.06666 34.1602 9.76C34.1069 10.4 33.9202 11.1733 33.6002 12.08C33.3335 12.9867 32.8802 14.1867 32.2402 15.68L27.6002 27.2H19.6802Z" fill="#D4D4D4"/>
+                                                        </svg>
+                                                    </div>
+                                              </div>
+                                            <?php endif; ?>
+
+                                                                                        <?php if (!empty($t['name'])) : ?>
                                                 <span class="text-[#0A1119] font-secondary text-6xl font-normal leading-[56px] tracking-[-0.16px]">
                                                     <?php echo esc_html($t['name']); ?>
                                                 </span>
@@ -134,12 +145,6 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                             <?php if (!empty($t['title'])) : ?>
                                                 <p class="text-[#0A1119] font-primary text-base font-semibold leading-6 tracking-[0.08px]">
                                                     <?php echo esc_html($t['title']); ?>
-                                                </p>
-                                            <?php endif; ?>
-
-                                            <?php if (!empty($t['testimonial'])) : ?>
-                                                <p class="mt-2 text-base font-normal tracking-normal leading-6 text-[#0A1119] font-primary">
-                                                    <?php echo wp_kses_post($t['testimonial']); ?>
                                                 </p>
                                             <?php endif; ?>
                                         </div>

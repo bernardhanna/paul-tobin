@@ -74,25 +74,31 @@ if (is_array($features)) {
 <section id="<?php echo esc_attr($section_id); ?>" class="<?php echo esc_attr($section_classes); ?>"<?php echo $section_style_attr; ?>>
     <div class="<?php echo esc_attr($inner_wrapper_classes); ?>">
         <div class="mx-auto w-full max-w-7xl">
-            <div class="flex flex-col gap-8 items-start md:flex-row md:gap-12">
-                <!-- Mobile heading -->
-                <div class="flex flex-col gap-6 text-left md:hidden">
-                    <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
-                        <?php echo esc_html($heading_text_fallback); ?>
-                    </<?php echo tag_escape($heading_tag); ?>>
+                 <div class="hidden flex-col gap-6 mb-5 max-lg:flex">
+                        <div class="flex flex-col gap-6 text-left">
+                            <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
+                                <?php echo esc_html($heading_text_fallback); ?>
+                            </<?php echo tag_escape($heading_tag); ?>>
 
-                    <?php if ($show_divider) : ?>
-                        <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
-                            <div class="bg-orange-500 flex-1 h-[5px]"></div>
-                            <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                            <div class="bg-slate-300 flex-1 h-[5px]"></div>
-                            <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                            <?php if ($show_divider) : ?>
+                                <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
+                                    <div class="bg-orange-500 flex-1 h-[5px]"></div>
+                                    <div class="bg-sky-500 flex-1 h-[5px]"></div>
+                                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                                    <div class="bg-lime-600 flex-1 h-[5px]"></div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php if (!empty($intro_rich_text)) : ?>
+                        <div class="text-black max-sm:hidden  font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
+                            <?php echo wp_kses_post($intro_rich_text); ?>
                         </div>
                     <?php endif; ?>
-                </div>
-
+                    </div>
+            <div class="flex flex-col gap-8 items-start sm:flex-row md:gap-12">
+            
                 <!-- Image -->
-                <div class="flex-shrink-0 w-full md:w-1/2 lg:w-[41%]">
+                <div class="flex-shrink-0 w-full sm:w-1/2 xl:w-[41%]">
                     <?php if (!empty($image_url)) : ?>
                         <img
                             src="<?php echo esc_url($image_url); ?>"
@@ -104,17 +110,22 @@ if (is_array($features)) {
                             class="w-full h-auto max-w-md lg:max-w-none object-contain lg:object-cover max-h-[480px] <?php echo esc_attr($image_border_radius ?: 'rounded-none'); ?>"
                         />
                     <?php endif; ?>
+                    <?php if (!empty($intro_rich_text)) : ?>
+                        <div class="text-black mt-8  max-sm:flex hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
+                            <?php echo wp_kses_post($intro_rich_text); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Copy & features -->
-                <div class="flex flex-col gap-6 w-full md:w-1/2 lg:w-[59%]">
-                    <div class="flex flex-col gap-6 max-md:hidden">
-                        <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
+                <div class="flex flex-col gap-6 w-full sm:w-1/2 xl:w-[59%]">
+                    <div class="flex flex-col gap-6 max-lg:hidden">
+                        <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-lg:hidden">
                             <?php echo esc_html($heading_text_fallback); ?>
                         </<?php echo tag_escape($heading_tag); ?>>
 
                         <?php if ($show_divider) : ?>
-                            <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
+                            <div class="flex  max-lg:hidden justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
                                 <div class="bg-orange-500 flex-1 h-[5px]"></div>
                                 <div class="bg-sky-500 flex-1 h-[5px]"></div>
                                 <div class="bg-slate-300 flex-1 h-[5px]"></div>

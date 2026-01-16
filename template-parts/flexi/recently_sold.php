@@ -34,15 +34,14 @@ if (empty($selected_properties)) {
             [
                 'taxonomy' => 'property_status',
                 'field'    => 'slug',
-                'terms'    => ['sold'], // "Sold" term slug
+                'terms'    => ['sold'],
             ],
         ],
-        'orderby' => 'modified', // last updated
+        'orderby' => 'modified',
         'order'   => 'DESC',
         'fields'  => 'ids',
     ]);
 
-    // Optional soft fallback if no "sold" items exist
     if (empty($selected_properties)) {
         $selected_properties = get_posts([
             'post_type'      => ['property'],
@@ -86,20 +85,21 @@ $has_heading = !empty($heading);
                         </<?php echo esc_attr($heading_tag); ?>>
                     <?php endif; ?>
 
-                    <!-- Decorative Bar (neutral; no design fields) -->
-                    <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                    <div class="flex justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                         <div class="bg-orange-500 flex-1 h-[5px]"></div>
                         <div class="bg-sky-500 flex-1 h-[5px]"></div>
                         <div class="bg-slate-300 flex-1 h-[5px]"></div>
                         <div class="bg-lime-600 flex-1 h-[5px]"></div>
                     </div>
                 </div>
-                    </div>
+            </div>
 
             <!-- Properties Grid -->
             <?php if (!empty($property_ids)) : ?>
-                <div class="grid grid-cols-1 gap-12 w-full md:grid-cols-2 lg:grid-cols-3 max-md:gap-8 max-sm:gap-6" role="region" aria-label="Recently sold properties">
-                    <?php foreach ($property_ids as $property_id) :
+                <!-- Below lg: 2 columns; pattern 50/50 then 100% (spans 2) -->
+                <!-- At lg: 3 equal columns -->
+                <div class="grid grid-cols-1 gap-12 w-full sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 max-md:gap-8 max-sm:gap-6" role="region" aria-label="Recently sold properties">
+                    <?php foreach ($property_ids as $idx => $property_id) :
                         $property_title     = get_the_title($property_id);
                         $property_permalink = get_permalink($property_id);
                         $featured_image     = get_post_thumbnail_id($property_id);
@@ -107,8 +107,14 @@ $has_heading = !empty($heading);
 
                         $property_types = get_the_terms($property_id, 'property_type');
                         $property_type  = (!empty($property_types) && !is_wp_error($property_types)) ? $property_types[0]->name : 'Property';
+
+                        // Every 3rd card (0-based idx 2,5,8,...) spans 2 cols on sm/md; reset to 1 at lg
+                        $span_classes = ($idx % 3 === 2)
+                            ? 'sm:col-span-2 md:col-span-2 lg:col-span-1'
+                            : 'sm:col-span-1 md:col-span-1 lg:col-span-1';
                     ?>
-                        <a href="<?php echo esc_url($property_permalink); ?>" class="flex flex-col items-start h-[318px] max-md:h-[280px] max-sm:h-[250px]">
+                        <a href="<?php echo esc_url($property_permalink); ?>"
+                           class="group flex flex-col items-start h-[318px] max-md:h-[280px] max-sm:h-[250px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 <?php echo esc_attr($span_classes); ?>">
                             <div class="flex overflow-hidden flex-col justify-center items-center w-full flex-[1_0_0] relative">
                                 <?php if ($featured_image) : ?>
                                     <div class="absolute inset-0 w-full h-full">
@@ -120,18 +126,21 @@ $has_heading = !empty($heading);
                                     </div>
                                 <?php endif; ?>
 
+                                <!-- Gradient overlay on hover/focus -->
+                                <div
+                                  class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 group-focus:opacity-100"
+                                  style="background: linear-gradient(0deg, rgba(0, 152, 216, 0.25) 0%, rgba(0, 152, 216, 0.25) 100%);"
+                                  aria-hidden="true"
+                                ></div>
+
                                 <div class="box-border flex flex-col justify-end items-start p-8 w-full flex-[1_0_0] max-sm:p-6 relative z-10">
                                     <div class="flex flex-col items-start px-8 py-4 bg-gray-200 max-md:px-6 max-md:py-3 max-sm:px-5 max-sm:py-3">
-                                        <span class="font-secondary font-semibold text-xl sm:text-[32px] leading-tight sm:leading-[40px] tracking-[-0.16px] text-slate-900">
-                                            <div
-                                                
-                                                class="transition-colors duration-200"
-                                                aria-describedby="property-type-<?php echo esc_attr($property_id); ?>"
-                                            >
+                                        <span class="font-secondary font-semibold text-[2.125rem] leading-[2.5rem] tracking-[-0.01rem] text-[#0A1119]">
+                                            <div class="transition-colors duration-200" aria-describedby="property-type-<?php echo esc_attr($property_id); ?>">
                                                 <?php echo esc_html($property_title); ?>
                                             </div>
                                         </span>
-                                        <p id="property-type-<?php echo esc_attr($property_id); ?>" class="text-base tracking-normal leading-7 text-gray-700 max-md:text-sm max-md:leading-6 max-sm:text-sm max-sm:leading-6">
+                                        <p id="property-type-<?php echo esc_attr($property_id); ?>" class="font-normal text-[1rem] leading-[1.625rem] text-[#434B53]">
                                             <?php echo esc_html($property_type); ?>
                                         </p>
                                     </div>

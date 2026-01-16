@@ -120,7 +120,7 @@ $section_id = 'team-section-' . uniqid();
                                             >
                                                 <?php echo esc_html($member_name); ?>
                                             </h3>
-                                            <p class="box-border text-base tracking-normal leading-7 text-gray-700 max-md:text-base max-md:leading-6 max-sm:text-sm max-sm:leading-6">
+                                            <p class="box-border text-base tracking-normal leading-7 text-[#434B53] max-md:text-base max-md:leading-6 max-sm:text-sm max-sm:leading-6">
                                                 <?php echo esc_html($member_role); ?>
                                             </p>
                                         </div>

@@ -66,59 +66,27 @@ if (!in_array($section_heading_tag, $allowed_headings, true)) {
 
 /**
  * Span classes per-tile (index-based).
- *
- * Breakpoints (custom):
- * md: 768px, lg: 1084px
- *
- * < md:                1 col – all items full width
- * md–(lg-1):           rows repeat: 50/50, 100/100, 100/100, 50/50, 100/100, 100/100, ...
- * ≥ lg:                rows repeat: 50/50, 40/60, 60/40, 50/50, ...
  */
 function property_grid_span_classes($index) {
-    $pair_index = intdiv($index, 2);  // which two-up row we're on (0-based)
-    $pos        = $index % 2;         // 0 = left, 1 = right
+    $pair_index = intdiv($index, 2);
+    $pos        = $index % 2;
 
-    // Tablet pattern (md): 6-row cycle
     switch ($pair_index % 6) {
-        case 0: // 50/50
-            $md_span = 'md:col-span-1';
-            break;
-        case 1: // 100/100
-            $md_span = 'md:col-span-2';
-            break;
-        case 2: // 100/100
-            $md_span = 'md:col-span-2';
-            break;
-        case 3: // 50/50
-            $md_span = 'md:col-span-1';
-            break;
-        case 4: // 100/100
-            $md_span = 'md:col-span-2';
-            break;
-        case 5: // 100/100
-        default:
-            $md_span = 'md:col-span-2';
-            break;
+        case 0: $md_span = 'md:col-span-1'; break;
+        case 1: $md_span = 'md:col-span-2'; break;
+        case 2: $md_span = 'md:col-span-2'; break;
+        case 3: $md_span = 'md:col-span-1'; break;
+        case 4: $md_span = 'md:col-span-2'; break;
+        default:$md_span = 'md:col-span-2'; break;
     }
 
-    // Desktop pattern (lg): 4-row cycle
     switch ($pair_index % 4) {
-        case 0: // 50/50
-            $lg_span = 'lg:col-span-5';
-            break;
-        case 1: // 40/60
-            $lg_span = ($pos === 0) ? 'lg:col-span-4' : 'lg:col-span-6';
-            break;
-        case 2: // 60/40
-            $lg_span = ($pos === 0) ? 'lg:col-span-6' : 'lg:col-span-4';
-            break;
-        case 3: // 50/50
-        default:
-            $lg_span = 'lg:col-span-5';
-            break;
+        case 0: $lg_span = 'lg:col-span-5'; break;          // 50/50
+        case 1: $lg_span = ($pos === 0) ? 'lg:col-span-4' : 'lg:col-span-6'; break; // 40/60
+        case 2: $lg_span = ($pos === 0) ? 'lg:col-span-6' : 'lg:col-span-4'; break; // 60/40
+        default:$lg_span = 'lg:col-span-5'; break;          // 50/50
     }
 
-    // Base: 1 col (< md). At md: 2 cols. At lg: 10 cols.
     return "col-span-1 {$md_span} {$lg_span}";
 }
 ?>
@@ -145,7 +113,6 @@ function property_grid_span_classes($index) {
 
         <?php if (!empty($property_ids)): ?>
             <div class="w-full">
-                <!-- Base: 1 col; md: 2 cols (tablet cycle handled via md:col-span-*); lg: 10 cols (desktop cycle via lg:col-span-*) -->
                 <div class="grid grid-cols-1 gap-6 px-0 md:grid-cols-2 lg:grid-cols-10 lg:gap-12">
                     <?php foreach ($property_ids as $i => $pid): ?>
                         <?php
@@ -165,14 +132,22 @@ function property_grid_span_classes($index) {
                         <div class="<?php echo esc_attr($tile_classes); ?>">
                             <a
                                 href="<?php echo esc_url($link); ?>"
-                                class="block group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
+                                class="block group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119]"
                                 aria-label="<?php echo esc_attr('View ' . $title); ?>"
                             >
                                 <div class="relative flex flex-col justify-end items-start overflow-hidden max-md:h-[18.75rem] h-[31.25rem]">
+                                    <!-- Background image -->
                                     <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('<?php echo esc_url($img_url); ?>');"></div>
 
+                                    <!-- Gradient overlay on hover/focus -->
+                                    <div
+                                        class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 group-focus:opacity-100"
+                                        style="background: linear-gradient(0deg, rgba(0, 152, 216, 0.25) 0%, rgba(0, 152, 216, 0.25) 100%);"
+                                        aria-hidden="true"
+                                    ></div>
+
                                     <div class="relative p-3 px-6 m-4 bg-white sm:m-8 sm:p-4 sm:px-8">
-                                        <h3 class="font-secondary font-semibold text-xl sm:text-[32px] leading-tight sm:leading-[40px] tracking-[-0.16px] text-slate-900">
+                                        <h3 class="font-secondary font-semibold text-xl sm:text-[32px] leading-tight sm:leading-[40px] tracking-[-0.16px] text-[#0A1119]">
                                             <?php echo esc_html($title); ?>
                                         </h3>
                                         <p class="font-primary text-sm sm:text-base leading-relaxed sm:leading-[26px] text-slate-600">

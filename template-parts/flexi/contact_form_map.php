@@ -654,7 +654,7 @@ function toggleOffice(element) {
                 required
                 aria-required="true"
                 aria-describedby="privacy-error"
-                class="w-4 h-4 rounded-sm border border-solid border-slate-900"
+                class="w-4 h-4 rounded-sm border border-solid border-[#0A1119]"
             />
         </div>
         <label for="privacy_policy" class="flex-1 text-base tracking-normal leading-7 cursor-pointer text-slate-950 max-sm:text-sm">
@@ -670,7 +670,7 @@ function toggleOffice(element) {
     <!-- Submit Button -->
     <button
         type="submit"
-        class="flex gap-2.5 justify-center items-center px-2 py-0 w-full h-11 text-sm font-semibold tracking-normal leading-6 transition-colors duration-200 cursor-pointer btn bg-slate-900 text-slate-50 max-sm:text-sm hover:bg-slate-800"
+        class="flex gap-2.5 justify-center items-center px-2 py-0 w-full h-11 text-sm font-semibold tracking-normal leading-6 transition-colors duration-200 cursor-pointer btn bg-[#0A1119] text-slate-50 max-sm:text-sm hover:bg-slate-800"
         aria-describedby="submit-help"
     >
         Send message

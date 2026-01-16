@@ -43,7 +43,7 @@ add_action('after_setup_theme', 'matrix_starter_setup');
  */
 add_filter('nav_menu_link_attributes', function ($atts, $item, $args) {
     if (!empty($args->theme_location) && $args->theme_location === 'footer_one') {
-        $atts['class'] = trim(($atts['class'] ?? '') . ' block hover:underline focus:outline-none focus:ring-2 focus:ring-slate-900');
+        $atts['class'] = trim(($atts['class'] ?? '') . ' block hover:underline focus:outline-none focus:ring-2 focus:ring-[#0A1119]');
     }
     return $atts;
 }, 10, 3);
