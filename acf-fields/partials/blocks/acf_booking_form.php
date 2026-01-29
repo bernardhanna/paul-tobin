@@ -2,19 +2,19 @@
 
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-$contact_form_map = new FieldsBuilder('contact_form_map', [
-    'label' => 'Contact Form with Map',
+$booking_form = new FieldsBuilder('booking_form', [
+    'label' => 'Booking Form with Find Us',
 ]);
 
-$contact_form_map
-    ->addTab('Content')
-        // Form Section
-        ->addText('form_heading', [
-            'label' => 'Form Heading',
-            'default_value' => 'Book an evaluation'
+$booking_form
+    ->addTab('Content', ['label' => 'Content'])
+        // Booking Form Section
+        ->addText('heading', [
+            'label' => 'Main Heading',
+            'default_value' => 'Book an evaluation',
         ])
-        ->addSelect('form_heading_tag', [
-            'label' => 'Form Heading Tag',
+        ->addSelect('heading_tag', [
+            'label' => 'Heading Tag',
             'choices' => [
                 'h1' => 'H1',
                 'h2' => 'H2',
@@ -23,16 +23,17 @@ $contact_form_map
                 'h5' => 'H5',
                 'h6' => 'H6',
                 'p' => 'Paragraph',
-                'span' => 'Span'
+                'span' => 'Span',
             ],
             'default_value' => 'h2',
         ])
-        ->addText('form_description', [
-            'label' => 'Form Description',
-            'default_value' => 'Curious what your home\'s worth? Book your free evaluation today.'
+        ->addTextarea('description', [
+            'label' => 'Description',
+            'default_value' => 'Curious what your home\'s worth? Book your free evaluation today.',
+            'rows' => 3,
         ])
         ->addWysiwyg('form_markup', [
-            'label' => 'Form HTML (paste static form here)',
+            'label' => 'Form HTML',
             'instructions' => 'Paste the static HTML form code here.',
             'toolbar' => 'basic',
             'media_upload' => 0,
@@ -40,16 +41,16 @@ $contact_form_map
         ])
         ->addUrl('privacy_policy_url', [
             'label' => 'Privacy Policy URL',
-            'default_value' => '#'
+            'default_value' => '#',
         ])
 
-        // Location Section
-        ->addText('location_heading', [
-            'label' => 'Location Section Heading',
-            'default_value' => 'Where you can find us'
+        // Find Us Section
+        ->addText('find_us_heading', [
+            'label' => 'Find Us Heading',
+            'default_value' => 'Where you can find us',
         ])
-        ->addSelect('location_heading_tag', [
-            'label' => 'Location Heading Tag',
+        ->addSelect('find_us_heading_tag', [
+            'label' => 'Find Us Heading Tag',
             'choices' => [
                 'h1' => 'H1',
                 'h2' => 'H2',
@@ -58,40 +59,39 @@ $contact_form_map
                 'h5' => 'H5',
                 'h6' => 'H6',
                 'p' => 'Paragraph',
-                'span' => 'Span'
+                'span' => 'Span',
             ],
             'default_value' => 'h2',
         ])
-        ->addText('location_description', [
-            'label' => 'Location Description',
-            'default_value' => 'Curious what your home\'s worth? Book your free evaluation today.'
+        ->addTextarea('find_us_description', [
+            'label' => 'Find Us Description',
+            'default_value' => 'Curious what your home\'s worth? Book your free evaluation today.',
+            'rows' => 3,
         ])
 
-        // Offices Repeater
-        ->addRepeater('offices', [
+        // Office Locations
+        ->addRepeater('office_locations', [
             'label' => 'Office Locations',
-            'instructions' => 'Add office locations with contact details.',
-            'button_label' => 'Add Office',
+            'instructions' => 'Add office locations with contact information.',
+            'button_label' => 'Add Office Location',
+            'min' => 1,
             'layout' => 'block',
-            'min' => 0,
         ])
             ->addText('office_name', [
                 'label' => 'Office Name',
-                'default_value' => 'Dublin M50 office'
+                'required' => 1,
             ])
-            ->addTextarea('office_address', [
-                'label' => 'Office Address',
+            ->addTextarea('address', [
+                'label' => 'Address',
                 'rows' => 4,
-                'default_value' => 'Paul Tobin Estate Agents\nClifton House\nFitzwilliam Street Lower\nDublin 2, D02 XT91'
+                'required' => 1,
             ])
-            ->addTextarea('office_phone', [
-                'label' => 'Phone Numbers',
-                'rows' => 2,
-                'default_value' => '01 902 0092\n086 827 1556'
+            ->addTextarea('phone_numbers', [
+                'label' => 'Phone Numbers (one per line)',
+                'rows' => 3,
             ])
-            ->addEmail('office_email', [
+            ->addEmail('email', [
                 'label' => 'Email Address',
-                'default_value' => 'info@paultobin.ie'
             ])
             ->addLink('team_link', [
                 'label' => 'Team Link',
@@ -103,29 +103,17 @@ $contact_form_map
                 'preview_size' => 'medium',
             ])
             ->addTrueFalse('is_expanded', [
-                'label' => 'Expanded by Default',
-                'instructions' => 'Show this office details expanded by default.',
+                'label' => 'Show Expanded by Default',
+                'instructions' => 'Show this location expanded with full details.',
                 'default_value' => 0,
             ])
         ->endRepeater()
 
-        // Map Settings
-        ->addTrueFalse('enable_map', [
-            'label' => 'Enable Map',
-            'ui' => 1,
-            'default_value' => 1,
-        ])
-        ->addUrl('map_iframe_url', [
-            'label' => 'Map Iframe URL',
-            'instructions' => 'Enter the iframe URL for the map (e.g., Google Maps embed URL).',
-            'conditional_logic' => [['field' => 'enable_map', 'operator' => '==', 'value' => 1]],
-        ])
-
-    ->addTab('Email')
+    ->addTab('Email', ['label' => 'Email'])
         ->addText('form_name', [
             'label' => 'Internal Form Name',
             'instructions' => 'Saved with each entry & used in email subject.',
-            'default_value' => 'Contact Form with Map'
+            'default_value' => 'Property Evaluation Form',
         ])
         ->addText('from_name', [
             'label' => 'From Name (override)',
@@ -133,7 +121,7 @@ $contact_form_map
         ])
         ->addEmail('from_email', [
             'label' => 'From Email (override)',
-            'instructions' => 'Use an address on your domain (e.g. no-reply@domain.ie). Leave empty to use Theme Options.',
+            'instructions' => 'Use an address on your domain. Leave empty to use Theme Options.',
         ])
         ->addText('email_to', [
             'label' => 'Send To',
@@ -148,51 +136,43 @@ $contact_form_map
         ])
         ->addText('email_subject', [
             'label' => 'Subject',
-            'default_value' => 'Website contact form enquiry'
+            'default_value' => 'Property evaluation form enquiry',
         ])
         ->addTrueFalse('save_entries_to_db', [
             'label' => 'Save to DB?',
             'ui' => 1,
-            'default_value' => 1
+            'default_value' => 1,
         ])
 
-    ->addTab('Autoresponder')
+    ->addTab('Autoresponder', ['label' => 'Autoresponder'])
         ->addTrueFalse('enable_autoresponder', [
             'label' => 'Enable?',
-            'ui' => 1
+            'ui' => 1,
         ])
         ->addText('autoresponder_subject', [
             'label' => 'Autoresponder Subject',
             'conditional_logic' => [[['field' => 'enable_autoresponder', 'operator' => '==', 'value' => 1]]],
-            'default_value' => 'Thank you for your message'
+            'default_value' => 'Thank you for your evaluation request',
         ])
         ->addWysiwyg('autoresponder_message', [
             'label' => 'Autoresponder Message',
             'conditional_logic' => [[['field' => 'enable_autoresponder', 'operator' => '==', 'value' => 1]]],
             'wrapper' => ['class' => 'wp_editor'],
-            'default_value' => '<p>Thank you for contacting us. We will get back to you as soon as possible.</p>'
+            'default_value' => '<p>Thank you for requesting a property evaluation. We will get back to you as soon as possible.</p>',
         ])
 
-    ->addTab('Design')
+    ->addTab('Design', ['label' => 'Design'])
         ->addColorPicker('background_color', [
             'label' => 'Background Color',
-            'default_value' => '#ffffff'
-        ])
-        ->addText('background_css', [
-            'label' => 'Background CSS (optional)',
-            'instructions' => 'Full CSS value, e.g. linear-gradient(270deg, rgba(242,245,247,0.83) 0%, rgba(242,245,247,0.30) 51.56%, #F2F5F7 100%)',
-            'default_value' => '',
-        ])
-        ->addColorPicker('text_color', [
-            'label' => 'Text Color',
-            'default_value' => '#0a0a0a'
+            'default_value' => '#ffffff',
         ])
 
-    ->addTab('Layout')
+    ->addTab('Layout', ['label' => 'Layout'])
         ->addRepeater('padding_settings', [
             'label' => 'Padding Settings',
             'instructions' => 'Customize padding for different screen sizes.',
-            'button_label' => 'Add Padding',
+            'button_label' => 'Add Screen Size Padding',
+            'layout' => 'table',
         ])
             ->addSelect('screen_size', [
                 'label' => 'Screen Size',
@@ -207,6 +187,7 @@ $contact_form_map
                     'xxl' => 'xxl',
                     'ultrawide' => 'ultrawide',
                 ],
+                'required' => 1,
             ])
             ->addNumber('padding_top', [
                 'label' => 'Padding Top',
@@ -214,6 +195,7 @@ $contact_form_map
                 'max' => 20,
                 'step' => 0.1,
                 'append' => 'rem',
+                'default_value' => 5,
             ])
             ->addNumber('padding_bottom', [
                 'label' => 'Padding Bottom',
@@ -221,7 +203,8 @@ $contact_form_map
                 'max' => 20,
                 'step' => 0.1,
                 'append' => 'rem',
+                'default_value' => 5,
             ])
         ->endRepeater();
 
-return $contact_form_map;
+return $booking_form;

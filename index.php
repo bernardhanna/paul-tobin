@@ -390,7 +390,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
                     </h3>
                   </div>
 
-                  <div class="mb-2.5 text-black max-lg:hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
+                  <div class="mb-2.5 font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
                     <p><?php echo esc_html( $post_excerpt ); ?></p>
                   </div>
 
