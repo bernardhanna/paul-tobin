@@ -1,189 +1,165 @@
 <?php
-
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
 $contact_section = new FieldsBuilder('contact_section', [
-    'label' => 'Get In Touch Contact Section',
+    'label' => 'Calendly Contact Section',
 ]);
 
 $contact_section
-    ->addTab('Content', ['label' => 'Content'])
+    ->addTab('Content')
 
-    // Left Column Fields
-    ->addText('left_heading', [
-        'label' => 'Left Column Heading',
-        'instructions' => 'Enter the heading for the left column (e.g., "Got a question?")',
-        'default_value' => 'Got a question?',
-        'required' => 1,
-    ])
-    ->addSelect('left_heading_tag', [
-        'label' => 'Left Heading Tag',
-        'instructions' => 'Select the HTML tag for the left heading',
-        'choices' => [
-            'h1' => 'H1',
-            'h2' => 'H2',
-            'h3' => 'H3',
-            'h4' => 'H4',
-            'h5' => 'H5',
-            'h6' => 'H6',
-            'p' => 'Paragraph',
-            'span' => 'Span',
-        ],
-        'default_value' => 'h2',
-        'required' => 1,
-    ])
-    ->addWysiwyg('left_description', [
-        'label' => 'Left Column Description',
-        'instructions' => 'Enter the description text for the left column',
-        'default_value' => 'Interested in any listed property? Book a consultation with Paul.',
-        'media_upload' => 0,
-        'tabs' => 'visual,text',
-        'toolbar' => 'basic',
-        'required' => 1,
-    ])
-    ->addLink('left_button', [
-        'label' => 'Left Column Button',
-        'instructions' => 'Configure the button for the left column',
-        'return_format' => 'array',
-        'required' => 1,
-    ])
-    ->addTextarea('calendly_shortcode', [
-        'label' => 'Calendly Shortcode',
-        'instructions' => 'Enter the Calendly shortcode or embed code',
-        'placeholder' => '[calendly url="your-calendly-url"]',
-        'rows' => 3,
-    ])
-
-    // Right Column Fields
-    ->addText('right_heading', [
-        'label' => 'Right Column Heading',
-        'instructions' => 'Enter the heading for the right column (e.g., "About your property")',
-        'default_value' => 'About your property',
-        'required' => 1,
-    ])
-    ->addSelect('right_heading_tag', [
-        'label' => 'Right Heading Tag',
-        'instructions' => 'Select the HTML tag for the right heading',
-        'choices' => [
-            'h1' => 'H1',
-            'h2' => 'H2',
-            'h3' => 'H3',
-            'h4' => 'H4',
-            'h5' => 'H5',
-            'h6' => 'H6',
-            'p' => 'Paragraph',
-            'span' => 'Span',
-        ],
-        'default_value' => 'h3',
-        'required' => 1,
-    ])
-    ->addWysiwyg('right_description', [
-        'label' => 'Right Column Description',
-        'instructions' => 'Enter the description text for the right column',
-        'default_value' => 'Curious what your home\'s worth? Book your free evaluation today.',
-        'media_upload' => 0,
-        'tabs' => 'visual,text',
-        'toolbar' => 'basic',
-        'required' => 1,
-    ])
-    ->addLink('right_button', [
-        'label' => 'Right Column Button',
-        'instructions' => 'Configure the button for the right column',
-        'return_format' => 'array',
-        'required' => 1,
-    ])
-
-    // Video Configuration
-    ->addSelect('video_type', [
-        'label' => 'Video Type',
-        'instructions' => 'Choose the type of video to display in the right column',
-        'choices' => [
-            'youtube' => 'YouTube Video',
-            'local' => 'Local Video File',
-        ],
-        'default_value' => 'youtube',
-        'required' => 1,
-    ])
-    ->addUrl('youtube_url', [
-        'label' => 'YouTube Video URL',
-        'instructions' => 'Enter the full YouTube video URL',
-        'placeholder' => 'https://www.youtube.com/watch?v=VIDEO_ID',
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'video_type',
-                    'operator' => '==',
-                    'value' => 'youtube',
+        ->addGroup('left_block', ['label' => 'Left Block'])
+            ->addText('heading_text', [
+                'label' => 'Heading Text',
+                'default_value' => 'Got a question?',
+            ])
+            ->addSelect('heading_tag', [
+                'label' => 'Heading Tag',
+                'choices' => [
+                    'h1'=>'h1','h2'=>'h2','h3'=>'h3','h4'=>'h4','h5'=>'h5','h6'=>'h6','span'=>'span','p'=>'p'
                 ],
-            ],
-        ],
-    ])
-    ->addFile('local_video', [
-        'label' => 'Local Video File',
-        'instructions' => 'Upload a video file (MP4, WebM, etc.)',
-        'return_format' => 'id',
-        'mime_types' => 'mp4,webm,ogg,mov,avi',
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'video_type',
-                    'operator' => '==',
-                    'value' => 'local',
+                'default_value' => 'h2',
+            ])
+            ->addWysiwyg('description', [
+                'label' => 'Description',
+                'media_upload' => 0,
+                'tabs' => 'all',
+                'toolbar' => 'full',
+                'delay' => 0,
+                'default_value' => 'Interested in any listed property? Book a consultation with Paul.',
+            ])
+            ->addLink('cta_link', [
+                'label' => 'CTA Link (Calendly)',
+                'instructions' => 'URL, link text, target.',
+            ])
+            ->addSelect('media_type', [
+                'label' => 'Left Media Type',
+                'choices' => [
+                    'image' => 'Image',
+                    'calendly' => 'Calendly Shortcode (WYSIWYG)',
                 ],
-            ],
-        ],
-    ])
+                'default_value' => 'image',
+            ])
+            ->addImage('image', [
+                'label' => 'Image',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'conditional_logic' => [
+                    [['field' => 'media_type', 'operator' => '==', 'value' => 'image']]
+                ],
+            ])
+            ->addWysiwyg('shortcode', [
+                'label' => 'Calendly Shortcode',
+                'instructions' => 'Paste your Calendly shortcode or embed here.',
+                'media_upload' => 0,
+                'tabs' => 'all',
+                'toolbar' => 'full',
+                'delay' => 0,
+                'conditional_logic' => [
+                    [['field' => 'media_type', 'operator' => '==', 'value' => 'calendly']]
+                ],
+            ])
+        ->endGroup()
 
-    ->addTab('Design', ['label' => 'Design'])
-    ->addColorPicker('background_color', [
-        'label' => 'Background Color',
-        'instructions' => 'Set the background color for the entire section',
-        'default_value' => '#f9fafb',
-    ])
+        ->addGroup('right_block', ['label' => 'Right Block'])
+            ->addText('heading_text', [
+                'label' => 'Heading Text',
+                'default_value' => 'About your property',
+            ])
+            ->addSelect('heading_tag', [
+                'label' => 'Heading Tag',
+                'choices' => [
+                    'h1'=>'h1','h2'=>'h2','h3'=>'h3','h4'=>'h4','h5'=>'h5','h6'=>'h6','span'=>'span','p'=>'p'
+                ],
+                'default_value' => 'h2',
+            ])
+            ->addWysiwyg('description', [
+                'label' => 'Description',
+                'media_upload' => 0,
+                'tabs' => 'all',
+                'toolbar' => 'full',
+                'delay' => 0,
+                'default_value' => 'Curious what your home’s worth? Book your free evaluation today.',
+            ])
+            ->addLink('cta_link', [
+                'label' => 'CTA Link (Request a Call)',
+                'instructions' => 'URL, link text, target.',
+            ])
+            ->addSelect('media_type', [
+                'label' => 'Right Media Type',
+                'choices' => [
+                    'image' => 'Image',
+                    'video' => 'Video',
+                ],
+                'default_value' => 'image',
+            ])
+            ->addImage('image', [
+                'label' => 'Image',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'conditional_logic' => [
+                    [['field' => 'media_type', 'operator' => '==', 'value' => 'image']]
+                ],
+            ])
+            ->addSelect('video_type', [
+                'label' => 'Video Type',
+                'choices' => [
+                    'youtube' => 'YouTube URL',
+                    'local' => 'Local File',
+                ],
+                'conditional_logic' => [
+                    [['field' => 'media_type', 'operator' => '==', 'value' => 'video']]
+                ],
+            ])
+            ->addUrl('youtube_url', [
+                'label' => 'YouTube URL',
+                'placeholder' => 'https://www.youtube.com/watch?v=XXXXX',
+                'conditional_logic' => [
+                    [['field' => 'video_type', 'operator' => '==', 'value' => 'youtube']]
+                ],
+            ])
+            ->addFile('local_video', [
+                'label' => 'Local Video File',
+                'return_format' => 'array',
+                'library' => 'all',
+                'mime_types' => 'mp4,webm,ogg',
+                'conditional_logic' => [
+                    [['field' => 'video_type', 'operator' => '==', 'value' => 'local']]
+                ],
+            ])
+            ->addImage('poster_image', [
+                'label' => 'Poster Image (for YouTube & Local)',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'conditional_logic' => [
+                    [['field' => 'media_type', 'operator' => '==', 'value' => 'video']]
+                ],
+            ])
+        ->endGroup()
 
-    ->addTab('Layout', ['label' => 'Layout'])
-    ->addRepeater('padding_settings', [
-        'label' => 'Padding Settings',
-        'instructions' => 'Customize padding for different screen sizes.',
-        'button_label' => 'Add Screen Size Padding',
-        'layout' => 'table',
-        'min' => 0,
-        'max' => 10,
-    ])
-        ->addSelect('screen_size', [
-            'label' => 'Screen Size',
-            'instructions' => 'Select the screen size for this padding setting',
-            'choices' => [
-                'xxs' => 'XXS (Extra Extra Small)',
-                'xs' => 'XS (Extra Small)',
-                'mob' => 'Mobile',
-                'sm' => 'SM (Small)',
-                'md' => 'MD (Medium)',
-                'lg' => 'LG (Large)',
-                'xl' => 'XL (Extra Large)',
-                'xxl' => 'XXL (Extra Extra Large)',
-                'ultrawide' => 'Ultrawide',
-            ],
-            'required' => 1,
+    ->addTab('Layout')
+        ->addRepeater('padding_settings', [
+            'label' => 'Padding Settings',
+            'instructions' => 'Customize padding for different screen sizes.',
+            'button_label' => 'Add Screen Size Padding',
         ])
-        ->addNumber('padding_top', [
-            'label' => 'Padding Top',
-            'instructions' => 'Set the top padding in rem units',
-            'min' => 0,
-            'max' => 20,
-            'step' => 0.1,
-            'append' => 'rem',
-            'default_value' => 5,
-        ])
-        ->addNumber('padding_bottom', [
-            'label' => 'Padding Bottom',
-            'instructions' => 'Set the bottom padding in rem units',
-            'min' => 0,
-            'max' => 20,
-            'step' => 0.1,
-            'append' => 'rem',
-            'default_value' => 5,
-        ])
-    ->endRepeater();
+            ->addSelect('screen_size', [
+                'label' => 'Screen Size',
+                'choices' => [
+                    'xxs'=>'xxs','xs'=>'xs','mob'=>'mob','sm'=>'sm','md'=>'md','lg'=>'lg','xl'=>'xl','xxl'=>'xxl','ultrawide'=>'ultrawide',
+                ],
+            ])
+            ->addNumber('padding_top', [
+                'label' => 'Padding Top',
+                'instructions' => 'Set the top padding in rem.',
+                'min' => 0, 'max' => 20, 'step' => 0.1, 'append' => 'rem',
+            ])
+            ->addNumber('padding_bottom', [
+                'label' => 'Padding Bottom',
+                'instructions' => 'Set the bottom padding in rem.',
+                'min' => 0, 'max' => 20, 'step' => 0.1, 'append' => 'rem',
+            ])
+        ->endRepeater()
+    ->setLocation('block', '==', 'acf/contact_section');
 
 return $contact_section;

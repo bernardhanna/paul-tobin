@@ -42,8 +42,8 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
   }
 </style>
 
-<div class="mt-[5rem] xs:mt-[10rem] w-full">
-  <section class="flex overflow-hidden relative">
+<div class="w-full">
+  <section class="flex overflow-hidden relative mt-[4rem]">
     <div class="flex flex-col items-center mx-auto w-full bg-black">
       <div class="overflow-hidden relative max-w-[1158px] px-5 w-full hero-background" <?php //echo $section_style; ?>>
 
@@ -188,7 +188,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
               class="flex flex-wrap gap-4 items-start mt-2 w-full font-medium max-md:max-w-full"
             >
               <button role="radio"
-                      class="gap-2 px-6 py-2 whitespace-nowrap bg-white rounded-lg hover:text-white hover:bg-primary btn filter-btn focus:outline-none focus:ring-2 focus:ring-offset-2"
+                      class="gap-2 px-6 py-2 whitespace-nowrap bg-white rounded-lg hover:text-black hover:bg-[#0098D8] btn filter-btn focus:outline-none focus:ring-2 focus:ring-offset-2"
                       data-filter="all"
                       aria-checked="<?php echo $current_slug === 'all' ? 'true' : 'false'; ?>"
                       tabindex="<?php echo $current_slug === 'all' ? '0' : '-1'; ?>">
@@ -203,7 +203,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
               ?>
                 <button
                   role="radio"
-                  class="gap-2 px-6 py-2 whitespace-nowrap bg-white rounded-lg hover:bg-primary filter-btn hover:bg-teritary hover:border-white hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                  class="gap-2 px-6 py-2 whitespace-nowrap bg-white rounded-lg hover:bg-[#0098D8] filter-btn hover:bg-teritary hover:border-white hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
                   data-filter="<?php echo $slug; ?>"
                   aria-checked="<?php echo $checked; ?>"
                   tabindex="<?php echo $tab; ?>"
@@ -232,7 +232,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
                 </div>
               </div>
 
-              <button type="submit" class="flex gap-2 justify-center items-center px-6 py-4 bg-primary border-2 border-white rounded-none min-h-14 w-[72px] max-md:px-5 search-btn" aria-label="Search">
+              <button type="submit" class="flex gap-2 justify-center items-center px-6 py-4 bg-primary border-2 border-white rounded-none min-h-14 w-[72px] max-md:px-5 search-btn hover:bg-[#0098D8]" aria-label="Search">
                 <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 21.0408L16.65 16.6908M19 11.0408C19 15.459 15.4183 19.0408 11 19.0408C6.58172 19.0408 3 15.459 3 11.0408C3 6.62249 6.58172 3.04077 11 3.04077C15.4183 3.04077 19 6.62249 19 11.0408Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -273,7 +273,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
       const searchForm = document.querySelector('form[role="search"]');
       if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
-          e.preventDefault();
+          e.prevent();
           const searchInput = this.querySelector('input[type="search"]');
           const searchValue = searchInput.value.trim();
 
@@ -358,7 +358,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
             ?>
               <a
                 href="<?php echo esc_url( $post_url ); ?>"
-                class="block overflow-hidden pb-4 rounded-br-3xl rounded-bl-3xl border-2 border-gray-300 border-solid project-card group border-shape"
+                class="block overflow-hidden pb-4 border-solid project-card group border-shape"
                 data-categories="<?php echo esc_attr( $cats ); ?>"
                 aria-label="<?php echo esc_attr( 'Read full article: ' . $post_title ); ?>"
               >
@@ -375,29 +375,28 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter News';
                 </div>
 
                 <div class="py-4 bg-white">
-                  <div class="px-8 py-2.5 text-sm font-medium leading-5 text-gray-500 opacity-80">
+                  <div class="py-2.5 text-sm font-medium leading-5 text-gray-500 opacity-80">
                     <time datetime="<?php echo esc_attr( get_the_date('c') ); ?>" class="text-sm text-gray-500">
                       <?php echo esc_html( $post_date ); ?> • Read time: <?php echo esc_html( $read_time ); ?>
                     </time>
                   </div>
 
-                  <div class="px-8 mb-3.5">
+                  <div class="mb-3.5">
                     <!-- h3 kept for search JS (querySelector('h3')) -->
                     <h3 class="text-2xl font-medium leading-8">
-                      <span class="text-xl font-medium leading-7 transition-colors duration-200 cursor-pointer text-zinc-900 group-hover:text-primary">
+                      <span class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-center font-secondary text-primary text-[24px] max-lg:text-2xl max-lg:font-semibold max-lg:leading-[26px] max-lg:tracking-[-0.16px]">
                         <?php echo esc_html( $post_title ); ?>
                       </span>
                     </h3>
                   </div>
 
-                  <div class="px-8 mb-2.5 text-lg leading-7 text-gray-500">
+                  <div class="mb-2.5 text-black max-lg:hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
                     <p><?php echo esc_html( $post_excerpt ); ?></p>
                   </div>
 
-                  <div class="px-8 mt-2.5 text-left">
+                  <div class="mt-2.5 text-left">
                     <div
-                      class="btn flex gap-2 justify-center items-center px-6 py-4 my-auto text-sm font-semibold leading-none bg-white border-primary border-2 border-solid min-h-[52px] max-md:px-5 transition-colors duration-200 group text-primary hover:text-white hover:bg-primary"
-                      style="width:160px; height:48px;"
+                      class="btn relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn"
                     >
                       View More
                     </div>

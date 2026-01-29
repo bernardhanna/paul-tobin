@@ -8,114 +8,57 @@ get_header();
         load_hero_templates();
     }
     ?>
-      <!-- Hero Section -->
-      <section class="relative w-full">
-        <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/7b6998a281be8ddd33d9f526fb5abf04e11251ec?width=2560"
-          alt="Property exterior view"
-          class="w-full h-[500px] md:h-[665px] object-cover"
-        />
-      </section>
 
-      <!-- Property Data Section -->
-      <section class="flex flex-col w-full lg:flex-row bg-pt-icewhite">
-        <div class="flex py-20 mx-auto w-full max-w-container max-lg:py-10 bg-pt-high-emphasis">
-          <div class="flex w-full max-w-[400px] p-4 gap-4 bg-pt-medium-emphasis">
-            <!-- Decorative bar -->
-            <div class="flex-shrink-0 w-1 bg-pt-blue"></div>
 
-            <div class="flex flex-col gap-3">
-              <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="w-full sm:w-[100px] flex-shrink-0">
-                  <h3 class="font-serif font-semibold text-2xl leading-[26px] text-pt-midnight">Sector</h3>
+  <?php
+    if (have_posts()) :
+        while (have_posts()) : the_post();
+            if (trim(get_the_content()) != '') : ?>
+                <div class="max-w-[1095px] max-xl:px-5  mx-auto">
+                    <?php
+                    get_template_part('template-parts/content/content', 'page');
+                    ?>
                 </div>
-                <div class="flex-1">
-                  <p class="text-base leading-[26px] text-pt-midnight">Residential</p>
-                </div>
-              </div>
+    <?php endif;
+        endwhile;
+    else :
+        echo '<p>No content found</p>';
+    endif;
+    ?>
+     <?php load_flexible_content_templates(); ?>
 
-              <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="w-full sm:w-[100px] flex-shrink-0">
-                  <h3 class="font-serif font-semibold text-2xl leading-[26px] text-pt-midnight">Year</h3>
-                </div>
-                <div class="flex-1">
-                  <p class="text-base leading-[26px] text-pt-midnight">2016</p>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="w-full sm:w-[100px] flex-shrink-0">
-                  <h3 class="font-serif font-semibold text-2xl leading-[26px] text-pt-midnight">Client</h3>
-                </div>
-                <div class="flex-1">
-                  <p class="text-base leading-[26px] text-pt-midnight">Client name</p>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="w-full sm:w-[100px] flex-shrink-0">
-                  <h3 class="font-serif font-semibold text-2xl leading-[26px] text-pt-midnight">Size</h3>
-                </div>
-                <div class="flex-1">
-                  <p class="text-base leading-[26px] text-pt-midnight">
-                    Area: 2500 square feet<br />
-                    Height: 143 meters<br />
-                    Stories: 42
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-1 p-10 md:p-20 bg-pt-icewhite">
-          <div class="flex flex-col gap-6">
-            <p class="text-base leading-[26px] text-black">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat.
-            </p>
-            <p class="text-base leading-[26px] text-black">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit .
-            </p>
-            <a href="#" class="text-base leading-[26px] text-pt-midnight underline max-w-fit">Read more</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Full Width Image -->
-      <section class="flex flex-col gap-12 py-10 md:py-20 bg-pt-icewhite">
-        <div class="">
-          <div class="w-full h-[400px] md:h-[500px] overflow-hidden mx-auto max-w-container">
-            <img
-              src="https://api.builder.io/api/v1/image/assets/TEMP/fd1096fcc4ce55a2a58f694f8233314d9beab554?width=2240"
-              alt="Property detail"
-              class="object-cover w-full h-full"
-            />
-          </div>
-        </div>
-      </section>
 
       <!-- Property Text Section -->
-      <section class="flex flex-col w-full lg:flex-row bg-pt-icewhite">
-        <div class="flex px-5 py-20 mx-auto w-full max-w-container max-lg:py-10 bg-pt-high-emphasis">
-          <div class="flex flex-col flex-1 gap-6">
-            <div class="flex flex-col gap-6">
-              <h2 class="font-serif font-semibold text-[32px] leading-10 text-pt-midnight">
+      <section class="bg-[#ededed] relative">
+        <div class="mx-auto w-full max-w-[1200px] px-5 xl:px-0">
+          <div class="grid grid-cols-1 gap-[3rem] py-[2.5rem] lg:py-[5rem] md:grid-cols-2">
+            <!-- Left: Heading + decorative bar -->
+            <div class="w-full">
+              <h2 class="max-w-[33.5rem]  text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary">
                 Lorem ipsum dolor sit amet lorem consectetur sed.
               </h2>
-              <div class="flex w-[71px] h-[5px]">
-                <div class="flex-1 bg-pt-orange"></div>
-                <div class="flex-1 bg-pt-blue"></div>
-                <div class="flex-1 bg-pt-gray-blue"></div>
-                <div class="flex-1 bg-pt-green"></div>
+
+              <div class="mt-6 flex h-[0.3125rem] w-[4.4375rem]" aria-hidden="true">
+                <span class="h-full flex-1 bg-[#ef7b10]"></span>
+                <span class="h-full flex-1 bg-[#0098d8]"></span>
+                <span class="h-full flex-1 bg-[#b6c0cb]"></span>
+                <span class="h-full flex-1 bg-[#74af27]"></span>
               </div>
             </div>
-            <p class="text-base leading-[26px] text-black">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat.
-            </p>
+
+            <!-- Right: Text + CTA -->
+            <div class="w-full">
+              <p class="max-w-[33.5rem]  text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+
+              <button
+                type="button"
+                class="btn mt-6 inline-flex w-fit items-center justify-center gap-2 bg-[#0f172a] px-8 py-3.5 text-[0.875rem] font-[600] leading-[1.375rem] text-white transition-opacity duration-200 hover:opacity-90hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-[#40bff5] hover:text-black lg:h-[2.75rem] max-w-[165px]"
+              >
+                <span class="font-primary">Request a call</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -139,7 +82,7 @@ get_header();
           </div>
         </div>
 
-        <div class="flex flex-col gap-12 px-10 md:px-20 md:flex-row">
+        <div class="flex flex-col gap-12 px-10 mx-auto md:px-20 md:flex-row max-w-container">
           <div class="w-full md:w-[400px] h-[400px] md:h-[500px] overflow-hidden">
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/677c6b1c6342c8403a88e2bd1d95152451ac2510?width=800"
@@ -158,25 +101,36 @@ get_header();
       </section>
 
       <!-- Property Text Section 2 -->
-      <section class="flex flex-col w-full lg:flex-row bg-pt-icewhite">
-        <div class="flex mx-auto w-full max-xl:px-5 max-w-container bg-pt-high-emphasis">
-          <div class="flex flex-col flex-1 gap-6">
-            <div class="flex flex-col gap-6">
-              <h2 class="font-serif font-semibold text-[32px] leading-10 text-pt-midnight">
+      <section class="bg-[#ededed] relative">
+        <div class="mx-auto w-full max-w-[1200px] px-5 xl:px-0">
+          <div class="grid grid-cols-1 gap-[3rem] py-[2.5rem] lg:py-[5rem] md:grid-cols-2">
+            <!-- Left: Heading + decorative bar -->
+            <div class="w-full">
+              <h2 class="max-w-[33.5rem]  text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary">
                 Lorem ipsum dolor sit amet lorem consectetur sed.
               </h2>
-              <div class="flex w-[71px] h-[5px]">
-                <div class="flex-1 bg-pt-orange"></div>
-                <div class="flex-1 bg-pt-blue"></div>
-                <div class="flex-1 bg-pt-gray-blue"></div>
-                <div class="flex-1 bg-pt-green"></div>
+
+              <div class="mt-6 flex h-[0.3125rem] w-[4.4375rem]" aria-hidden="true">
+                <span class="h-full flex-1 bg-[#ef7b10]"></span>
+                <span class="h-full flex-1 bg-[#0098d8]"></span>
+                <span class="h-full flex-1 bg-[#b6c0cb]"></span>
+                <span class="h-full flex-1 bg-[#74af27]"></span>
               </div>
             </div>
-            <p class="text-base leading-[26px] text-black">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat.
-            </p>
+
+            <!-- Right: Text + CTA -->
+            <div class="w-full">
+              <p class="max-w-[33.5rem]  text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+
+              <button
+                type="button"
+                class="btn mt-6 inline-flex w-fit items-center justify-center gap-2 bg-[#0f172a] px-8 py-3.5 text-[0.875rem] font-[600] leading-[1.375rem] text-white transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-[#40bff5] hover:text-black lg:h-[2.75rem]"
+              >
+                <span class="font-primary">Request a call</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -318,56 +272,6 @@ get_header();
           </div>
         </div>
       </section>
-
-      <!-- Get in Touch CTA -->
-      <section class="flex w-full bg-pt-midnight">
-        <div class="flex flex-1 justify-center items-center p-10 md:p-20">
-          <div class="flex flex-col lg:flex-row items-center gap-16 max-w-[911px]">
-            <div class="flex flex-col flex-1 gap-6">
-              <h2 class="font-serif font-semibold text-[32px] leading-10 text-pt-icewhite">
-                Why don't find out what we can do for you?
-              </h2>
-              <div class="flex w-[71px] h-[5px]">
-                <div class="flex-1 bg-pt-orange"></div>
-                <div class="flex-1 bg-pt-blue"></div>
-                <div class="flex-1 bg-pt-gray-blue"></div>
-                <div class="flex-1 bg-pt-green"></div>
-              </div>
-              <p class="text-base leading-[26px] text-pt-icewhite">
-                From refurbishment and tenant sourcing to management, rent collection, sales, and tax agent services, all handled
-                for you.
-              </p>
-            </div>
-
-            <div class="flex-1 lg:max-w-[300px] w-full">
-              <a
-                href="/contact"
-                class="flex h-11 px-8 justify-center items-center bg-pt-icewhite border-4 border-pt-midnight text-pt-midnight font-semibold text-sm leading-[22px] hover:bg-pt-high-emphasis transition-colors w-full"
-              >
-                Get in touch
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-  <?php
-    if (have_posts()) :
-        while (have_posts()) : the_post();
-            if (trim(get_the_content()) != '') : ?>
-                <div class="max-w-[1095px] max-xl:px-5  mx-auto">
-                    <?php
-                    get_template_part('template-parts/content/content', 'page');
-                    ?>
-                </div>
-    <?php endif;
-        endwhile;
-    else :
-        echo '<p>No content found</p>';
-    endif;
-    ?>
-     <?php load_flexible_content_templates(); ?>
   </main>
 <?php
 get_footer();

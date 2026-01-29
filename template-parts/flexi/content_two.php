@@ -36,7 +36,7 @@ $section_id = 'content-two-' . wp_rand(1000, 9999);
                 <div class="flex-1 w-full max-md:flex-none max-md:w-full max-sm:flex-none max-sm:w-full">
                     <?php echo wp_get_attachment_image($image, 'full', false, [
                         'alt' => esc_attr($image_alt),
-                        'class' => 'object-cover w-full h-[349px] max-md:h-[300px] max-sm:h-[250px] rounded-lg',
+                        'class' => 'object-cover w-full h-[349px] max-md:h-[300px] max-sm:h-[250px]',
                         'loading' => 'lazy'
                     ]); ?>
                 </div>

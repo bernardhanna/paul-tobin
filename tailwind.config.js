@@ -14,6 +14,9 @@ module.exports = {
         secondary: ['Playfair', 'serif'],
       },
       colors: {
+        blue: { 
+          DEFAULT: '#0098D8',
+        },
         primary: {
           DEFAULT: '#0A1119',
           light: '#9AA770',

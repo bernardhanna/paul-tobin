@@ -232,24 +232,45 @@ add_filter('acf/update_value/type=flexible_content', function ($value, $post_id,
  * - Pages: hero_001
  * - Sectors/practice_areas: hero_001
  */
+// Respect empty hero if user removed it
+add_filter('acf/update_value/name=hero_content_blocks', function ($value, $post_id, $field) {
+    // Keep your existing sanitizer
+    $value = matrix_sanitize_flexible_value($value);
+
+    if (empty($value)) {
+        update_post_meta((int)$post_id, '_matrix_hero_intentionally_empty', 1);
+    } else {
+        delete_post_meta((int)$post_id, '_matrix_hero_intentionally_empty');
+    }
+
+    return $value;
+}, -9999, 3);
+
+// Only apply default if not intentionally empty (and only once)
 add_filter('acf/load_value/name=hero_content_blocks', function ($value, $post_id, $field) {
     if (!empty($value)) {
-        return $value;
+        return $value; // has data, do nothing
+    }
+
+    // If user intentionally cleared it, respect that
+    if (get_post_meta((int)$post_id, '_matrix_hero_intentionally_empty', true)) {
+        return $value; // keep empty
+    }
+
+    // Apply default only once
+    $already_applied = get_post_meta((int)$post_id, '_matrix_hero_default_applied', true);
+    if ($already_applied) {
+        return $value; // don't re-apply
     }
 
     $type = matrix_resolve_post_type_for_acf($post_id);
-
-    if ($type === 'post') {
-        return [ ['acf_fc_layout' => 'hero_001'] ];
-    }
-
-    if ($type === 'page') {
+    if ($type === 'post' || $type === 'page') {
+        update_post_meta((int)$post_id, '_matrix_hero_default_applied', 1);
         return [ ['acf_fc_layout' => 'hero_001'] ];
     }
 
     return $value;
 }, 10, 3);
-
 /**
  * --------------------
  * FLEX DEFAULTS
