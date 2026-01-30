@@ -76,7 +76,7 @@ if (is_array($features)) {
         <div class="mx-auto w-full max-w-7xl">
                  <div class="hidden flex-col gap-6 mb-5 max-lg:flex">
                         <div class="flex flex-col gap-6 text-left">
-                            <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
+                            <<?php echo tag_escape($heading_tag); ?> class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8">
                                 <?php echo esc_html($heading_text_fallback); ?>
                             </<?php echo tag_escape($heading_tag); ?>>
 
@@ -84,7 +84,7 @@ if (is_array($features)) {
                                 <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
                                     <div class="bg-orange-500 flex-1 h-[5px]"></div>
                                     <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                                    <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                                     <div class="bg-lime-600 flex-1 h-[5px]"></div>
                                 </div>
                             <?php endif; ?>
@@ -120,7 +120,7 @@ if (is_array($features)) {
                 <!-- Copy & features -->
                 <div class="flex flex-col gap-6 w-full sm:w-1/2 xl:w-[59%]">
                     <div class="flex flex-col gap-6 max-lg:hidden">
-                        <<?php echo tag_escape($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-lg:hidden">
+                        <<?php echo tag_escape($heading_tag); ?> class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-lg:hidden">
                             <?php echo esc_html($heading_text_fallback); ?>
                         </<?php echo tag_escape($heading_tag); ?>>
 
@@ -128,7 +128,7 @@ if (is_array($features)) {
                             <div class="flex  max-lg:hidden justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
                                 <div class="bg-orange-500 flex-1 h-[5px]"></div>
                                 <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                                <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                                <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                                 <div class="bg-lime-600 flex-1 h-[5px]"></div>
                             </div>
                         <?php endif; ?>
@@ -154,9 +154,9 @@ if (is_array($features)) {
                                     <div class="flex-shrink-0 w-1" style="background-color: <?php echo esc_attr($bar_color); ?>;" aria-hidden="true"></div>
                                     <div class="flex flex-col gap-2">
                                         <?php if (!empty($feature_heading)) : ?>
-                                            <h3 class="text-[#0A1119] font-secondary text-[24px] font-semibold leading-[26px] tracking-[-0.16px]">
+                                            <span class="text-[#0A1119] font-secondary text-[24px] lg:text-[1.5rem] font-semibold leading-[26px] tracking-[-0.16px]">
                                                 <?php echo esc_html($feature_heading); ?>
-                                            </h3>
+                                            </span>
                                         <?php endif; ?>
                                         <?php if (!empty($feature_text)) : ?>
                                             <div class="text-black font-primary text-base font-normal leading-[26px] tracking-normal wp_editor">

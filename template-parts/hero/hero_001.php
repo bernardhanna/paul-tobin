@@ -5,6 +5,12 @@ $heading_tag   = get_sub_field('heading_tag');
 $description   = get_sub_field('description');
 $button        = get_sub_field('button');
 
+// Whitelist heading tag
+$allowed_tags = ['h1','h2','h3','h4','h5','h6','p','span'];
+if (!in_array($heading_tag, $allowed_tags, true)) {
+    $heading_tag = 'h2';
+}
+
 // Background media settings
 $background_type          = get_sub_field('background_type');
 $background_image         = get_sub_field('background_image');
@@ -79,7 +85,7 @@ if ($background_type === 'image' && $background_image) {
         </div>';
 }
 
-// Video backgrounds (md+ as absolute layer, ≤md inline container like before)
+// Video backgrounds (md+ as absolute layer, ≤md inline container)
 if ($background_type === 'video') {
     if ($background_video_type === 'local' && $background_video_file) {
         $video_url  = wp_get_attachment_url($background_video_file);
@@ -157,14 +163,19 @@ $position_classes = match ($content_box_position) {
     'right'  => 'justify-end items-end',
     default  => 'justify-start items-end',
 };
+
+// Content checks
+$has_heading     = !empty($heading);
+$has_description = !empty($description);
+$has_button      = !empty($button['url']) && !empty($button['title']);
+$has_content     = $has_heading || $has_description || $has_button;
 ?>
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
     class="mt-[4.5rem] relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
-    style=""
+    <?php echo $has_heading ? 'aria-labelledby="' . esc_attr($section_id) . '-heading"' : ''; ?>
     role="banner"
-    aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
     <!-- Background layers -->
     <?php echo $image_desktop_bg; // md+ image layer ?>
@@ -174,18 +185,19 @@ $position_classes = match ($content_box_position) {
         <div class="hidden absolute inset-0 z-10 md:block" style="<?php echo esc_attr($overlay_style); ?>" aria-hidden="true"></div>
     <?php endif; ?>
 
-    <!-- Mobile media (<= md): if image selected, render real <img>; if video, render inline video/iframe -->
+    <!-- Mobile media (<= md) -->
     <?php if (!empty($image_mobile)) : ?>
         <?php echo $image_mobile; ?>
     <?php endif; ?>
 
+    <?php if ($has_content): ?>
     <!-- Content -->
     <div class="relative z-20 flex max-w-container w-full mx-auto max-md:p-0 <?php echo esc_attr($position_classes); ?>">
         <div class="w-full">
             <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 md:m-[2rem] pt-[1rem]"
                  style="<?php echo esc_attr($content_box_style); ?>">
 
-                <?php if (!empty($heading)): ?>
+                <?php if ($has_heading): ?>
                     <<?php echo esc_attr($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
                         class="text-[#0A1119] font-secondary text-[40px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
@@ -194,20 +206,22 @@ $position_classes = match ($content_box_position) {
                     </<?php echo esc_attr($heading_tag); ?>>
                 <?php endif; ?>
 
-                <div class="flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
-                    <div class="bg-[#EF7B10] flex-1 h-[5px]"></div>
-                    <div class="bg-[#0098D8] flex-1 h-[5px]"></div>
-                    <div class="bg-[#B6C0C0] flex-1 h-[5px]"></div>
-                    <div class="bg-[#74AF27] flex-1 h-[5px]"></div>
-                </div>
+                <?php if ($has_heading || $has_description || $has_button): ?>
+                    <div class="flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
+                        <div class="bg-[#EF7B10] flex-1 h-[5px]"></div>
+                        <div class="bg-[#0098D8] flex-1 h-[5px]"></div>
+                        <div class="bg-[#B6C0C0] flex-1 h-[5px]"></div>
+                        <div class="bg-[#74AF27] flex-1 h-[5px]"></div>
+                    </div>
+                <?php endif; ?>
 
-                <?php if (!empty($description)): ?>
+                <?php if ($has_description): ?>
                     <div class="font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
                         <?php echo wp_kses_post($description); ?>
                     </div>
                 <?php endif; ?>
 
-                <?php if (!empty($button['url']) && !empty($button['title'])): ?>
+                <?php if ($has_button): ?>
                     <a href="<?php echo esc_url($button['url']); ?>"
                        class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn"
                        target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
@@ -219,4 +233,5 @@ $position_classes = match ($content_box_position) {
             </div>
         </div>
     </div>
+    <?php endif; // $has_content ?>
 </section>

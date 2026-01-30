@@ -67,15 +67,15 @@ $next_id    = $slider_id . '-next';
   <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5 max-md:pb-8">
 
     <?php if (!empty($section_heading)): ?>
-      <header class="gap-6 w-full text-3xl font-semibold tracking-normal leading-none text-left md:text-center text-primary max-md:max-w-full">
+      <header class="gap-6 w-full text-[2.125rem] font-semibold tracking-normal leading-none text-left md:text-center text-primary max-md:max-w-full">
         <div class="flex flex-col gap-6 items-start w-full max-md:max-w-full">
-          <<?php echo esc_attr($section_heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-left md:text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-md:max-w-full">
+          <<?php echo esc_attr($section_heading_tag); ?> class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left md:text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-md:max-w-full">
             <?php echo esc_html($section_heading); ?>
           </<?php echo esc_attr($section_heading_tag); ?>>
           <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
             <div class="bg-orange-500 flex-1 h-[5px]"></div>
             <div class="bg-sky-500 flex-1 h-[5px]"></div>
-            <div class="bg-slate-300 flex-1 h-[5px]"></div>
+            <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
             <div class="bg-lime-600 flex-1 h-[5px]"></div>
           </div>
         </div>
@@ -162,7 +162,7 @@ $next_id    = $slider_id . '-next';
                   <div class="flex gap-4 ml-auto md:hidden">
                     <button
                       type="button"
-                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
                       aria-label="Previous property"
                       data-mobile-prev="<?php echo esc_attr($slider_id); ?>">
                       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -173,7 +173,7 @@ $next_id    = $slider_id . '-next';
 
                     <button
                       type="button"
-                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
                       aria-label="Next property"
                       data-mobile-next="<?php echo esc_attr($slider_id); ?>">
                       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

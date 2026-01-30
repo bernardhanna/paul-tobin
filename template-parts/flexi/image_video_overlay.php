@@ -7,7 +7,7 @@ $vimeo_url              = get_sub_field('vimeo_url');
 $autoplay               = get_sub_field('autoplay');
 $show_overlay           = get_sub_field('show_overlay');
 $overlay_background_css = get_sub_field('overlay_background_css'); // <-- text field with color/gradient
-$background_color       = get_sub_field('background_color') ?: '#e5e7eb';
+$background_color       = get_sub_field('background_color') ?: '#EDEDED';
 
 // Get image alt text
 $image_alt = '';

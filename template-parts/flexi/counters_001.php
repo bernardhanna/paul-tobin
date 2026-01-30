@@ -46,7 +46,7 @@ if (have_rows('counters')) {
         <header class="flex flex-col gap-6 items-center self-stretch">
             <?php if (!empty($heading)): ?>
                 <div class="flex flex-col gap-6 items-center self-stretch">
-                    <<?php echo esc_attr($heading_tag); ?> class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8">
+                    <<?php echo esc_attr($heading_tag); ?> class="text-[2.125rem] font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8">
                         <?php echo esc_html($heading); ?>
                     </<?php echo esc_attr($heading_tag); ?>>
 
@@ -57,7 +57,7 @@ if (have_rows('counters')) {
                     >
                       <div class="bg-orange-500 flex-1 h-[5px]"></div>
                       <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                      <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                      <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                       <div class="bg-lime-600 flex-1 h-[5px]"></div>
                     </div>
                 </div>

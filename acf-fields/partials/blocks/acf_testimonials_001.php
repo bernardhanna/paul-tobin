@@ -91,7 +91,7 @@ $testimonials_001
     ->addColorPicker('background_color', [
         'label' => 'Background Color',
         'instructions' => 'Set the background color for the testimonials section.',
-        'default_value' => '#e5e7eb',
+        'default_value' => '#EDEDED',
     ])
 
     ->addTab('Layout', ['label' => 'Layout'])

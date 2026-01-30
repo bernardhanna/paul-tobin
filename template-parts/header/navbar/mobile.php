@@ -68,21 +68,27 @@ $menu_array = $primary_navigation->toArray();
 <?php if ($enable_hamburger && $primary_navigation->isNotEmpty()) : ?>
   <?php
   // Minimal recursive encoder for a Navi item -> plain array (label, url, children[])
-  if (!function_exists('matrix_encode_menu_subtree')) {
-    function matrix_encode_menu_subtree($node) {
-      $out = [
-        'label'    => isset($node->label) ? (string) $node->label : '',
-        'url'      => isset($node->url)   ? (string) $node->url   : '',
-        'children' => [],
-      ];
-      if (!empty($node->children) && is_iterable($node->children)) {
-        foreach ($node->children as $child) {
-          $out['children'][] = matrix_encode_menu_subtree($child);
+    if (!function_exists('matrix_encode_menu_subtree')) {
+      function matrix_encode_menu_subtree($node) {
+        $label = isset($node->label) ? (string) $node->label : '';
+        // Decode HTML entities → plain text, then strip any tags for safety
+        $label = wp_strip_all_tags( wp_specialchars_decode( $label, ENT_QUOTES ) );
+
+        $out = [
+          'label'    => $label,
+          'url'      => isset($node->url) ? (string) $node->url : '',
+          'children' => [],
+        ];
+
+        if (!empty($node->children) && is_iterable($node->children)) {
+          foreach ($node->children as $child) {
+            $out['children'][] = matrix_encode_menu_subtree($child);
+          }
         }
+        return $out;
       }
-      return $out;
     }
-  }
+
   ?>
   <div
     x-data='{

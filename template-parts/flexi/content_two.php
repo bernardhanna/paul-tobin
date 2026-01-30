@@ -49,7 +49,7 @@ $section_id = 'content-two-' . wp_rand(1000, 9999);
                         <div class="flex flex-col gap-6 items-start w-full">
                             <<?php echo esc_attr($heading_tag); ?>
                                 id="<?php echo esc_attr($section_id); ?>-heading"
-                                class="w-full text-3xl font-semibold tracking-normal leading-10 text-center text-slate-950 max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8 max-sm:text-left"
+                                class="w-full text-[2.125rem] font-semibold tracking-normal leading-10 text-center text-slate-950 max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-sm:text-left"
                             >
                                 <?php echo esc_html($heading); ?>
                             </<?php echo esc_attr($heading_tag); ?>>
@@ -58,7 +58,7 @@ $section_id = 'content-two-' . wp_rand(1000, 9999);
                                 <div class="flex   justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                                     <div class="bg-orange-500 flex-1 h-[5px]"></div>
                                     <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                                    <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                                     <div class="bg-lime-600 flex-1 h-[5px]"></div>
                                 </div>
                             <?php endif; ?>

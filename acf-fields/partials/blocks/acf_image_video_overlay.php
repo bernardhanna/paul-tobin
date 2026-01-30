@@ -68,7 +68,7 @@ $image_video_overlay
         ->addColorPicker('background_color', [
             'label'         => 'Section Background Color',
             'instructions'  => 'Set the background color for the entire section.',
-            'default_value' => '#e5e7eb',
+            'default_value' => '#EDEDED',
         ])
 
     ->addTab('Layout', ['label' => 'Layout'])

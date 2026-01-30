@@ -104,7 +104,7 @@ function property_grid_span_classes($index) {
             <header class="py-12 w-full md:py-16 lg:py-20">
                 <<?php echo esc_attr($section_heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="text-3xl font-semibold tracking-normal leading-tight text-center md:text-4xl text-slate-950"
+                    class="text-[2.125rem] font-semibold tracking-normal leading-tight text-center md:text-4xl text-slate-950"
                 >
                     <?php echo esc_html($section_heading); ?>
                 </<?php echo esc_attr($section_heading_tag); ?>>

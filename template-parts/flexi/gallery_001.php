@@ -52,7 +52,7 @@ $section_id = 'gallery-' . uniqid();
                             <div class="pr-4">
                                 <button
                                     type="button"
-                                    class="gallery-trigger w-full h-[500px] max-md:h-[400px] max-sm:h-[300px] overflow-hidden relative flex flex-col items-start bg-gray-100 rounded-lg focus:outline-none btn"
+                                    class="gallery-trigger w-full h-[500px] max-md:h-[400px] max-sm:h-[300px] overflow-hidden relative flex flex-col items-start bg-[#EDEDED] rounded-lg focus:outline-none btn"
                                     data-gallery-index="<?php echo esc_attr($index); ?>"
                                     aria-label="<?php echo esc_attr($image_alt); ?>"
                                 >
@@ -179,7 +179,7 @@ $section_id = 'gallery-' . uniqid();
             <!-- Modal Gallery -->
             <div
                 id="gallery-modal-<?php echo esc_attr($section_id); ?>"
-                class="hidden fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-90 gallery-modal"
+                class="hidden fixed inset-0 z-50 justify-center items-center p-4 bg-white bg-opacity-90 gallery-modal"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Gallery viewer"
@@ -189,7 +189,7 @@ $section_id = 'gallery-' . uniqid();
                     <!-- Close Button -->
                     <button
                         type="button"
-                        class="flex absolute top-4 right-4 z-10 justify-center items-center w-12 h-12 text-white bg-black bg-opacity-50 rounded-full transition-all duration-300 gallery-close hover:bg-opacity-75 btn"
+                        class="flex absolute top-4 right-4 z-10 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 gallery-close hover:bg-blue btn"
                         aria-label="Close gallery"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -226,7 +226,7 @@ $section_id = 'gallery-' . uniqid();
                     <!-- Navigation Arrows -->
                     <button
                         type="button"
-                        class="flex absolute left-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black bg-opacity-50 rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-prev hover:bg-opacity-75 btn"
+                        class="flex absolute left-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-prev hover:bg-blue btn"
                         aria-label="Previous image"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -236,7 +236,7 @@ $section_id = 'gallery-' . uniqid();
 
                     <button
                         type="button"
-                        class="flex absolute right-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black bg-opacity-50 rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-next hover:bg-opacity-75 btn"
+                        class="flex absolute right-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-next hover:bg-blue btn"
                         aria-label="Next image"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -245,7 +245,7 @@ $section_id = 'gallery-' . uniqid();
                     </button>
 
                     <!-- Image Counter -->
-                    <div class="absolute bottom-4 left-1/2 px-4 py-2 text-white bg-black bg-opacity-50 rounded-full transform -translate-x-1/2">
+                    <div class="absolute bottom-4 left-1/2 px-4 py-2 text-black rounded-full transform -translate-x-1/2 bg-blue">
                         <span class="gallery-counter" aria-live="polite">1 / <?php echo count($gallery_images); ?></span>
                     </div>
                 </div>

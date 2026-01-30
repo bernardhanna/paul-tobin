@@ -22,7 +22,7 @@ get_header();
     if (have_posts()) :
         while (have_posts()) : the_post();
             if (trim(get_the_content()) != '') : ?>
-                <div class="max-w-[1095px] max-xl:px-5  mx-auto">
+                <div class="mx-auto w-full max-w-container max-xl:px-5">
                     <?php
                     get_template_part('template-parts/content/content', 'page');
                     ?>

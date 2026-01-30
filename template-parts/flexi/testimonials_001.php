@@ -67,18 +67,18 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
 
         <div class="mx-auto w-full max-w-7xl">
             <?php if (!empty($heading)) : ?>
-                <div class="flex flex-col gap-6 items-center mb-12">
+                <div class="flex flex-col gap-6 items-center mmb-12">
                     <<?php echo tag_escape($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
-                        class="text-3xl font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8"
+                        class="text-[2.125rem] font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo tag_escape($heading_tag); ?>>
 
-                    <div class="flex   justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
+                    <div class="flex lg:pb-8 justify-between items-center w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                         <div class="bg-orange-500 flex-1 h-[5px]"></div>
                         <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                        <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                        <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                         <div class="bg-lime-600 flex-1 h-[5px]"></div>
                     </div>
                 </div>

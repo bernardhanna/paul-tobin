@@ -47,14 +47,14 @@ $clamp = function ($val, $min, $max) {
             <header class="mb-12 w-full text-left max-md:mb-8">
                 <<?php echo esc_attr($heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="mb-6 text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8"
+                    class="mb-6 text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
                 >
                     <?php echo esc_html($heading); ?>
                 </<?php echo esc_attr($heading_tag); ?>>
                 <div class="flex justify-between mr-auto items-left w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                     <div class="bg-orange-500 flex-1 h-[5px]"></div>
                     <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                    <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                    <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                     <div class="bg-lime-600 flex-1 h-[5px]"></div>
                 </div>
             </header>
@@ -90,7 +90,7 @@ $clamp = function ($val, $min, $max) {
                         <?php foreach ($items as $i => $item): ?>
                             <?php
                             $item_content = $item['content'] ?? '';
-                            $item_bg      = $item['item_background_color'] ?? '#E5E7EB';
+                            $item_bg      = $item['item_background_color'] ?? '#EDEDED';
                             $bar_color    = $item['bar_color'] ?? '#0098D8';
                             $item_id      = $section_id . '-row-' . ($row_index + 1) . '-item-' . ($i + 1);
 
@@ -105,7 +105,7 @@ $clamp = function ($val, $min, $max) {
                                 style="background-color: <?php echo esc_attr($item_bg); ?>;"
                             >
                                 <?php if (!empty($item_content)): ?>
-                                    <div class="text-center font-secondary font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119] wp_editor max-w-[20rem] w-full mx-auto">
+                                    <div class="text-center font-secondary font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119]  max-w-[20rem] w-full mx-auto">
                                         <?php echo wp_kses_post($item_content); ?>
                                     </div>
                                 <?php endif; ?>

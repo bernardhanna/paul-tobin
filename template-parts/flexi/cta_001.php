@@ -36,7 +36,7 @@ $section_id = 'cta-' . uniqid();
                     <?php if (!empty($heading)): ?>
                         <<?php echo esc_attr($heading_tag); ?>
                             id="<?php echo esc_attr($section_id); ?>-heading"
-                            class="text-[#F9FAFB] font-secondary text-3xl font-semibold leading-10 tracking-[-0.16px] max-md:max-w-full"
+                            class="text-[#F9FAFB] font-secondary text-[2.125rem] font-semibold leading-10 tracking-[-0.16px] max-md:max-w-full"
                         >
                             <?php echo esc_html($heading); ?>
                         </<?php echo esc_attr($heading_tag); ?>>
@@ -46,7 +46,7 @@ $section_id = 'cta-' . uniqid();
                         <div class="flex   justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                         <div class="bg-orange-500 flex-1 h-[5px]"></div>
                         <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                        <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                        <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                         <div class="bg-lime-600 flex-1 h-[5px]"></div>
                     </div>
                         </div>

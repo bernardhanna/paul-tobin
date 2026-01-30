@@ -12,7 +12,7 @@ $hero_001
             'label'         => 'Heading Text',
             'instructions'  => 'Enter the main heading text for the hero section.',
             'default_value' => 'Your Irish property, expertly handled while you\'re abroad.',
-            'required'      => 1,
+            'required'      => 0,
         ])
         ->addSelect('heading_tag', [
             'label'         => 'Heading Tag',
@@ -23,7 +23,7 @@ $hero_001
                 'p'  => 'Paragraph', 'span' => 'Span',
             ],
             'default_value' => 'h1',
-            'required'      => 1,
+            'required'      => 0,
         ])
         ->addWysiwyg('description', [
             'label'         => 'Description Text',
@@ -48,7 +48,7 @@ $hero_001
             'video' => 'Video',
         ],
         'default_value' => 'image',
-        'required'      => 1,
+        'required'      => 0,
     ])
     ->addImage('background_image', [
         'label'             => 'Background Image',
@@ -127,7 +127,7 @@ $hero_001
         ->addColorPicker('content_box_bg_color', [
             'label'         => 'Content Box Background Color',
             'instructions'  => 'Set the background color for the content box.',
-            'default_value' => '#e5e7eb',
+            'default_value' => '#EDEDED',
         ])
         ->addRange('content_box_bg_opacity', [
             'label'         => 'Content Box Background Opacity',
@@ -172,7 +172,7 @@ $hero_001
                 '665' => '665px',
             ],
             'default_value' => '500',
-            'required'      => 1,
+            'required'      => 0,
         ])
         ->addRepeater('padding_settings', [
             'label'        => 'Padding Settings',

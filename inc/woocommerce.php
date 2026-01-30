@@ -246,7 +246,7 @@ add_filter('body_class', function ($classes) {
 add_action('woocommerce_before_checkout_form', function () {
   if (!is_checkout()) return;
   echo '<div class="px-6 mx-auto max-w-[1140px]">';
-  echo '  <h1 class="text-3xl font-semibold text-[#0A1119]">Checkout</h1>';
+  echo '  <h1 class="text-[2.125rem] font-semibold text-[#0A1119]">Checkout</h1>';
   echo '  <div class="mt-6">'; // keep structure simple; do columns in CSS
 }, 0);
 

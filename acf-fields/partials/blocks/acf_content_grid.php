@@ -65,7 +65,7 @@ $content_grid
                 ->addColorPicker('item_background_color', [
                     'label'         => 'Item Background Color',
                     'instructions'  => 'Set the background color for this grid item.',
-                    'default_value' => '#E5E7EB',
+                    'default_value' => '#EDEDED',
                 ])
                 // Fixed palette for the decorative bar color
                 ->addSelect('bar_color', [

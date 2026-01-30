@@ -29,7 +29,7 @@ $padding_bottom = $not_found_settings['padding_bottom'] ?? 'pb-10';
               class="flex relative flex-col w-full min-h-[700px] max-md:max-w-full max-sm:min-h-[246px] rounded-tr-3xl rounded-br-3xl"
             >
               <img
-                src="wp-content/uploads/2025/07/cryo-room-16th-June-2023-2.png"
+                src="wp-content/uploads/2025/12/hero-section.png"
                 alt="404 error background image"
                 class="object-cover absolute inset-0 rounded-tr-3xl rounded-br-3xl size-full"
                 aria-hidden="true"
@@ -54,7 +54,7 @@ $padding_bottom = $not_found_settings['padding_bottom'] ?? 'pb-10';
             >
               <a
                 href="/"
-                class="flex gap-2 justify-center items-center px-7 py-4 text-white whitespace-nowrap rounded btn border-primary bg-primary min-h-14 max-md:px-5 w-fit hover:bg-tertiary hover:text-primary hover:border-primary"
+                class="flex gap-2 justify-center items-center px-7 py-4 text-white whitespace-nowrap rounded btn border-primary bg-primary min-h-14 max-md:px-5 w-fit hover:bg-blue hover:text-primary hover:border-primary"
                 role="button"
               >
                Return Home

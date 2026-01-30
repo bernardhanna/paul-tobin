@@ -1,8 +1,15 @@
 <?php
 // ================== Fetch fields ==================
-$heading             = get_sub_field('heading');
-$heading_tag         = get_sub_field('heading_tag');
-$selected_properties = get_sub_field('selected_properties');
+$heading                  = get_sub_field('heading');
+$heading_tag              = get_sub_field('heading_tag');
+$selected_properties      = get_sub_field('selected_properties'); // relationship (object)
+$filter_by                = get_sub_field('filter_by'); // 'none' | 'property_status' | 'property_type'
+$property_status_terms    = get_sub_field('property_status_terms'); // term objects/ids
+$property_type_terms      = get_sub_field('property_type_terms');   // term objects/ids
+$auto_related_on_single   = (bool) get_sub_field('auto_related_on_single');
+$limit                    = (int) (get_sub_field('limit') ?: 3);
+$order_by                 = get_sub_field('order_by') ?: 'modified';
+$order                    = get_sub_field('order') ?: 'DESC';
 
 // Whitelist heading tag
 $allowed_tags = ['h1','h2','h3','h4','h5','h6','p','span'];
@@ -24,28 +31,108 @@ if (have_rows('padding_settings')) {
     }
 }
 
-// ================== Auto fallback: 3 most recently UPDATED Sold ==================
-if (empty($selected_properties)) {
-    $selected_properties = get_posts([
-        'post_type'      => ['property'],
-        'posts_per_page' => 3,
-        'post_status'    => 'publish',
-        'tax_query'      => [
-            [
-                'taxonomy' => 'property_status',
-                'field'    => 'slug',
-                'terms'    => ['sold'],
-            ],
-        ],
-        'orderby' => 'modified',
-        'order'   => 'DESC',
-        'fields'  => 'ids',
-    ]);
+// Helper: normalize term values to term_ids
+$term_ids = static function ($terms) {
+    $ids = [];
+    if (is_array($terms)) {
+        foreach ($terms as $t) {
+            if (is_object($t) && isset($t->term_id)) {
+                $ids[] = (int) $t->term_id;
+            } elseif (is_numeric($t)) {
+                $ids[] = (int) $t;
+            }
+        }
+    }
+    return array_filter($ids);
+};
 
-    if (empty($selected_properties)) {
-        $selected_properties = get_posts([
+// ================== Resolve Property IDs ==================
+// 1) Manual selection (highest priority)
+$property_ids = [];
+if (!empty($selected_properties) && is_array($selected_properties)) {
+    foreach ($selected_properties as $p) {
+        $property_ids[] = is_object($p) ? (int) $p->ID : (int) $p;
+    }
+    $property_ids = array_filter($property_ids);
+}
+
+// 2) If no manual selection, build query by taxonomy filters / related mode / default "Sold"
+if (empty($property_ids)) {
+    $tax_query = [];
+
+    // Related mode on single property: use current post's property_status
+    if ($auto_related_on_single && is_singular('property')) {
+        $current_id = get_the_ID();
+        $current_status = get_the_terms($current_id, 'property_status');
+        $current_status_ids = [];
+        if (!empty($current_status) && !is_wp_error($current_status)) {
+            foreach ($current_status as $ct) {
+                $current_status_ids[] = (int) $ct->term_id;
+            }
+        }
+        if (!empty($current_status_ids)) {
+            $tax_query[] = [
+                'taxonomy' => 'property_status',
+                'field'    => 'term_id',
+                'terms'    => $current_status_ids,
+            ];
+        }
+    } else {
+        // Admin-chosen taxonomy filters
+        if ($filter_by === 'property_status') {
+            $ids = $term_ids($property_status_terms);
+            if (!empty($ids)) {
+                $tax_query[] = [
+                    'taxonomy' => 'property_status',
+                    'field'    => 'term_id',
+                    'terms'    => $ids,
+                ];
+            }
+        } elseif ($filter_by === 'property_type') {
+            $ids = $term_ids($property_type_terms);
+            if (!empty($ids)) {
+                $tax_query[] = [
+                    'taxonomy' => 'property_type',
+                    'field'    => 'term_id',
+                    'terms'    => $ids,
+                ];
+            }
+        }
+    }
+
+    // Build args
+    $args = [
+        'post_type'      => ['property'],
+        'posts_per_page' => $limit ?: 3,
+        'post_status'    => 'publish',
+        'orderby'        => $order_by,
+        'order'          => $order,
+        'fields'         => 'ids',
+    ];
+
+    // If no filters set and not in single related mode, prefer Sold by default
+    if (empty($tax_query) && !is_singular('property')) {
+        $args['tax_query'] = [[
+            'taxonomy' => 'property_status',
+            'field'    => 'slug',
+            'terms'    => ['sold'],
+        ]];
+    } elseif (!empty($tax_query)) {
+        $args['tax_query'] = $tax_query;
+    }
+
+    // Exclude current property when on single
+    if (is_singular('property')) {
+        $args['post__not_in'] = [get_the_ID()];
+    }
+
+    $property_ids = get_posts($args);
+
+    // Absolute fallback: most recently modified properties
+    if (empty($property_ids)) {
+        $property_ids = get_posts([
             'post_type'      => ['property'],
-            'posts_per_page' => 3,
+            'posts_per_page' => $limit ?: 3,
             'post_status'    => 'publish',
             'orderby'        => 'modified',
             'order'          => 'DESC',
@@ -54,15 +141,17 @@ if (empty($selected_properties)) {
     }
 }
 
-// Normalize to IDs
+// 3) Normalize to IDs (in case anything slipped through)
 $property_ids = array_map(function ($p) {
     return is_object($p) ? (int) $p->ID : (int) $p;
-}, (array) $selected_properties);
+}, (array) $property_ids);
 
 // Random section id
 $section_id  = 'recently-sold-' . uniqid();
 $has_heading = !empty($heading);
 ?>
+
+<!-- ========== FROM HERE DOWN, YOUR FRONTEND IS UNCHANGED ========== -->
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
@@ -79,7 +168,7 @@ $has_heading = !empty($heading);
                     <?php if ($has_heading) : ?>
                         <<?php echo esc_attr($heading_tag); ?>
                             id="<?php echo esc_attr($section_id); ?>-heading"
-                            class="text-3xl font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-3xl max-md:leading-9 max-sm:text-2xl max-sm:leading-8"
+                            class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
                         >
                             <?php echo esc_html($heading); ?>
                         </<?php echo esc_attr($heading_tag); ?>>
@@ -88,7 +177,7 @@ $has_heading = !empty($heading);
                     <div class="flex justify-between items-start w-[71px] max-sm:w-[60px]" role="presentation" aria-hidden="true">
                         <div class="bg-orange-500 flex-1 h-[5px]"></div>
                         <div class="bg-sky-500 flex-1 h-[5px]"></div>
-                        <div class="bg-slate-300 flex-1 h-[5px]"></div>
+                        <div class="bg-[#B6C0CB] flex-1 h-[5px]"></div>
                         <div class="bg-lime-600 flex-1 h-[5px]"></div>
                     </div>
                 </div>
