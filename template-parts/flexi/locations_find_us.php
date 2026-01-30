@@ -1,15 +1,16 @@
 <?php
 /**
- * Frontend: Locations Find Us (MapLibre/Jawg)
- * Ensures custom marker shows on top of canvas. Orange fallback marker is kept visible as well.
+ * Frontend: Locations Find Us (Leaflet like Booking section)
+ * - Per-location display: Leaflet | iframe | image
+ * - Map fills container width, fixed height h-[500px]
+ * - Uses get_sub_field() only
  */
 
-// Vars
 $heading          = get_sub_field('heading') ?: 'Where you can find us';
 $heading_tag      = get_sub_field('heading_tag') ?: 'h2';
 $background_color = get_sub_field('background_color') ?: '#ffffff';
 
-// Padding
+// Padding classes
 $padding_classes = [];
 if (have_rows('padding_settings')) {
   while (have_rows('padding_settings')) {
@@ -22,23 +23,8 @@ if (have_rows('padding_settings')) {
   }
 }
 
-// Need MapLibre?
-$section_id   = 'locations-find-us-' . wp_generate_uuid4();
-$rows         = get_sub_field('locations') ?: [];
-$needs_maplib = false;
-foreach ($rows as $r) {
-  if (($r['map_display_type'] ?? '') === 'leaflet') { $needs_maplib = true; break; }
-}
-if ($needs_maplib) {
-  if (!wp_style_is('maplibre-gl', 'registered')) {
-    wp_register_style('maplibre-gl', 'https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.css', [], '5.7.0');
-  }
-  if (!wp_script_is('maplibre-gl', 'registered')) {
-    wp_register_script('maplibre-gl', 'https://unpkg.com/maplibre-gl@5.7.0/dist/maplibre-gl.js', [], '5.7.0', true);
-  }
-  wp_enqueue_style('maplibre-gl');
-  wp_enqueue_script('maplibre-gl');
-}
+// Unique section ID
+$section_id = 'locations-find-us-' . wp_generate_uuid4();
 ?>
 
 <section
@@ -50,10 +36,12 @@ if ($needs_maplib) {
   <div class="flex flex-col items-center py-10 mx-auto w-full lg:py-20 max-w-container max-lg:px-5">
 
     <div class="flex flex-col gap-6 w-full">
-      <<?php echo esc_attr($heading_tag); ?>
-        id="<?php echo esc_attr($section_id); ?>-heading"
-        class="max-w-full text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary"
-      ><?php echo esc_html($heading); ?></<?php echo esc_attr($heading_tag); ?>>
+      <?php if ($heading): ?>
+        <<?php echo esc_attr($heading_tag); ?>
+          id="<?php echo esc_attr($section_id); ?>-heading"
+          class="max-w-full text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary"
+        ><?php echo esc_html($heading); ?></<?php echo esc_attr($heading_tag); ?>>
+      <?php endif; ?>
 
       <div class="flex justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
         <div class="bg-orange-500 flex-1 h-[5px]"></div>
@@ -63,6 +51,7 @@ if ($needs_maplib) {
       </div>
     </div>
 
+    <!-- Locations Grid -->
     <?php if (have_rows('locations')): ?>
       <div class="grid grid-cols-1 gap-10 mt-12 w-full md:grid-cols-2 max-md:mt-10">
         <?php while (have_rows('locations')): the_row();
@@ -71,32 +60,29 @@ if ($needs_maplib) {
           $phone_numbers = get_sub_field('phone_numbers');
           $email         = get_sub_field('email');
 
-          $map_type      = get_sub_field('map_display_type') ?: 'image';
+          $map_type      = get_sub_field('map_display_type') ?: 'leaflet'; // leaflet | iframe | image
 
           // Static image
           $map_image_id  = get_sub_field('map_image');
           $map_image_alt = $map_image_id ? (get_post_meta($map_image_id, '_wp_attachment_image_alt', true) ?: 'Office location map') : 'Office location map';
 
-          // MapLibre fields
-          $lat           = (float) (get_sub_field('map_latitude')  ?: 0);
-          $lng           = (float) (get_sub_field('map_longitude') ?: 0);
-          $zoom          = (int)   (get_sub_field('map_zoom')      ?: 15);
-          $icon_id       = get_sub_field('map_icon');
-          $icon_src      = $icon_id ? wp_get_attachment_image_url($icon_id, 'full') : '';
-          $icon_w        = 36; // px
-          $icon_h        = 44; // px
+          // Leaflet fields (match booking section behavior)
+          $lat            = (float) (get_sub_field('map_latitude')  ?: 0);
+          $lng            = (float) (get_sub_field('map_longitude') ?: 0);
+          $zoom           = (int)   (get_sub_field('map_zoom')      ?: 15);
+          $provider       = 'jawg-light'; // you can change to 'jawg-dark' or 'osm' if needed
+          $tile_api_key   = get_sub_field('tile_api_key') ?: 'zxWPtYn9xCoXLAzkN6ckqMOHRw7Xf0zsTWBN0EmR7BSjUMW2F0hsBScanw15iLpX';
+          $marker_icon_id = get_sub_field('map_icon');
+          $marker_icon    = $marker_icon_id ? wp_get_attachment_image_url($marker_icon_id, 'full') : '';
 
           // iframe
           $map_iframe_html = get_sub_field('map_iframe_html');
 
-          // Jawg token (fallback to provided test key)
-          $token = get_sub_field('tile_api_key') ?: 'zxWPtYn9xCoXLAzkN6ckqMOHRw7Xf0zsTWBN0EmR7BSjUMW2F0hsBScanw15iLpX';
-
-          $location_id = 'location-' . wp_generate_uuid4();
+          $location_id   = 'location-' . wp_generate_uuid4();
         ?>
           <article class="flex flex-col" aria-labelledby="<?php echo esc_attr($location_id); ?>-title">
 
-            <!-- Card -->
+            <!-- Contact Information Card -->
             <div class="p-8 w-full bg-[#B6C0CB] min-h-[332px] h-full">
               <header class="pb-4">
                 <div class="flex justify-between items-center py-4 w-full">
@@ -155,95 +141,38 @@ if ($needs_maplib) {
             <!-- Map/Embed/Image -->
             <div class="w-full">
               <?php if ($map_type === 'leaflet' && $lat && $lng): ?>
-                <div id="<?php echo esc_attr($location_id); ?>__map" class="w-full h-[500px] overflow-hidden"></div>
-
-                <!-- queue + runner once -->
-                <script>
-                  (function(){
-                    if (!window.__mlQueue) {
-                      window.__mlQueue = [];
-                      window.__mlRun = function() {
-                        if (!window.maplibregl) return;
-                        window.__mlQueue.splice(0).forEach(function(fn){ try{ fn(); }catch(e){ console.error(e); } });
-                      };
-                      window.addEventListener('load', window.__mlRun);
-                    }
-                  })();
-                </script>
-
-                <!-- init -->
-                <script>
-                  (function(){
-                    window.__mlQueue = window.__mlQueue || [];
-                    window.__mlQueue.push(function (){
-                      if (typeof maplibregl === 'undefined') return;
-
-                      var apiKey = <?php echo wp_json_encode($token); ?>;
-                      var lng    = <?php echo esc_js($lng); ?>;
-                      var lat    = <?php echo esc_js($lat); ?>;
-                      var zoom   = <?php echo esc_js($zoom); ?>;
-                      var id     = '<?php echo esc_js($location_id); ?>__map';
-
-                      var map = new maplibregl.Map({
-                        container: id,
-                        style: 'https://api.jawg.io/styles/jawg-lagoon.json?access-token=' + encodeURIComponent(apiKey),
-                        center: [lng, lat],
-                        zoom: zoom
-                      });
-
-                      map.on('load', function(){
-                        // Custom SVG marker (if provided)
-                        var customIcon = <?php echo wp_json_encode((string) $icon_src); ?>;
-                        if (customIcon && customIcon.length > 4) {
-                          var el  = document.createElement('div');
-                          var img = document.createElement('img');
-                          img.src = customIcon;
-                          img.alt = 'Location';
-                          img.style.width         = '<?php echo (int) $icon_w; ?>px';
-                          img.style.height        = '<?php echo (int) $icon_h; ?>px';
-                          img.style.maxWidth      = 'none';
-                          img.style.display       = 'block';
-                          img.style.visibility    = 'visible';
-                          img.style.mixBlendMode  = 'normal';
-                          img.style.filter        = 'none';
-                          img.style.opacity       = '1';
-                          img.style.pointerEvents = 'none';
-                          el.style.zIndex         = '1000';
-                          el.style.position       = 'absolute';
-                          el.setAttribute('aria-label', 'Map marker');
-                          el.appendChild(img);
-
-                          new maplibregl.Marker({ element: el, anchor: 'bottom' })
-                            .setLngLat([lng, lat])
-                            .addTo(map);
-                        }
-
-                        // Always add orange fallback marker so you can see it for sure
-                        new maplibregl.Marker({ color: '#ff4d00', anchor: 'bottom' })
-                          .setLngLat([lng, lat])
-                          .addTo(map);
-
-                        setTimeout(function(){ try { map.resize(); } catch(e){} }, 150);
-                      });
-                    });
-
-                    if (window.maplibregl && window.__mlRun) { window.__mlRun(); }
-                  })();
-                </script>
+                <div
+                  id="<?php echo esc_attr($location_id); ?>__map"
+                  class="w-full h-[500px] overflow-hidden"
+                  data-leaflet
+                  data-provider="<?php echo esc_attr($provider); ?>"
+                  data-token="<?php echo esc_attr($tile_api_key); ?>"
+                  data-lat="<?php echo esc_attr($lat); ?>"
+                  data-lng="<?php echo esc_attr($lng); ?>"
+                  data-zoom="<?php echo esc_attr($zoom); ?>"
+                  <?php if ($marker_icon): ?>
+                  data-marker-icon="<?php echo esc_url($marker_icon); ?>"
+                  <?php endif; ?>
+                ></div>
 
               <?php elseif ($map_type === 'iframe' && !empty($map_iframe_html)): ?>
-                <div class="w-full h-[340px] overflow-hidden">
+                <div class="w-full h-[500px] overflow-hidden">
                   <?php
                   $iframe = preg_replace(['#\s(width)="[^"]*"#i', '#\s(height)="[^"]*"#i'], ['', ''], (string) $map_iframe_html);
                   if (stripos($iframe, '<iframe') !== false) {
                     $iframe = preg_replace('#<iframe#i', '<iframe style="width:100%;height:100%;border:0;"', $iframe, 1);
                   }
-                  echo wp_kses($iframe, ['iframe' => ['src'=>[], 'title'=>[], 'style'=>[], 'loading'=>[], 'referrerpolicy'=>[], 'allow'=>[], 'allowfullscreen'=>[]]]);
+                  echo wp_kses($iframe, [
+                    'iframe' => [
+                      'src'=>[], 'title'=>[], 'style'=>[], 'loading'=>[], 'referrerpolicy'=>[],
+                      'allow'=>[], 'allowfullscreen'=>[]
+                    ],
+                  ]);
                   ?>
                 </div>
 
               <?php elseif ($map_image_id): ?>
-                <div class="w-full h-[340px] overflow-hidden">
+                <div class="w-full h-[500px] overflow-hidden">
                   <?php
                   echo wp_get_attachment_image($map_image_id, 'full', false, [
                     'alt'    => esc_attr($map_image_alt),
@@ -264,17 +193,63 @@ if ($needs_maplib) {
 </section>
 
 <style>
-  /* Marker must be above canvas */
-  .maplibregl-map .maplibregl-canvas-container { z-index: 0 !important; }
-  .maplibregl-map .maplibregl-canvas          { z-index: 0 !important; }
-  .maplibregl-map .maplibregl-marker          { z-index: 1000 !important; position: absolute !important; }
-  .maplibregl-map .maplibregl-marker img {
-    display: block !important;
-    max-width: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    mix-blend-mode: normal !important;
-    filter: none !important;
-    pointer-events: none !important;
-  }
+  /* Accordion animation (kept for consistency if you add expanding bits later) */
+  .accordion-content { overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out; }
+  .accordion-content.collapsed { max-height: 0; opacity: 0; }
+  .accordion-content.expanded  { max-height: 1000px; opacity: 1; }
 </style>
+
+<!-- Leaflet assets (once) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+(function(){
+  // Initialize all Leaflet map divs rendered in this section
+  function initLeafletMap(container) {
+    if (!container || typeof L === 'undefined' || container.dataset.initialized === '1') return;
+
+    const provider   = container.getAttribute('data-provider') || 'jawg-light';
+    const token      = container.getAttribute('data-token') || '';
+    const lat        = parseFloat(container.getAttribute('data-lat')  || '53.349805');
+    const lng        = parseFloat(container.getAttribute('data-lng')  || '-6.26031');
+    const zoom       = parseInt(container.getAttribute('data-zoom')   || '14', 10);
+    const markerIcon = container.getAttribute('data-marker-icon') || '';
+
+    const map = L.map(container).setView([lat, lng], zoom);
+
+    // Tile layer (same as booking section)
+    let tileUrl, tileOpts = {};
+    if (provider === 'osm') {
+      tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      tileOpts = { maxZoom: 19, attribution: '&copy; OpenStreetMap' };
+    } else if (provider === 'jawg-dark') {
+      tileUrl = 'https://tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token=' + encodeURIComponent(token);
+      tileOpts = { maxZoom: 22, attribution: '&copy; <a href="https://www.jawg.io" target="_blank" rel="noopener">Jawg</a>' };
+    } else {
+      tileUrl = 'https://tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token=' + encodeURIComponent(token);
+      tileOpts = { maxZoom: 22, attribution: '&copy; <a href="https://www.jawg.io" target="_blank" rel="noopener">Jawg</a>' };
+    }
+    L.tileLayer(tileUrl, tileOpts).addTo(map);
+
+    // Custom marker (if provided)
+    let icon = null;
+    if (markerIcon) {
+      icon = L.icon({
+        iconUrl: markerIcon,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
+    }
+    L.marker([lat, lng], icon ? { icon } : undefined).addTo(map);
+
+    container.dataset.initialized = '1';
+    setTimeout(() => { map.invalidateSize(); }, 100);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('#<?php echo esc_js($section_id); ?> [data-leaflet]').forEach(initLeafletMap);
+  });
+})();
+</script>
