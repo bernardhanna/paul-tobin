@@ -171,7 +171,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                         aria-hidden="true"
                     ><?php echo esc_html($benchmark_text); ?></div>
 
-                    <script>
+<script>
 (function(){
   var sectionId  = <?php echo json_encode($section_id); ?>;
   var contentId  = <?php echo json_encode($content_id); ?>;
@@ -180,7 +180,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   var readMore   = <?php echo json_encode($read_more_label); ?>;
   var readLess   = <?php echo json_encode($read_less_label); ?>;
 
-  // Guard: if we already initialized this section, bail
   var sectionEl = document.getElementById(sectionId);
   if (!sectionEl || sectionEl.dataset.readmoreInit === '1') return;
   sectionEl.dataset.readmoreInit = '1';
@@ -190,7 +189,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   var measurer  = document.getElementById(measureId);
   if (!container || !btn || !measurer) return;
 
-  // Mirror container width for accurate threshold
   function syncMeasureWidth() {
     try {
       var rect = container.getBoundingClientRect();
@@ -199,7 +197,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   }
 
   function collapsedMax() {
-    return measurer.scrollHeight; // threshold based on benchmark text
+    return measurer.scrollHeight;
   }
 
   function applyCollapsed() {
@@ -220,24 +218,22 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
 
   function evaluate() {
     syncMeasureWidth();
-    // Ensure collapsed before we decide to show the button (so scrollHeight is full content height)
     applyCollapsed();
-    // Wait a tick for layout/fonts
+
     requestAnimationFrame(function(){
-      var needsToggle = container.scrollHeight > collapsedMax() + 2;
+      var threshold = collapsedMax();
+      var needsToggle = container.scrollHeight > threshold + 2;
+
       if (needsToggle) {
         btn.hidden = false;
-        // Keep collapsed initially when toggle is present
         applyCollapsed();
       } else {
-        // Content is short; show fully and hide the button
-        applyExpanded();
         btn.hidden = true;
+        applyExpanded(); // IMPORTANT: clear max-height when not needed
       }
     });
   }
 
-  // Wire up button (only button toggles — left column does nothing)
   btn.addEventListener('click', function(e){
     e.preventDefault();
     e.stopPropagation();
@@ -245,20 +241,38 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
     if (expanded) applyCollapsed(); else applyExpanded();
   });
 
-  // Initial evaluation
   evaluate();
 
-  // Re-evaluate on resize
   window.addEventListener('resize', function(){
-    // If collapsed, re-apply with new threshold; also decide if button should be visible
     syncMeasureWidth();
     var threshold = collapsedMax();
-    if (container.getAttribute('data-expanded') !== 'true') {
-      container.style.maxHeight = threshold + 'px';
-    }
-    // Show/hide button appropriately
+    var expanded  = container.getAttribute('data-expanded') === 'true';
+
+    // Decide if toggle still needed at this width
+    // (Temporarily collapse only for measurement accuracy if currently expanded)
+    var prevMax = container.style.maxHeight;
+    var prevOv  = container.style.overflow;
+
+    container.style.maxHeight = '';
+    container.style.overflow  = '';
+
     var needs = container.scrollHeight > threshold + 2;
-    btn.hidden = !needs;
+
+    // Restore state properly
+    if (!needs) {
+      btn.hidden = true;
+      applyExpanded(); // IMPORTANT: removes max-height
+    } else {
+      btn.hidden = false;
+      if (!expanded) {
+        container.style.maxHeight = threshold + 'px';
+        container.style.overflow = 'hidden';
+      } else {
+        // expanded stays expanded
+        container.style.maxHeight = '';
+        container.style.overflow = '';
+      }
+    }
   });
 })();
 </script>
