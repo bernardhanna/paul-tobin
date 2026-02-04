@@ -171,10 +171,10 @@ $r_hover_border = '#0098d8';
               href="<?php echo esc_url($l_link['url']); ?>"
               target="<?php echo esc_attr(!empty($l_link['target']) ? $l_link['target'] : '_self'); ?>"
               aria-label="<?php echo esc_attr(!empty($l_link['title']) ? $l_link['title'] : 'Open link'); ?>"
-              class="<?php echo esc_attr($l_btn_class); ?> inline-flex w-full h-[44px] justify-center items-center gap-2 px-8 py-3.5 font-[600] transition-opacity duration-200"
+              class="<?php echo esc_attr($l_btn_class); ?> inline-flex w-full h-[44px] justify-center items-center gap-2 px-8 py-3.5 font-[600] transition-opacity duration-200 group"
               style="background-color: <?php echo esc_attr($l_base_bg); ?>; color: <?php echo esc_attr($l_base_text); ?>; border: 0.125rem solid <?php echo esc_attr($l_base_border); ?>;"
             >
-              <span class="text-[0.875rem] leading-[1.375rem] font-['Montserrat']">
+              <span class="text-[0.875rem] leading-[1.375rem] font-primary group-hover:text-black">
                 <?php echo esc_html(!empty($l_link['title']) ? $l_link['title'] : 'Book now via Calendly'); ?>
               </span>
             </a>
@@ -237,10 +237,10 @@ $r_hover_border = '#0098d8';
               href="<?php echo esc_url($r_link['url']); ?>"
               target="<?php echo esc_attr(!empty($r_link['target']) ? $r_link['target'] : '_self'); ?>"
               aria-label="<?php echo esc_attr(!empty($r_link['title']) ? $r_link['title'] : 'Open link'); ?>"
-              class="<?php echo esc_attr($r_btn_class); ?> inline-flex w-full h-[44px] justify-center items-center gap-2 px-8 py-3.5 font-[600] transition-opacity duration-200 border-[0.125rem]"
+              class="<?php echo esc_attr($r_btn_class); ?> inline-flex w-full h-[44px] justify-center items-center gap-2 px-8 py-3.5 font-[600] transition-opacity duration-200 border-[0.125rem] group"
               style="background-color: <?php echo esc_attr($r_base_bg); ?>; color: <?php echo esc_attr($r_base_text); ?>; border-color: <?php echo esc_attr($r_base_border); ?>;"
             >
-              <span class="text-[0.875rem] leading-[1.375rem] font-['Montserrat']">
+              <span class="text-[0.875rem] leading-[1.375rem] font-primary group-hover:text-black">
                 <?php echo esc_html(!empty($r_link['title']) ? $r_link['title'] : 'Request a call'); ?>
               </span>
             </a>
