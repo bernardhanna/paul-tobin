@@ -112,7 +112,7 @@ $section_id = 'image-video-overlay-' . uniqid();
             <?php if ($show_overlay && !empty($overlay_background_css)): ?>
                 <!-- Pure color/gradient overlay -->
                 <div
-                    class="absolute inset-0"
+                    class="relative inset-0"
                     style="background: <?php echo esc_attr($overlay_background_css); ?>;"
                     aria-hidden="true"
                 ></div>
