@@ -133,7 +133,7 @@ $r_hover_text   = '#ffffff';
 $r_hover_border = '#0098d8';
 ?>
 
-<section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#f9fafb]">
+<section id="<?php echo esc_attr($section_id); ?>" class="relative flex  bg-[#f9fafb]">
   <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5 <?php echo $padding_class_str; ?>">
 
     <!-- Keep original inner width + grid layout -->
@@ -141,7 +141,7 @@ $r_hover_border = '#0098d8';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-[3rem] pt-[5rem] pr-[5rem] pb-[5rem] pl-[5rem] max-xl:px-5 bg-[#f9fafb] bg-center w-[80rem] max-w-full">
 
         <!-- LEFT COLUMN -->
-        <div class="flex flex-col gap-[1.5rem] overflow-hidden max-w-full self-start">
+        <div class="flex flex-col gap-[1.5rem]  max-w-full self-start">
 
           <!-- Heading -->
           <div class="flex flex-col gap-[1.5rem] max-w-full h-[4.3125rem]">
@@ -194,7 +194,7 @@ $r_hover_border = '#0098d8';
             </style>
           <?php endif; ?>
 
-          <div class="overflow-hidden self-center max-w-full">
+          <div class="self-center max-w-full">
             <?php
               if ($l_media === 'calendly') {
                   echo '<div class="w-full h-full wp_editor">';
@@ -208,7 +208,7 @@ $r_hover_border = '#0098d8';
         </div>
 
         <!-- RIGHT COLUMN -->
-        <div class="flex flex-col gap-[1.5rem] overflow-hidden max-w-full self-start">
+        <div class="flex flex-col gap-[1.5rem]  max-w-full self-start">
 
           <div class="flex flex-col gap-[1.5rem] max-w-full h-[4.3125rem]">
             <?php
@@ -260,7 +260,7 @@ $r_hover_border = '#0098d8';
             </style>
           <?php endif; ?>
 
-          <div class="overflow-hidden self-center max-w-full">
+          <div class="self-center max-w-full">
             <?php
               if ($r_media === 'video') {
                   if ($r_vtype === 'local' && $r_local) {
