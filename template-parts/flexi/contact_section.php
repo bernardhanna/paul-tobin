@@ -138,7 +138,7 @@ $r_hover_border = '#0098d8';
 
     <!-- Keep original inner width + grid layout -->
     <div class="w-full max-w-[80rem]">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-[3rem]  max-xl:px-5 bg-[#f9fafb] bg-center w-[80rem] max-w-full">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-[3rem]  pt-[5rem] max-xl:px-5 bg-[#f9fafb] bg-center w-[80rem] max-w-full">
 
         <!-- LEFT COLUMN -->
         <div class="flex flex-col gap-[1.5rem]  max-w-full self-start">
