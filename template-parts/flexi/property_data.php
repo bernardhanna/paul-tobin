@@ -60,9 +60,9 @@ $benchmark_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit .";
 ?>
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#ededed]">
-    <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5<?php echo $padding_class_string; ?>">
+    <div class="flex flex-col items-center w-full mx-auto max-w-container  max-lg:px-5<?php echo $padding_class_string; ?>">
         <div class="w-full xl:px-0">
-            <div class="flex flex-col gap-[3rem] py-[2.5rem] lg:py-[5rem] md:flex-row md:items-stretch">
+            <div class="flex flex-col gap-[3rem] py-[2.5rem] lg:py-[3.5rem] md:flex-row md:items-stretch">
                 <!-- Left card -->
                 <div class="w-full bg-[#e0e0e0] p-4 lg:p-6 md:w-1/2 lg:w-2/5 h-full max-h-fit">
                     <div class="flex gap-4">
