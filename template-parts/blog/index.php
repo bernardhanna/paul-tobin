@@ -58,7 +58,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                       </div>
          <ol class="flex gap-2 items-center pt-0.5 min-w-60">
                           <li class="flex gap-2 items-center">
-                              <a href="<?php echo esc_url(home_url()); ?>" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="Home">
+                              <a href="<?php echo esc_url(home_url()); ?>" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="Home">
                                   Home
                               </a>
                               <?php if (!is_front_page()) : // Only show arrow if not on home page ?>
@@ -83,7 +83,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                               if ($resources_page_id) {
                                   ?>
                                   <li class="flex gap-2 items-center">
-                                      <a href="<?php echo esc_url(get_permalink($resources_page_id)); ?>" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="Resources">
+                                      <a href="<?php echo esc_url(get_permalink($resources_page_id)); ?>" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="Resources">
                                           Resources
                                       </a>
                                       <?php if (!is_home() && !is_post_type_archive('projects') && !is_page($resources_page_id->ID)) : // Only show arrow if there's more to come after Resources ?>
@@ -103,7 +103,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                                   if (!empty($categories)) {
                                       $category = $categories[0]; // Get the first category
                                       echo '<li class="flex gap-2 items-center">';
-                                      echo '<a href="' . esc_url(get_category_link($category->term_id)) . '" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="' . esc_attr($category->name) . '">';
+                                      echo '<a href="' . esc_url(get_category_link($category->term_id)) . '" class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2" aria-label="' . esc_attr($category->name) . '">';
                                       echo esc_html($category->name);
                                       echo '</a>';
                                       echo '<div class="flex gap-2 items-center pt-0.5 w-4" aria-hidden="true">';
@@ -164,7 +164,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                       ?>
 
                       <?php if ($sub_text): ?>
-                        <p class="mt-2 text-xl leading-snug text-yellow-100 max-md:max-w-full">
+                        <p class="mt-2 text-xl leading-snug text-white max-md:max-w-full">
                           <?php echo esc_html($sub_text); ?>
                         </p>
                       <?php endif; ?>

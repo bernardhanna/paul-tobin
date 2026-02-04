@@ -1059,6 +1059,10 @@ body {
   /* This ensures the heading stays on the same line as the marker */
 }
 
+.entry-content ul, .entry-content ol  {
+  @apply pb-4;
+}
+
 .woocommerce-EditAccountForm .entry-content span {
   @apply w-full text-base font-normal leading-6 text-gray-800;
 }
@@ -1138,7 +1142,7 @@ body {
   @apply list-decimal list-inside;
 }
 
-.slick-dots li, .wp_editor li {
+.slick-dots li {
   @apply mb-2;
   list-style: none;
 }

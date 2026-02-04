@@ -32,6 +32,26 @@ $clamp = function ($val, $min, $max) {
     if ($v > $max) $v = $max;
     return $v;
 };
+
+// Hover colour sequence (repeat every 5 items across the whole section)
+$hover_colors = ['#D9F1FC', '#E0F4C5', '#FFE5CC', '#E0E0E0', '#D4D4D4'];
+
+// Prebuild a flat list of item IDs + hover colours so we can output a single <style> block
+$hover_map = [];
+$hover_index = 0;
+if (!empty($grid_rows) && is_array($grid_rows)) {
+    foreach ($grid_rows as $row) {
+        $items = $row['items'] ?? [];
+        if (!is_array($items) || empty($items)) continue;
+
+        foreach ($items as $_) {
+            $id = $section_id . '-item-' . ($hover_index + 1);
+            $hover_bg = $hover_colors[$hover_index % count($hover_colors)];
+            $hover_map[] = ['id' => $id, 'hover' => $hover_bg];
+            $hover_index++;
+        }
+    }
+}
 ?>
 <section
     id="<?php echo esc_attr($section_id); ?>"
@@ -47,7 +67,7 @@ $clamp = function ($val, $min, $max) {
             <header class="mb-12 w-full text-left max-md:mb-8">
                 <<?php echo esc_attr($heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
-                    class="mb-6 text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
+                    class="mb-6 text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9 max-sm:leading-8"
                 >
                     <?php echo esc_html($heading); ?>
                 </<?php echo esc_attr($heading_tag); ?>>
@@ -68,7 +88,19 @@ $clamp = function ($val, $min, $max) {
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($hover_map)): ?>
+            <style>
+                <?php foreach ($hover_map as $h): ?>
+                    #<?php echo esc_html($h['id']); ?>:hover,
+                    #<?php echo esc_html($h['id']); ?>:focus-within {
+                        background-color: <?php echo esc_html($h['hover']); ?> !important;
+                    }
+                <?php endforeach; ?>
+            </style>
+        <?php endif; ?>
+
         <?php if (!empty($grid_rows) && is_array($grid_rows)): ?>
+            <?php $render_index = 0; ?>
             <div class="flex flex-col gap-6 w-full">
                 <?php foreach ($grid_rows as $row_index => $row): ?>
                     <?php
@@ -92,7 +124,9 @@ $clamp = function ($val, $min, $max) {
                             $item_content = $item['content'] ?? '';
                             $item_bg      = $item['item_background_color'] ?? '#EDEDED';
                             $bar_color    = $item['bar_color'] ?? '#0098D8';
-                            $item_id      = $section_id . '-row-' . ($row_index + 1) . '-item-' . ($i + 1);
+
+                            // Hover ID based on global render order (matches the <style> map)
+                            $hover_id = $section_id . '-item-' . ($render_index + 1);
 
                             // Span rules: for 3-item rows, make the last item 100% @ md & lg; reset at xl
                             $span_classes = ($count === 3 && $i === 2)
@@ -100,12 +134,12 @@ $clamp = function ($val, $min, $max) {
                                 : '';
                             ?>
                             <article
-                                id="<?php echo esc_attr($item_id); ?>"
+                                id="<?php echo esc_attr($hover_id); ?>"
                                 class="flex flex-col justify-center p-8 min-h-[8.75rem] max-md:px-5 <?php echo esc_attr($span_classes); ?>"
                                 style="background-color: <?php echo esc_attr($item_bg); ?>;"
                             >
                                 <?php if (!empty($item_content)): ?>
-                                    <div class="text-center font-secondary font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119]  max-w-[20rem] w-full mx-auto">
+                                    <div class="text-center font-secondary font-semibold text-[1.5rem] leading-[1.625rem] tracking-[-0.01rem] text-[#0A1119] max-w-[20rem] w-full mx-auto">
                                         <?php echo wp_kses_post($item_content); ?>
                                     </div>
                                 <?php endif; ?>
@@ -117,6 +151,7 @@ $clamp = function ($val, $min, $max) {
                                     style="background-color: <?php echo esc_attr($bar_color); ?>;"
                                 ></div>
                             </article>
+                            <?php $render_index++; ?>
                         <?php endforeach; ?>
                     </div>
                 <?php endforeach; ?>

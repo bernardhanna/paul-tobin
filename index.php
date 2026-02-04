@@ -63,7 +63,7 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
             <ol class="flex gap-2 items-center pt-0.5">
               <li class="flex gap-2 items-center">
                 <a href="<?php echo esc_url(home_url('/')); ?>"
-                   class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2"
+                   class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2"
                    aria-label="Home">Home</a>
                 <?php if (!is_front_page()) : ?>
                   <div class="flex gap-2 items-center pt-0.5 w-4 text-white" aria-hidden="true">
@@ -83,7 +83,7 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
                 if ($resources_page_id) { ?>
                   <li class="flex gap-2 items-center">
                     <a href="<?php echo esc_url(get_permalink($resources_page_id)); ?>"
-                       class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2"
+                       class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2"
                        aria-label="Resources">Resources</a>
                     <?php if (!is_home() && !is_post_type_archive('Blog') && !is_page($resources_page_id->ID)) : ?>
                       <div class="flex gap-2 items-center pt-0.5 w-4" aria-hidden="true">
@@ -101,7 +101,7 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
                     $category = $categories[0]; ?>
                     <li class="flex gap-2 items-center">
                       <a href="<?php echo esc_url(get_category_link($category->term_id)); ?>"
-                         class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-yellow-100 focus:text-yellow-100 focus:outline-2 focus:outline-white focus:outline-offset-2"
+                         class="text-sm font-semibold leading-none text-white whitespace-nowrap hover:text-white focus:text-white focus:outline-2 focus:outline-white focus:outline-offset-2"
                          aria-label="<?php echo esc_attr($category->name); ?>">
                         <?php echo esc_html($category->name); ?>
                       </a>
@@ -152,7 +152,7 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
               );
             ?>
             <?php if (!empty($sub_text)): ?>
-              <p class="mt-2 text-xl leading-snug text-yellow-100 max-md:max-w-full">
+              <p class="mt-2 text-xl leading-snug text-white max-md:max-w-full">
                 <?php echo esc_html($sub_text); ?>
               </p>
             <?php endif; ?>

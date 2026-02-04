@@ -89,7 +89,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
                   <span id="<?php echo esc_attr($location_id); ?>-title" class="font-secondary text-[1.2rem] font-[600] leading-6 tracking-[0.005rem]">
                     <?php echo esc_html($office_name); ?>
                   </span>
-                  <i class="w-4 h-4 fas fa-chevron-down text-slate-950" aria-hidden="true"></i>
+                 <!-- <i class="w-4 h-4 fas fa-chevron-down text-slate-950" aria-hidden="true"></i> -->
                 </div>
               </header>
 
