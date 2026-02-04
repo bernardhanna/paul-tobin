@@ -179,7 +179,7 @@ $has_playable_video = ($media_type === 'video') && (
                     fetchpriority="low"
                 />
             <?php elseif ($media_type === 'video') : ?>
-                <div class="absolute inset-0">
+                <div class="relative inset-0">
                     <?php if ($video_provider === 'local' && $file_url) : ?>
                         <video
                             id="<?php echo esc_attr($video_id); ?>"
