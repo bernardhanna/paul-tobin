@@ -1,12 +1,13 @@
 <?php
 /**
- * Frontend: Property Data (Auto Read More)
+ * Frontend: Property Data (Read More after benchmark WORD COUNT)
  * - No design options; fixed colors per snippet.
  * - Uses get_sub_field() exclusively.
  * - Random section ID.
  * - Standard section/container & responsive padding controls.
  * - WYSIWYG fields get wp_editor class.
- * - “Read more” shows automatically only if content exceeds the benchmark text height.
+ * - “Read more” shows based on benchmark WORD COUNT (not height).
+ * - NO max-height is ever applied.
  */
 
 // -------------------------
@@ -52,19 +53,18 @@ $padding_class_string = !empty($padding_classes) ? ' ' . esc_attr(implode(' ', $
 $section_id = 'section-' . wp_generate_uuid4();
 $content_id = $section_id . '-right-content';
 $button_id  = $section_id . '-readmore-btn';
-$measure_id = $section_id . '-measure';
 
-// Benchmark text (the exact sample you provided) — used for measuring threshold height
+// Benchmark text (the exact sample you provided) — used for WORD COUNT cutoff
 $benchmark_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit .";
 ?>
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#ededed]">
-    <div class="flex flex-col items-center w-full mx-auto max-w-container  max-lg:px-5<?php echo $padding_class_string; ?>">
+    <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5<?php echo $padding_class_string; ?>">
         <div class="w-full xl:px-0">
-            <div class="flex flex-col gap-[3rem] py-[2.5rem] lg:py-[3.5rem] md:flex-row md:items-stretch">
+            <div class="flex flex-col gap-[3rem] py-[2.5rem] lg:py-[5rem] md:flex-row md:items-stretch">
                 <!-- Left card -->
-                <div class="w-full bg-[#e0e0e0] p-4 lg:p-6 md:w-1/2 lg:w-[36%] h-full max-h-fit">
+                <div class="w-full bg-[#e0e0e0] p-4 lg:p-6 md:w-1/2 lg:w-2/5 h-full max-h-fit">
                     <div class="flex gap-4">
                         <!-- Decorative bar -->
                         <div class="w-[0.25rem] shrink-0 bg-[#0098d8]" aria-hidden="true"></div>
@@ -136,13 +136,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                     </div>
                 </div>
 
-                <!-- Right text + AUTO Read more -->
-                <div class="w-full md:w-1/2 lg:w-[64%]">
-                    <!-- Collapsed container (threshold set via JS after measuring benchmark) -->
+                <!-- Right text + Read more after benchmark WORD COUNT -->
+                <div class="w-full md:w-1/2 lg:w-3/5">
                     <div
                         id="<?php echo esc_attr($content_id); ?>"
-                        class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary wp_editor overflow-hidden"
-                        data-expanded="false"
+                        class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary wp_editor"
+                        data-expanded="true"
                     >
                         <?php
                         if (!empty($right_text)) {
@@ -164,119 +163,132 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                         <?php echo esc_html($read_more_label); ?>
                     </button>
 
-                    <!-- Offscreen measurer for benchmark text height -->
-                    <div
-                        id="<?php echo esc_attr($measure_id); ?>"
-                        class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary opacity-0 pointer-events-none fixed -left-[9999px] -top-[9999px] w-[60ch]"
-                        aria-hidden="true"
-                    ><?php echo esc_html($benchmark_text); ?></div>
-
-<script>
+                    <script>
 (function(){
   var sectionId  = <?php echo json_encode($section_id); ?>;
   var contentId  = <?php echo json_encode($content_id); ?>;
   var buttonId   = <?php echo json_encode($button_id); ?>;
-  var measureId  = <?php echo json_encode($measure_id); ?>;
   var readMore   = <?php echo json_encode($read_more_label); ?>;
   var readLess   = <?php echo json_encode($read_less_label); ?>;
 
+  // Benchmark text (definitive cutoff) — we cut after the same WORD COUNT as this text.
+  var benchmarkText = <?php echo json_encode($benchmark_text); ?>;
+
+  // Guard: if we already initialized this section, bail
   var sectionEl = document.getElementById(sectionId);
   if (!sectionEl || sectionEl.dataset.readmoreInit === '1') return;
   sectionEl.dataset.readmoreInit = '1';
 
   var container = document.getElementById(contentId);
   var btn       = document.getElementById(buttonId);
-  var measurer  = document.getElementById(measureId);
-  if (!container || !btn || !measurer) return;
+  if (!container || !btn) return;
 
-  function syncMeasureWidth() {
-    try {
-      var rect = container.getBoundingClientRect();
-      if (rect && rect.width) measurer.style.width = rect.width + 'px';
-    } catch(e){}
+  function wordCount(str){
+    return (String(str).trim().match(/\S+/g) || []).length;
   }
 
-  function collapsedMax() {
-    return measurer.scrollHeight;
+  var cutoffWords = wordCount(benchmarkText);
+
+  function getTextNodes(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node){
+        return (node.nodeValue && node.nodeValue.match(/\S/))
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    return nodes;
   }
 
-  function applyCollapsed() {
-    container.style.maxHeight = collapsedMax() + 'px';
-    container.style.overflow = 'hidden';
+  // Split AFTER N words, preserving existing HTML up to the split.
+  function splitAfterWords(root, nWords) {
+    if (root.querySelector('[data-readmore-remainder="1"]')) return true;
+
+    var nodes = getTextNodes(root);
+    var seen = 0;
+    var splitNode = null;
+    var splitOffset = 0;
+
+    for (var i = 0; i < nodes.length; i++) {
+      var text = nodes[i].nodeValue;
+      var parts = text.split(/(\s+)/); // keep whitespace tokens
+      for (var p = 0; p < parts.length; p++) {
+        var token = parts[p];
+        if (!token) continue;
+
+        if (!/^\s+$/.test(token)) {
+          seen++;
+          if (seen === nWords) {
+            // Split AFTER this word token
+            var upto = parts.slice(0, p + 1).join('');
+            splitNode = nodes[i];
+            splitOffset = upto.length;
+            break;
+          }
+        }
+      }
+      if (splitNode) break;
+    }
+
+    // If we never reached cutoff, no toggle needed
+    if (!splitNode) return false;
+
+    // Build remainder range (from split point to end of container)
+    var r = document.createRange();
+    r.setStart(splitNode, splitOffset);
+    r.setEnd(container, container.childNodes.length);
+
+    // Only toggle if there is meaningful remainder
+    var remainderText = r.toString().trim();
+    if (!remainderText) return false;
+
+    var remainderSpan = document.createElement('span');
+    remainderSpan.setAttribute('data-readmore-remainder', '1');
+    remainderSpan.hidden = true;
+
+    remainderSpan.appendChild(r.extractContents());
+    container.appendChild(remainderSpan);
+
+    return true;
+  }
+
+  function setCollapsed() {
+    var rem = container.querySelector('[data-readmore-remainder="1"]');
+    if (rem) rem.hidden = true;
     container.setAttribute('data-expanded', 'false');
     btn.setAttribute('aria-expanded', 'false');
     btn.textContent = readMore;
   }
 
-  function applyExpanded() {
-    container.style.maxHeight = '';
-    container.style.overflow = '';
+  function setExpanded() {
+    var rem = container.querySelector('[data-readmore-remainder="1"]');
+    if (rem) rem.hidden = false;
     container.setAttribute('data-expanded', 'true');
     btn.setAttribute('aria-expanded', 'true');
     btn.textContent = readLess;
   }
 
-  function evaluate() {
-    syncMeasureWidth();
-    applyCollapsed();
+  // Init: split and decide
+  var needsToggle = splitAfterWords(container, cutoffWords);
 
-    requestAnimationFrame(function(){
-      var threshold = collapsedMax();
-      var needsToggle = container.scrollHeight > threshold + 2;
-
-      if (needsToggle) {
-        btn.hidden = false;
-        applyCollapsed();
-      } else {
-        btn.hidden = true;
-        applyExpanded(); // IMPORTANT: clear max-height when not needed
-      }
-    });
+  if (needsToggle) {
+    btn.hidden = false;
+    setCollapsed(); // show read more immediately after benchmark words
+  } else {
+    btn.hidden = true;
+    setExpanded(); // show full content
   }
 
   btn.addEventListener('click', function(e){
     e.preventDefault();
     e.stopPropagation();
     var expanded = container.getAttribute('data-expanded') === 'true';
-    if (expanded) applyCollapsed(); else applyExpanded();
-  });
-
-  evaluate();
-
-  window.addEventListener('resize', function(){
-    syncMeasureWidth();
-    var threshold = collapsedMax();
-    var expanded  = container.getAttribute('data-expanded') === 'true';
-
-    // Decide if toggle still needed at this width
-    // (Temporarily collapse only for measurement accuracy if currently expanded)
-    var prevMax = container.style.maxHeight;
-    var prevOv  = container.style.overflow;
-
-    container.style.maxHeight = '';
-    container.style.overflow  = '';
-
-    var needs = container.scrollHeight > threshold + 2;
-
-    // Restore state properly
-    if (!needs) {
-      btn.hidden = true;
-      applyExpanded(); // IMPORTANT: removes max-height
-    } else {
-      btn.hidden = false;
-      if (!expanded) {
-        container.style.maxHeight = threshold + 'px';
-        container.style.overflow = 'hidden';
-      } else {
-        // expanded stays expanded
-        container.style.maxHeight = '';
-        container.style.overflow = '';
-      }
-    }
+    if (expanded) setCollapsed(); else setExpanded();
   });
 })();
 </script>
-
                 </div>
             </div>
         </div>
