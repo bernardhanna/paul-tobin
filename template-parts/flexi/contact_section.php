@@ -118,7 +118,7 @@ function cs_video_youtube($url, $poster=null){
             echo cs_build_heading(
               $l_tag,
               $l_text,
-              " max-w-full break-words text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair']"
+              " max-w-full break-words text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary"
             );
           ?>
           <div class="flex flex-row justify-between items-start w-[4.4375rem] h-[0.3125rem]">
@@ -158,7 +158,7 @@ function cs_video_youtube($url, $poster=null){
             echo cs_build_heading(
               $r_tag,
               $r_text,
-              " max-w-full break-words text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair']"
+              " max-w-full break-words text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-secondary
             );
           ?>
           <div class="flex flex-row justify-between items-start w-[4.4375rem] h-[0.3125rem]">
