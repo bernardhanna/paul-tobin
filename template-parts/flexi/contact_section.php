@@ -134,7 +134,7 @@ $r_hover_border = '#0098d8';
 ?>
 
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex  bg-[#f9fafb]">
-  <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5 <?php echo $padding_class_str; ?>">
+  <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 lg:pt-[5.4rem] lg:pb-[5rem] max-xl:px-5 <?php echo $padding_class_str; ?>">
 
     <!-- Keep original inner width + grid layout -->
     <div class="w-full max-w-[80rem]">
