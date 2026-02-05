@@ -33,7 +33,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-  <div class="flex flex-col items-center py-10 mx-auto w-full lg:py-20 max-w-container max-lg:px-5">
+  <div class="flex flex-col items-center py-10 mx-auto w-full lg:py-20 max-w-container max-xl:px-5">
 
     <div class="flex flex-col gap-6 w-full">
       <?php if ($heading): ?>
