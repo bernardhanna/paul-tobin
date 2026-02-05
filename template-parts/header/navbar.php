@@ -115,7 +115,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     <?php foreach ($right_menu_items as $index => $item) : ?>
       <?php
         $is_last_item = ($index === (count($right_menu_items) - 1));
-        $dropdown_translate_class = $is_last_item ? '-translate-x-[55%]' : '-translate-x-[25%]';
+        $dropdown_translate_class = $is_last_item ? '-translate-x-[60%]' : '-translate-x-[25%]';
       ?>
       <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
         <a href="<?php echo esc_url($item->url); ?>"
@@ -157,7 +157,10 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
             <?php endforeach; ?>
           </ul>
         <?php endif; ?>
-
+      </li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>
 
     <!-- Mobile menu (unchanged structure) -->
     <?php get_template_part('template-parts/header/navbar/mobile'); ?>
