@@ -77,6 +77,7 @@ $section_id = 'gallery-' . uniqid();
                         }
                         #<?php echo esc_attr($section_id); ?> .gallery-main-slick .slick-track {
                             margin-left: 0 !important;
+                            display: flex !important;
                         }
 
                         /* Dots like reference */
