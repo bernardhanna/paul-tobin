@@ -36,7 +36,7 @@ if (empty($heading_tag)) {
 ?>
 
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#ededed]">
-    <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
+    <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
         <div class="mx-auto w-full max-w-[1200px] px-5 xl:px-0">
             <div class="grid grid-cols-1 gap-[3rem] py-[2.5rem] lg:py-[5rem] md:grid-cols-2">
                 <!-- Left: Heading + decorative bar -->
