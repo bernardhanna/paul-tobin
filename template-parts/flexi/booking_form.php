@@ -98,9 +98,9 @@ if ($form_markup) {
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-  <div class="flex flex-col items-center pt-20 pb-20 mx-auto w-full max-w-container max-lg:px-5 max-md:pt-16 max-md:pb-16 max-sm:pt-10 max-sm:pb-10">
+  <div class="flex flex-col items-center pt-[10rem] pb-20 mx-auto w-full max-w-container max-lg:px-5 max-md:pt-[7rem] max-md:pb-16 max-sm:pt-10 max-sm:pb-10">
 
-    <div class="grid grid-cols-1 gap-20 w-full md:grid-cols-2 max-md:gap-16 max-sm:gap-16">
+    <div class="grid grid-cols-1 gap-10 w-full lg:gap-20 lg:grid-cols-2 max-md:gap-16 max-sm:gap-16">
 
       <!-- LEFT: Booking Form -->
       <div class="flex flex-col">
@@ -124,7 +124,7 @@ if ($form_markup) {
           </p>
         <?php endif; ?>
 
-        <div class="p-10 bg-[#EDEDED] max-sm:p-6">
+        <div class="p-[2rem] bg-[#EDEDED] max-sm:p-6">
           <?php if ($form_markup): ?>
             <?php
             echo wp_kses(

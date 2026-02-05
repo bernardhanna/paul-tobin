@@ -44,7 +44,7 @@ if ($primary_navigation->isNotEmpty()) {
     }
   }"
   x-init="window.addEventListener('resize', () => checkWindowSize())"
-  class="py-4 bg-white"
+  class="py-4 bg-white border-b-2 border-b-[#B6C0CB] border-solid"
   x-effect="isOpen ? document.body.style.overflow = 'hidden' : document.body.style.overflow = ''"
 >
   <nav class="flex justify-between items-center w-full mx-auto max-w-[1168px] px-5 xl:px-0">

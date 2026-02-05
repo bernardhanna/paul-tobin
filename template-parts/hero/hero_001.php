@@ -173,7 +173,7 @@ $has_content     = $has_heading || $has_description || $has_button;
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="mt-[4.5rem] relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+    class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
     <?php echo $has_heading ? 'aria-labelledby="' . esc_attr($section_id) . '-heading"' : ''; ?>
     role="banner"
 >
