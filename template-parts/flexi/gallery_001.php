@@ -94,6 +94,10 @@ $section_id = 'gallery-' . uniqid();
                             overflow: hidden; padding: 0; border: 0;
                         }
                         #<?php echo esc_attr($section_id); ?> .slick-dots .slick-active button { background: #39a9dc; }
+
+                          #<?php echo esc_attr($section_id); ?> .slick-track {
+                            display: flex !important;
+                        }
                     </style>
                 </div>
 
