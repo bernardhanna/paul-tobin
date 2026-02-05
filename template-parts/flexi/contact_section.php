@@ -126,7 +126,6 @@ $r_base_border = '#0a1119';
 // Hover/focus colors (from original accents)
 $l_hover_bg     = '#0098d8';
 $l_hover_text   = '#ffffff';
-$l_hover_border = '#0098d8';
 
 $r_hover_bg     = '#0098d8';
 $r_hover_text   = '#ffffff';
@@ -184,8 +183,6 @@ $r_hover_border = '#0098d8';
                 background-color: <?php echo esc_attr($l_hover_bg); ?> !important;
                 color: <?php echo esc_attr($l_hover_text); ?> !important;
                 border-color: <?php echo esc_attr($l_hover_border); ?> !important;
-                outline: 2px solid <?php echo esc_attr($l_hover_border); ?>;
-                outline-offset: 2px;
               }
               .<?php echo esc_attr($l_btn_class); ?>:hover svg path,
               .<?php echo esc_attr($l_btn_class); ?>:focus svg path {
@@ -250,8 +247,6 @@ $r_hover_border = '#0098d8';
                 background-color: <?php echo esc_attr($r_hover_bg); ?> !important;
                 color: <?php echo esc_attr($r_hover_text); ?> !important;
                 border-color: <?php echo esc_attr($r_hover_border); ?> !important;
-                outline: 2px solid <?php echo esc_attr($r_hover_border); ?>;
-                outline-offset: 2px;
               }
               .<?php echo esc_attr($r_btn_class); ?>:hover svg path,
               .<?php echo esc_attr($r_btn_class); ?>:focus svg path {
