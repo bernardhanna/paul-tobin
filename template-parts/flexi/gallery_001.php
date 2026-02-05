@@ -185,7 +185,7 @@ $section_id = 'gallery-' . uniqid();
                 aria-label="Gallery viewer"
                 tabindex="-1"
             >
-                <div class="relative mx-auto w-full max-w-6xl">
+                <div class="overflow-hidden relative mx-auto w-full max-w-6xl">
                     <!-- Close Button -->
                     <button
                         type="button"
