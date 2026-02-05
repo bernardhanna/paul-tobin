@@ -135,18 +135,18 @@ $next_id    = $slider_id . '-next';
                   </a>
                 </div>
 
-                <div class="flex relative flex-wrap gap-10 justify-between items-center px-8 py-4 mt-80 w-full max-md:order-1 bg-primary max-md:px-5 max-md:mt-0 max-md:max-w-full">
-                  <div class="flex gap-10 items-center self-stretch my-auto text-base font-semibold tracking-normal text-gray-50 whitespace-nowrap">
-                    <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($property_type); ?></span>
+                <div class="flex relative flex-row px-8 py-4 mt-80 w-full md:items-center md:gap-10 md:justify-between max-md:items-start max-md:order-1 bg-primary max-md:px-5 max-md:mt-0 max-md:max-w-full">
+                  <div class="flex gap-4 items-center self-stretch my-auto text-base font-semibold tracking-normal text-gray-50 whitespace-nowrap md:gap-10 max-md:w-1/2 max-md:flex-col">
+                    <span class="max-md:text-left self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($property_type); ?></span>
 
-                    <div class="flex gap-2 justify-center items-center self-stretch my-auto" aria-label="Bedrooms">
+                    <div class="flex gap-2 justify-center items-center self-stretch my-auto max-md:justify-start" aria-label="Bedrooms">
                       <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm12-3h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-1.1-.9-2-2-2z"/>
                       </svg>
                       <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($bedrooms); ?></span>
                     </div>
 
-                    <div class="flex gap-2 justify-center items-center self-stretch my-auto" aria-label="Bathrooms">
+                    <div class="flex gap-2 justify-center items-center self-stretch my-auto max-md:justify-start" aria-label="Bathrooms">
                       <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M9 2v1h6V2h2v1h1c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2V5c-1.1 0-.9 2 .9 2h1V2h2zm9 16V8H6v10h12z"/>
                       </svg>
@@ -154,12 +154,12 @@ $next_id    = $slider_id . '-next';
                     </div>
 
                     <?php if ($area): ?>
-                      <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($area); ?></span>
+                      <span class="max-md:justify-start self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($area); ?></span>
                     <?php endif; ?>
                   </div>
 
                   <!-- DISPLAY ON MOBILE THE SLIDE ARROWS HERE -->
-                  <div class="flex gap-4 ml-auto md:hidden">
+                  <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
                     <button
                       type="button"
                       class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"

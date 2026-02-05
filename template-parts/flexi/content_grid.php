@@ -145,7 +145,7 @@ if (!empty($grid_rows) && is_array($grid_rows)) {
                                 <?php endif; ?>
 
                                 <div
-                                    class="mx-auto mt-4 flex w-full max-w-[6.25rem] h-[0.625rem] justify-center items-center"
+                                    class="mx-auto mt-4 flex w-full max-w-[6.25rem] h-[8px] justify-center items-center"
                                     role="presentation"
                                     aria-hidden="true"
                                     style="background-color: <?php echo esc_attr($bar_color); ?>;"

@@ -210,7 +210,7 @@ $section_id = 'gallery-' . uniqid();
                                     <img
                                         src="<?php echo esc_url($image_url); ?>"
                                         alt="<?php echo esc_attr($image_alt); ?>"
-                                        class="max-w-full max-h-[80vh] object-contain"
+                                        class="max-w-full max-h-[80vh] object-cover w-full h-full"
                                         loading="lazy"
                                     />
                                     <?php if ($image_title) : ?>
