@@ -215,7 +215,7 @@ $section_id = 'gallery-' . uniqid();
                                         loading="lazy"
                                     />
                                     <?php if ($image_title) : ?>
-                                        <figcaption class="mt-4 text-lg text-center text-white">
+                                        <figcaption class="hidden mt-4 text-lg text-center text-white">
                                             <?php echo esc_html($image_title); ?>
                                         </figcaption>
                                     <?php endif; ?>
