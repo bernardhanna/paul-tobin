@@ -73,11 +73,11 @@ if ($primary_navigation->isNotEmpty()) {
 
             <?php if (!empty($item->children)) : ?>
               <ul
-                class="absolute left-1/2 -translate-x-1/2 mt-2 p-3 w-[243px]
-                       bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
-                       opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
-                       group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
-                       focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
+                class="absolute left-1/2 -translate-x-[35%] mt-2 p-3 w-[243px]
+bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
+opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
+group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
                 role="menu"
               >
                 <?php foreach ($item->children as $child) : ?>
@@ -132,11 +132,11 @@ if ($primary_navigation->isNotEmpty()) {
 
             <?php if (!empty($item->children)) : ?>
               <ul
-                class="absolute left-1/2 -translate-x-1/2 mt-2 p-3 w-[243px]
-                       bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
-                       opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
-                       group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
-                       focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
+                class="absolute left-1/2 -translate-x-[25%] mt-2 p-3 w-[243px]
+bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
+opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
+group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
                 role="menu"
               >
                 <?php foreach ($item->children as $child) : ?>
