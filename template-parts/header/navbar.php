@@ -109,54 +109,55 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     </a>
 
     <!-- RIGHT: Primary (second half) -->
-    <?php if (!empty($right_menu_items)) : ?>
-      <ul class="hidden gap-6 items-center leading-loose text-black max-md:gap-6 lg:flex"
-          aria-label="Primary navigation (right)">
-        <?php foreach ($right_menu_items as $index => $item) : ?>
-          <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
-            <a href="<?php echo esc_url($item->url); ?>"
-               class="flex items-center gap-1 px-4 py-2 rounded-[8px] transition-colors duration-200
-                      <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-base font-[500] leading-normal">
-              <?php echo esc_html($item->label); ?>
-              <?php if (!empty($item->children)) : ?>
-                <span class="ml-[2px]">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none" class="shrink-0">
-                    <path d="M4.25 6.875L8.5 11.125L12.75 6.875"
-                          class="transition-colors duration-200 <?php echo $item->active ? 'stroke-black' : 'stroke-[#1D2939]'; ?> group-hover:stroke-black"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </span>
-              <?php endif; ?>
-            </a>
+<?php if (!empty($right_menu_items)) : ?>
+  <ul class="hidden gap-6 items-center leading-loose text-black max-md:gap-6 lg:flex"
+      aria-label="Primary navigation (right)">
+    <?php foreach ($right_menu_items as $index => $item) : ?>
+      <?php
+        $is_last_item = ($index === (count($right_menu_items) - 1));
+        $dropdown_translate_class = $is_last_item ? '-translate-x-[55%]' : '-translate-x-[25%]';
+      ?>
+      <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
+        <a href="<?php echo esc_url($item->url); ?>"
+           class="flex items-center gap-1 px-4 py-2 rounded-[8px] transition-colors duration-200
+                  <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
+                  group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-base font-[500] leading-normal">
+          <?php echo esc_html($item->label); ?>
+          <?php if (!empty($item->children)) : ?>
+            <span class="ml-[2px]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none" class="shrink-0">
+                <path d="M4.25 6.875L8.5 11.125L12.75 6.875"
+                      class="transition-colors duration-200 <?php echo $item->active ? 'stroke-black' : 'stroke-[#1D2939]'; ?> group-hover:stroke-black"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          <?php endif; ?>
+        </a>
 
-            <?php if (!empty($item->children)) : ?>
-              <ul
-                class="absolute left-1/2 -translate-x-[25%] mt-2 p-3 w-[243px]
-bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
-opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
-group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
-focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
-                role="menu"
-              >
-                <?php foreach ($item->children as $child) : ?>
-                  <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?>" role="none">
-                    <a href="<?php echo esc_url($child->url); ?>"
-                       class="menu-item block px-4 py-2 rounded-[8px] text-sm font-[500] leading-normal transition-colors duration-200
-                              <?php echo $child->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                              hover:bg-sky-100 focus:bg-sky-100 focus:outline-none"
-                       role="menuitem"
-                    >
-                      <?php echo esc_html($child->label); ?>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            <?php endif; ?>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-    <?php endif; ?>
+        <?php if (!empty($item->children)) : ?>
+          <ul
+            class="absolute left-1/2 <?php echo esc_attr($dropdown_translate_class); ?> mt-2 p-3 w-[243px]
+                   bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
+                   opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
+                   group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
+                   focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
+            role="menu"
+          >
+            <?php foreach ($item->children as $child) : ?>
+              <li class="group <?php echo esc_attr($child->classes); ?> <?php echo $child->active ? 'current-item' : ''; ?>" role="none">
+                <a href="<?php echo esc_url($child->url); ?>"
+                   class="menu-item block px-4 py-2 rounded-[8px] text-sm font-[500] leading-normal transition-colors duration-200
+                          <?php echo $child->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
+                          hover:bg-sky-100 focus:bg-sky-100 focus:outline-none"
+                   role="menuitem"
+                >
+                  <?php echo esc_html($child->label); ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
+
 
     <!-- Mobile menu (unchanged structure) -->
     <?php get_template_part('template-parts/header/navbar/mobile'); ?>
