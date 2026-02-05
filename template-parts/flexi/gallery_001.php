@@ -97,6 +97,7 @@ $section_id = 'gallery-' . uniqid();
 
                           #<?php echo esc_attr($section_id); ?> .slick-track {
                             display: flex !important;
+                            height: 100% !important;
                         }
                     </style>
                 </div>
