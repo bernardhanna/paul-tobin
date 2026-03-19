@@ -44,7 +44,7 @@ if (empty($heading_tag)) {
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#ededed]">
     <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-xl:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
         <div class="mx-auto w-full max-w-[1200px] px-5 xl:px-0">
-            <div class="grid grid-cols-1 gap-[3rem] py-[2.5rem] lg:py-[5rem] md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 py-[2.5rem] md:grid-cols-2 md:gap-[3rem] lg:py-[5rem]">
                 <!-- Left: Heading + decorative bar -->
                 <div class="w-full">
                     <?php if (!empty($heading)) : ?>
@@ -61,7 +61,7 @@ if (empty($heading_tag)) {
                     </div>
 
                     <?php if ($has_left_description) : ?>
-                        <div class="w-full pt-5 max-lg:pt-2">
+                        <div class="w-full pt-4 md:pt-5">
                             <div class="max-w-[33.5rem] text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary wp_editor">
                                 <?php echo wp_kses_post($left_description); ?>
                             </div>
