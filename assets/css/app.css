@@ -1340,7 +1340,7 @@ body {
 }
 
 .wp_editor p {
-   @apply font-primary text-[16px] font-normal leading-[26px] tracking-[0] mb-4;
+   @apply font-primary text-[16px] font-[300] leading-[26px] tracking-[0] mb-4;
 }
 
 /* Image Styling */
