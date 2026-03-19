@@ -115,7 +115,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     <?php foreach ($right_menu_items as $index => $item) : ?>
       <?php
         $is_last_item = ($index === (count($right_menu_items) - 1));
-        $dropdown_translate_class = $is_last_item ? '-translate-x-[60%]' : '-translate-x-[25%]';
+        $dropdown_position_class = $is_last_item ? 'right-0 left-auto translate-x-0' : 'left-1/2 -translate-x-[25%]';
       ?>
       <li class="relative group <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
         <a href="<?php echo esc_url($item->url); ?>"
@@ -136,7 +136,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
 
         <?php if (!empty($item->children)) : ?>
           <ul
-            class="absolute left-1/2 <?php echo esc_attr($dropdown_translate_class); ?> mt-2 p-3 w-[243px]
+            class="absolute <?php echo esc_attr($dropdown_position_class); ?> mt-2 p-3 w-[243px]
                    bg-gray-50 rounded-none border-b-4 border-solid border-b-slate-300 shadow-lg z-50
                    opacity-0 invisible -translate-y-2 transition-all duration-200 ease-in-out
                    group-hover:opacity-100 group-hover:visible group-hover:translate-y-0
