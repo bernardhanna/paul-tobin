@@ -32,6 +32,13 @@ $content_one
             'delay' => 0,
             'default_value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
         ])
+        ->addWysiwyg('left_description', [
+            'label' => 'Left Description (Below Title)',
+            'instructions' => 'Optional editor content shown under the heading and divider in the left column.',
+            'media_upload' => 0,
+            'tabs' => 'all',
+            'delay' => 0,
+        ])
         ->addLink('button_link', [
             'label' => 'CTA Button (ACF Link)',
             'return_format' => 'array',

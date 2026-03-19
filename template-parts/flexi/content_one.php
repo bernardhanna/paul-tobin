@@ -12,6 +12,12 @@ $section_id   = 'content-one-' . wp_rand(1000, 9999);
 $heading      = get_sub_field('heading');
 $heading_tag  = get_sub_field('heading_tag'); // h1..h6, p, span
 $description  = get_sub_field('description'); // WYSIWYG
+$left_description = get_sub_field('left_description'); // Optional left-side WYSIWYG
+if (is_string($left_description) && trim(wp_strip_all_tags($left_description)) === '') {
+    // Fallback to raw value in case formatted output is empty.
+    $left_description = get_sub_field('left_description', false, false);
+}
+$has_left_description = is_string($left_description) && trim(wp_strip_all_tags($left_description)) !== '';
 $button_link  = get_sub_field('button_link'); // ACF link array
 
 // Padding controls (Repeater → arbitrary-value classes)
@@ -53,6 +59,14 @@ if (empty($heading_tag)) {
                         <span class="h-full flex-1 bg-[#b6c0cb]"></span>
                         <span class="h-full flex-1 bg-[#74af27]"></span>
                     </div>
+
+                    <?php if ($has_left_description) : ?>
+                        <div class="w-full pt-5 max-lg:pt-2">
+                            <div class="max-w-[33.5rem] text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary wp_editor">
+                                <?php echo wp_kses_post($left_description); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Right: Text + CTA -->
