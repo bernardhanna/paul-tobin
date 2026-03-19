@@ -129,7 +129,7 @@ $expert_guidance
             'xxl' => 'XXL',
             'ultrawide' => 'Ultrawide',
         ],
-        'required' => 1,
+        'required' => 0,
     ])
     ->addNumber('padding_top', [
         'label' => 'Padding Top',

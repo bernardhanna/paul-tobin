@@ -28,7 +28,7 @@ $property_grid
                 'manual' => 'Pick specific properties',
             ],
             'default_value' => 'filter',
-            'required'      => 1,
+            'required'      => 0,
         ])
         // Choose one or more statuses from taxonomy
         ->addTaxonomy('property_statuses', [
@@ -77,7 +77,7 @@ $property_grid
                     'xxl' => 'xxl',
                     'ultrawide' => 'ultrawide',
                 ],
-                'required' => 1,
+                'required' => 0,
             ])
             ->addNumber('padding_top', [
                 'label'         => 'Padding Top',

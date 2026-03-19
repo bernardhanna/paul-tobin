@@ -39,7 +39,7 @@ $counters_001
         ->addNumber('number', [
             'label' => 'Counter Number',
             'instructions' => 'Enter the target number for the counter animation.',
-            'required' => 1,
+            'required' => 0,
             'min' => 0,
             'max' => 9999,
             'default_value' => 19,
@@ -52,7 +52,7 @@ $counters_001
         ->addText('title', [
             'label' => 'Counter Title',
             'instructions' => 'Enter the title/label for this counter.',
-            'required' => 1,
+            'required' => 0,
             'default_value' => 'years of experience',
         ])
         ->addWysiwyg('description', [

@@ -19,9 +19,12 @@ function load_flexible_content_templates($post_id = null)
   if ($post_id && have_rows('flexible_content_blocks', $post_id)) {
     while (have_rows('flexible_content_blocks', $post_id)) : the_row();
       $layout = get_row_layout();
+      $row_index = max(0, ((int) get_row_index()) - 1);
+      $anchor_id = 'matrix-block-flexible_content_blocks-' . $row_index;
       $template_path = get_template_directory() . '/template-parts/flexi/' . $layout . '.php';
 
       if (file_exists($template_path)) {
+        echo '<div id="' . esc_attr($anchor_id) . '" class="matrix-block-anchor"></div>';
         get_template_part('template-parts/flexi/' . $layout);
       } else {
         error_log("Missing flexible content template file: {$layout}.php");

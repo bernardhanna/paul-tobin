@@ -114,7 +114,7 @@ $property_slider
             'xxl' => 'XXL (Extra Extra Large)',
             'ultrawide' => 'Ultrawide',
         ],
-        'required' => 1,
+        'required' => 0,
     ])
     ->addNumber('padding_top', [
         'label' => 'Padding Top',

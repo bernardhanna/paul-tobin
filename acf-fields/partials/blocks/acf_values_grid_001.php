@@ -1,26 +1,26 @@
 <?php
 /**
- * ACF Builder: Clients 001
+ * ACF Builder: Values Grid 001
  */
 
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-$values_001 = new FieldsBuilder('values_001', [
-    'label' => 'Values',
+$values_grid_001 = new FieldsBuilder('values_grid_001', [
+    'label' => 'Values Grid',
     'menu_order' => 0,
 ]);
 
-$values_001
-    ->setLocation('post_type', '==', 'page'); // adjust as needed for your Flexible Content usage
+$values_grid_001
+    ->setLocation('post_type', '==', 'page');
 
 // ----- CONTENT TAB
-$values_001
+$values_grid_001
     ->addTab('content_tab', ['label' => 'Content'])
         ->addGroup('heading_group', ['label' => 'Heading'])
             ->addText('heading_text', [
                 'label' => 'Heading Text',
                 'instructions' => 'Main heading text.',
-                'default_value' => 'We are all about our clients',
+                'default_value' => 'Why Choose Us',
             ])
             ->addSelect('heading_tag', [
                 'label' => 'Heading Tag',
@@ -33,11 +33,6 @@ $values_001
                 'default_value' => 'h2',
             ])
         ->endGroup()
-        ->addImage('image', [
-            'label' => 'Main Image',
-            'instructions' => 'Upload/select the main image.',
-            'return_format' => 'array',
-        ])
         ->addTrueFalse('show_divider', [
             'label' => 'Show Color Divider',
             'ui' => 1,
@@ -48,37 +43,53 @@ $values_001
             'instructions' => 'Intro paragraph content.',
             'media_upload' => 0,
             'delay' => 0,
-            'default_value' => 'At Paul Tobin Estate Agents, we specialise in helping non-resident landlords and those emigrating manage, sell, or let their Irish properties with ease and confidence. With over 19 years of experience, we provide a highly personalised and boutique service, ensuring every client gets the attention they deserve: quality, tailored solutions.',
+        ])
+        ->addSelect('desktop_columns', [
+            'label' => 'Desktop Columns',
+            'instructions' => 'Choose 2 or 3 columns for desktop screens.',
+            'choices' => [
+                '2' => '2 Columns',
+                '3' => '3 Columns',
+            ],
+            'default_value' => '3',
+            'ui' => 1,
         ])
         ->addRepeater('features', [
             'label' => 'Features',
             'min' => 0,
-            'max' => 2,
+            'max' => 12,
             'layout' => 'block',
             'button_label' => 'Add Feature',
         ])
             ->addText('feature_heading', [
                 'label' => 'Feature Heading',
-                'default_value' => 'Boutique practice',
+                'default_value' => 'Proactive Maintenance',
             ])
             ->addWysiwyg('feature_text', [
                 'label' => 'Feature Text',
                 'media_upload' => 0,
                 'delay' => 0,
-                'default_value' => 'We are a boutique practice, offering professional bespoke services to property owners for more than 19 years.',
+            ])
+            ->addColorPicker('bar_color', [
+                'label' => 'Bar Color',
+                'default_value' => '#0ea5e9',
             ])
         ->endRepeater();
 
 // ----- DESIGN TAB
-$values_001
+$values_grid_001
     ->addTab('design_tab', ['label' => 'Design'])
         ->addColorPicker('background_color', [
             'label' => 'Background Color',
-            'default_value' => '#F8FAFC', // bg-bg-light analogue
+            'default_value' => '#FFFFFF',
+        ])
+        ->addColorPicker('card_background_color', [
+            'label' => 'Card Background Color',
+            'default_value' => '#E0E0E0',
         ])
         ->addColorPicker('text_color', [
             'label' => 'Text Color',
-            'default_value' => '#0F172A', // text-text-dark analogue
+            'default_value' => '#0F172A',
         ])
         ->addSelect('section_border_radius', [
             'label' => 'Section Border Radius',
@@ -91,22 +102,10 @@ $values_001
                 'rounded-2xl' => 'rounded-2xl',
             ],
             'default_value' => 'rounded-none',
-        ])
-        ->addSelect('image_border_radius', [
-            'label' => 'Image Border Radius',
-            'choices' => [
-                'rounded-none' => 'rounded-none',
-                'rounded' => 'rounded',
-                'rounded-md' => 'rounded-md',
-                'rounded-lg' => 'rounded-lg',
-                'rounded-xl' => 'rounded-xl',
-                'rounded-2xl' => 'rounded-2xl',
-            ],
-            'default_value' => 'rounded-lg',
         ]);
 
 // ----- LAYOUT TAB
-$values_001
+$values_grid_001
     ->addTab('layout_tab', ['label' => 'Layout'])
         ->addRepeater('padding_settings', [
             'label' => 'Padding Settings',
@@ -145,4 +144,4 @@ $values_001
             ])
         ->endRepeater();
 
-return $values_001;
+return $values_grid_001;

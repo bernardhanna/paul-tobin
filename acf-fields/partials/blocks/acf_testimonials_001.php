@@ -43,13 +43,29 @@ $testimonials_001
         'instructions' => 'How many testimonials to display (for auto mode).',
         'default_value' => 6,
         'min' => 1,
-        'max' => 20,
         'conditional_logic' => [
             [
                 [
                     'field' => 'testimonial_source',
                     'operator' => '==',
                     'value' => 'auto',
+                ],
+            ],
+        ],
+    ])
+    ->addPostObject('selected_testimonials', [
+        'label' => 'Select Testimonials',
+        'instructions' => 'Select testimonials from the Testimonial post type when using manual mode.',
+        'post_type' => ['testimonial'],
+        'return_format' => 'id',
+        'multiple' => 1,
+        'allow_null' => 0,
+        'conditional_logic' => [
+            [
+                [
+                    'field' => 'testimonial_source',
+                    'operator' => '==',
+                    'value' => 'manual',
                 ],
             ],
         ],
@@ -73,7 +89,7 @@ $testimonials_001
         ->addText('name', [
             'label' => 'Name',
             'instructions' => 'Enter the person\'s name.',
-            'required' => 1,
+            'required' => 0,
         ])
         ->addText('title', [
             'label' => 'Title/Position',
@@ -82,7 +98,7 @@ $testimonials_001
         ->addTextarea('testimonial', [
             'label' => 'Testimonial',
             'instructions' => 'Enter the testimonial text.',
-            'required' => 1,
+            'required' => 0,
             'rows' => 4,
         ])
     ->endRepeater()

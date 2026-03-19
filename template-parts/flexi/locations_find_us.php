@@ -120,7 +120,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
                           $clean = preg_replace('/[^+\d]/', '', trim($line));
                           if (!empty(trim($line))):
                       ?>
-                        <div><a href="tel:<?php echo esc_attr($clean); ?>" class="hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"><?php echo esc_html(trim($line)); ?></a></div>
+                        <div><a href="tel:<?php echo esc_attr($clean); ?>" class="no-underline hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"><?php echo esc_html(trim($line)); ?></a></div>
                       <?php endif; endforeach; ?>
                     </div>
                   </div>
@@ -132,7 +132,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
                       <path d="M18.625 0.625H2.625C1.52043 0.625 0.625 1.52043 0.625 2.625V14.625C0.625 15.7296 1.52043 16.625 2.625 16.625H18.625C19.7296 16.625 20.625 15.7296 20.625 14.625V2.625C20.625 1.52043 19.7296 0.625 18.625 0.625Z" stroke="#0A1119" stroke-width="1.25" stroke-linecap="round"></path>
                       <path d="M20.625 3.625L11.655 9.325C11.3463 9.51843 10.9893 9.62101 10.625 9.62101C10.2607 9.62101 9.90373 9.51843 9.595 9.325L0.625 3.625" stroke="#0A1119" stroke-width="1.25" stroke-linecap="round"></path>
                     </svg>
-                    <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm tracking-normal leading-6 text-slate-950 hover:underline"><?php echo esc_html($email); ?></a>
+                    <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm tracking-normal leading-6 text-slate-950 no-underline hover:underline"><?php echo esc_html($email); ?></a>
                   </div>
                 <?php endif; ?>
               </div>

@@ -275,7 +275,24 @@ if ($form_markup) {
                           </div>
                           <div class="py-1">
                             <div class="text-sm leading-6 text-slate-950 max-sm:text-xs max-sm:leading-5 wp_editor">
-                              <?php echo wp_kses_post($phone_numbers); ?>
+                              <?php
+                              $phone_lines = preg_split('/\r\n|\r|\n/', (string) $phone_numbers);
+                              foreach ($phone_lines as $phone_line) :
+                                $phone_line = trim((string) $phone_line);
+                                if ($phone_line === '') {
+                                  continue;
+                                }
+                                $phone_href = preg_replace('/[^+\d]/', '', $phone_line);
+                              ?>
+                                <div>
+                                  <a
+                                    href="tel:<?php echo esc_attr($phone_href); ?>"
+                                    class="no-underline hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
+                                  >
+                                    <?php echo esc_html($phone_line); ?>
+                                  </a>
+                                </div>
+                              <?php endforeach; ?>
                             </div>
                           </div>
                         </div>
@@ -290,7 +307,7 @@ if ($form_markup) {
                             </svg>
                           </div>
                           <div class="py-1">
-                            <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm leading-6 text-slate-950 hover:underline max-sm:text-xs max-sm:leading-5">
+                            <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm leading-6 text-slate-950 no-underline hover:underline max-sm:text-xs max-sm:leading-5">
                               <?php echo esc_html($email); ?>
                             </a>
                           </div>
@@ -300,7 +317,7 @@ if ($form_markup) {
                       <?php if ($team_link && is_array($team_link) && isset($team_link['url'], $team_link['title'])): ?>
                         <div class="pt-2">
                           <a href="<?php echo esc_url($team_link['url']); ?>"
-                             class="text-base leading-7 text-black underline cursor-pointer hover:no-underline max-sm:text-sm max-sm:leading-6"
+                             class="text-base leading-7 text-black no-underline cursor-pointer hover:underline max-sm:text-sm max-sm:leading-6"
                              target="<?php echo esc_attr($team_link['target'] ?? '_self'); ?>">
                             <?php echo esc_html($team_link['title']); ?>
                           </a>

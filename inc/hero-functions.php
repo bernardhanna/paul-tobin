@@ -49,10 +49,13 @@ function load_hero_templates($post_id = null)
   if ($post_id && have_rows('hero_content_blocks', $post_id)) {
     while (have_rows('hero_content_blocks', $post_id)) : the_row();
       $layout = get_row_layout();
+      $row_index = max(0, ((int) get_row_index()) - 1);
+      $anchor_id = 'matrix-block-hero_content_blocks-' . $row_index;
 
       // Check for template file
       $template_path = get_template_directory() . '/template-parts/hero/' . $layout . '.php';
       if (file_exists($template_path)) {
+        echo '<div id="' . esc_attr($anchor_id) . '" class="matrix-block-anchor"></div>';
         get_template_part('template-parts/hero/' . $layout);
       } else {
         error_log("Missing hero template file: {$layout}.php");

@@ -49,8 +49,8 @@ $booking_form
         'layout' => 'block',
         'min' => 1,
     ])
-      ->addText('office_name', ['label' => 'Office Name', 'required' => 1])
-      ->addTextarea('address', ['label' => 'Address', 'rows' => 4, 'required' => 1])
+      ->addText('office_name', ['label' => 'Office Name', 'required' => 0])
+      ->addTextarea('address', ['label' => 'Address', 'rows' => 4, 'required' => 0])
       ->addTextarea('phone_numbers', ['label' => 'Phone Numbers (one per line)', 'rows' => 3])
       ->addEmail('email', ['label' => 'Email Address'])
       ->addLink('team_link', ['label' => 'Team Link', 'return_format' => 'array'])
@@ -158,7 +158,7 @@ $booking_form
       ->addSelect('screen_size', [
           'label' => 'Screen Size',
           'choices' => ['xxs'=>'xxs','xs'=>'xs','mob'=>'mob','sm'=>'sm','md'=>'md','lg'=>'lg','xl'=>'xl','xxl'=>'xxl','ultrawide'=>'ultrawide'],
-          'required' => 1,
+          'required' => 0,
       ])
       ->addNumber('padding_top', [
           'label' => 'Padding Top',

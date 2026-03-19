@@ -2,6 +2,7 @@
 $media_type             = get_sub_field('media_type') ?: 'image';
 $image                  = get_sub_field('image');
 $local_video            = get_sub_field('local_video');
+$poster_image           = get_sub_field('poster_image');
 $youtube_url            = get_sub_field('youtube_url');
 $vimeo_url              = get_sub_field('vimeo_url');
 $autoplay               = get_sub_field('autoplay');
@@ -13,6 +14,10 @@ $background_color       = get_sub_field('background_color') ?: '#EDEDED';
 $image_alt = '';
 if ($image) {
     $image_alt = get_post_meta($image, '_wp_attachment_image_alt', true) ?: 'Media content';
+}
+$poster_url = '';
+if ($poster_image) {
+    $poster_url = wp_get_attachment_image_url((int) $poster_image, 'full') ?: '';
 }
 
 // Extract YouTube ID
@@ -70,6 +75,7 @@ $section_id = 'image-video-overlay-' . uniqid();
                         class="box-border flex object-cover w-full h-[480px] max-md:h-[360px] max-sm:h-60"
                         <?php echo $autoplay ? 'autoplay muted loop playsinline' : 'controls'; ?>
                         preload="metadata"
+                        <?php echo $poster_url ? 'poster="' . esc_url($poster_url) . '"' : ''; ?>
                         aria-label="Video content"
                     >
                         <source src="<?php echo esc_url(wp_get_attachment_url($local_video)); ?>" type="video/mp4">

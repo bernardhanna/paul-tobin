@@ -12,7 +12,7 @@ $cta_001
         'label' => 'Heading Text',
         'instructions' => 'Enter the main heading text for the CTA section.',
         'default_value' => 'Why don\'t find out what we can do for you?',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addSelect('heading_tag', [
         'label' => 'Heading Tag',
@@ -28,7 +28,7 @@ $cta_001
             'span' => 'Span',
         ],
         'default_value' => 'h2',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addWysiwyg('description', [
         'label' => 'Description',
@@ -42,7 +42,7 @@ $cta_001
         'label' => 'Call to Action Button',
         'instructions' => 'Configure the CTA button link and text.',
         'return_format' => 'array',
-        'required' => 1,
+        'required' => 0,
     ])
 
     ->addTab('Design', ['label' => 'Design'])
@@ -73,7 +73,7 @@ $cta_001
             'xxl' => 'XXL',
             'ultrawide' => 'Ultrawide',
         ],
-        'required' => 1,
+        'required' => 0,
     ])
     ->addNumber('padding_top', [
         'label' => 'Padding Top',

@@ -12,7 +12,7 @@ $content_two
         'label' => 'Heading Text',
         'instructions' => 'Enter the main heading for this section.',
         'default_value' => 'We are all about our clients',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addSelect('heading_tag', [
         'label' => 'Heading Tag',
@@ -28,7 +28,7 @@ $content_two
             'span' => 'Span',
         ],
         'default_value' => 'h2',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addWysiwyg('content', [
         'label' => 'Content Text',
@@ -37,7 +37,7 @@ $content_two
         'media_upload' => 0,
         'tabs' => 'all',
         'toolbar' => 'full',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addImage('image', [
         'label' => 'Section Image',
@@ -45,7 +45,7 @@ $content_two
         'return_format' => 'id',
         'preview_size' => 'medium',
         'library' => 'all',
-        'required' => 1,
+        'required' => 0,
     ])
     ->addTrueFalse('show_decorative_bars', [
         'label' => 'Show Decorative Color Bars',
@@ -84,7 +84,7 @@ $content_two
             'xxl' => 'XXL (Extra Extra Large)',
             'ultrawide' => 'Ultrawide',
         ],
-        'required' => 1,
+        'required' => 0,
     ])
     ->addNumber('padding_top', [
         'label' => 'Padding Top',

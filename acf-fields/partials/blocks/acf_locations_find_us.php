@@ -27,12 +27,12 @@ $locations_find_us
         ])
             ->addText('office_name', [
                 'label' => 'Office Name',
-                'required' => 1,
+                'required' => 0,
             ])
             ->addTextarea('address', [
                 'label' => 'Address',
                 'rows' => 4,
-                'required' => 1,
+                'required' => 0,
             ])
             ->addTextarea('phone_numbers', [
                 'label' => 'Phone Numbers (one per line)',
@@ -100,7 +100,7 @@ $locations_find_us
                   'label' => 'Map Tile API Key (Jawg)',
                   'instructions' => 'Paste your Jawg Maps access token.',
                   'default_value' => 'zxWPtYn9xCoXLAzkN6ckqMOHRw7Xf0zsTWBN0EmR7BSjUMW2F0hsBScanw15iLpX',
-                  'required' => 1,
+                  'required' => 0,
               ])
             // iframe embed option
             ->addTextarea('map_iframe_html', [
@@ -131,7 +131,7 @@ $locations_find_us
                 'choices' => [
                     'xxs'=>'xxs','xs'=>'xs','mob'=>'mob','sm'=>'sm','md'=>'md','lg'=>'lg','xl'=>'xl','xxl'=>'xxl','ultrawide'=>'ultrawide',
                 ],
-                'required' => 1,
+                'required' => 0,
             ])
             ->addNumber('padding_top', [
                 'label' => 'Padding Top',

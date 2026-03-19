@@ -27,7 +27,7 @@ $content_grid
                 'span'=> 'Span',
             ],
             'default_value' => 'h2',
-            'required'      => 1,
+            'required'      => 0,
         ])
         ->addWysiwyg('content', [
             'label'         => 'Section Description',
@@ -79,7 +79,7 @@ $content_grid
                         '#0A1119' => 'Black (#0A1119)',
                     ],
                     'default_value' => '#0098D8',
-                    'required'      => 1,
+                    'required'      => 0,
                 ])
             ->endRepeater()
         ->endRepeater()

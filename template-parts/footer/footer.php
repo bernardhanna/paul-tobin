@@ -149,9 +149,13 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
                   if (!$logo_id) continue;
                   $pl_url    = matrix_link_url($logo_link);
                   $pl_target = matrix_link_target($logo_link);
-                  echo '<div class="flex flex-col items-center w-20 max-sm:w-[60px]">';
+                  echo '<div class="flex flex-col items-center w-20">';
                   if ($pl_url) echo '<a href="' . esc_url($pl_url) . '" target="' . esc_attr($pl_target) . '" rel="noopener">';
-                  echo matrix_render_image($logo_id, 'thumbnail', 'Partner logo', ['class' => 'object-contain']);
+                  echo matrix_render_image($logo_id, 'thumbnail', 'Partner logo', [
+                      'class'  => 'w-20 h-10 object-contain',
+                      'width'  => 80,
+                      'height' => 40,
+                  ]);
                   if ($pl_url) echo '</a>';
                   echo '</div>';
               }

@@ -18,7 +18,7 @@ $image_video_overlay
                 'vimeo'       => 'Vimeo Video',
             ],
             'default_value' => 'image',
-            'required'      => 1,
+            'required'      => 0,
         ])
         ->addImage('image', [
             'label'             => 'Image',
@@ -43,6 +43,13 @@ $image_video_overlay
             'label'             => 'Vimeo URL',
             'instructions'      => 'Full Vimeo URL (e.g., https://vimeo.com/VIDEO_ID).',
             'conditional_logic' => [[['field' => 'media_type','operator' => '==','value' => 'vimeo']]],
+        ])
+        ->addImage('poster_image', [
+            'label'             => 'Video Poster Image',
+            'instructions'      => 'Optional poster image shown before local video playback starts.',
+            'return_format'     => 'id',
+            'preview_size'      => 'medium',
+            'conditional_logic' => [[['field' => 'media_type','operator' => '==','value' => 'local_video']]],
         ])
         ->addTrueFalse('autoplay', [
             'label'             => 'Autoplay Video',

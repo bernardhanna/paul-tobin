@@ -88,20 +88,51 @@ if ($background_type === 'image' && $background_image) {
 // Video backgrounds (md+ as absolute layer, ≤md inline container)
 if ($background_type === 'video') {
     if ($background_video_type === 'local' && $background_video_file) {
-        $video_url  = wp_get_attachment_url($background_video_file);
+        $video_id = 0;
+        $video_url = '';
+        if (is_array($background_video_file)) {
+            if (!empty($background_video_file['ID'])) {
+                $video_id = (int) $background_video_file['ID'];
+            }
+            if (!empty($background_video_file['url']) && is_string($background_video_file['url'])) {
+                $video_url = $background_video_file['url'];
+            }
+        } elseif (is_numeric($background_video_file)) {
+            $video_id = (int) $background_video_file;
+        } elseif (is_string($background_video_file) && preg_match('#^https?://#', $background_video_file)) {
+            $video_url = $background_video_file;
+        }
+        if ($video_url === '' && $video_id > 0) {
+            $video_url = (string) wp_get_attachment_url($video_id);
+        }
+        $video_mime = 'video/mp4';
+        if ($video_id > 0) {
+            $mime = get_post_mime_type($video_id);
+            if (is_string($mime) && strpos($mime, 'video/') === 0) {
+                $video_mime = $mime;
+            }
+        } elseif (is_string($video_url) && $video_url !== '') {
+            $check = wp_check_filetype($video_url);
+            if (!empty($check['type']) && is_string($check['type']) && strpos($check['type'], 'video/') === 0) {
+                $video_mime = $check['type'];
+            }
+        }
         $poster_url = $video_poster ? wp_get_attachment_image_url($video_poster, 'full') : '';
-        $video_background = "
-            <div class='hidden absolute inset-0 md:block' aria-hidden='true'>
-                <video autoplay muted loop playsinline class='object-cover absolute inset-0 w-full h-full' " . ($poster_url ? "poster='" . esc_url($poster_url) . "'" : "") . ">
-                    <source src='" . esc_url($video_url) . "' type='video/mp4'>
-                </video>
-            </div>";
-        $image_mobile = '
-            <div class="relative z-20 w-full md:hidden">
-                <video autoplay muted loop playsinline class="object-cover w-full h-full min-h-[18.75rem]" ' . ($poster_url ? 'poster="' . esc_url($poster_url) . '"' : '') . '>
-                    <source src="' . esc_url($video_url) . '" type="video/mp4">
-                </video>
-            </div>';
+        $poster_attr = $poster_url ? " poster='" . esc_url($poster_url) . "'" : '';
+        if ($video_url !== '') {
+            $video_background = "
+                <div class='hidden absolute inset-0 md:block' aria-hidden='true'>
+                    <video autoplay muted loop playsinline webkit-playsinline preload='auto' class='object-cover absolute inset-0 w-full h-full matrix-hero-bg-video'" . $poster_attr . ">
+                        <source src='" . esc_url($video_url) . "' type='" . esc_attr($video_mime) . "'>
+                    </video>
+                </div>";
+            $image_mobile = '
+                <div class="relative z-20 w-full md:hidden">
+                    <video autoplay muted loop playsinline webkit-playsinline preload="auto" class="object-cover w-full h-full min-h-[18.75rem] matrix-hero-bg-video" ' . ($poster_url ? 'poster="' . esc_url($poster_url) . '"' : '') . '>
+                        <source src="' . esc_url($video_url) . '" type="' . esc_attr($video_mime) . '">
+                    </video>
+                </div>';
+        }
     } elseif ($background_video_type === 'youtube' && $background_video_youtube) {
         preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $background_video_youtube, $m);
         $youtube_id = $m[1] ?? '';
@@ -200,7 +231,7 @@ $has_content     = $has_heading || $has_description || $has_button;
                 <?php if ($has_heading): ?>
                     <<?php echo esc_attr($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
-                        class="text-[#0A1119] font-secondary text-[40px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
+                        class="text-[#0A1119] font-secondary text-[38px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo esc_attr($heading_tag); ?>>
@@ -235,3 +266,43 @@ $has_content     = $has_heading || $has_description || $has_button;
     </div>
     <?php endif; // $has_content ?>
 </section>
+<script>
+(function () {
+    var root = document.getElementById('<?php echo esc_js($section_id); ?>');
+    if (!root) return;
+
+    var attemptPlay = function (video) {
+        if (!video) return;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.loop = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('autoplay', '');
+        video.setAttribute('loop', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+
+        var promise = video.play();
+        if (promise && typeof promise.catch === 'function') {
+            promise.catch(function () {});
+        }
+    };
+
+    var videos = root.querySelectorAll('.matrix-hero-bg-video');
+    videos.forEach(function (video) {
+        if (!video || video.dataset.matrixHeroInit === '1') return;
+        video.dataset.matrixHeroInit = '1';
+        attemptPlay(video);
+        video.addEventListener('loadeddata', function () { attemptPlay(video); }, { once: true });
+        video.addEventListener('canplay', function () { attemptPlay(video); }, { once: true });
+    });
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState !== 'visible') return;
+        videos.forEach(function (video) { attemptPlay(video); });
+    });
+    window.addEventListener('pageshow', function () {
+        videos.forEach(function (video) { attemptPlay(video); });
+    });
+})();
+</script>

@@ -12,7 +12,7 @@ $recently_sold
         'label'         => 'Section Heading',
         'instructions'  => 'Main heading for this section.',
         'default_value' => '',
-        'required'      => 1,
+        'required'      => 0,
     ])
     ->addSelect('heading_tag', [
         'label'         => 'Heading Tag',
@@ -28,7 +28,7 @@ $recently_sold
             'span'=> 'Span',
         ],
         'default_value' => 'h2',
-        'required'      => 1,
+        'required'      => 0,
     ])
     ->addRelationship('selected_properties', [
         'label'         => 'Manually Select Properties',
@@ -48,7 +48,7 @@ $recently_sold
             'property_type'   => 'Property Type',
         ],
         'default_value'=> 'property_status',
-        'required'     => 1,
+        'required'     => 0,
     ])
     ->addTaxonomy('property_status_terms', [
         'label'        => 'Property Status Terms',
@@ -135,7 +135,7 @@ $recently_sold
                 'xxl' => 'xxl',
                 'ultrawide' => 'ultrawide',
             ],
-            'required' => 1,
+            'required' => 0,
         ])
         ->addNumber('padding_top', [
             'label'         => 'Padding Top',
