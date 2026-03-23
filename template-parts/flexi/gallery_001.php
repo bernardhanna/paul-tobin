@@ -355,6 +355,8 @@ $section_id = 'gallery-' . uniqid();
                             autoplay: true,
                             autoplaySpeed: 3000,
                             pauseOnHover: true,
+                            pauseOnFocus: false,
+                            pauseOnDotsHover: false,
                             speed: 400,
                             slidesToShow: 2,
                             slidesToScroll: 1,
@@ -364,6 +366,7 @@ $section_id = 'gallery-' . uniqid();
                             ],
                             accessibility: true
                         });
+                        $main.slick('slickPlay');
                     }
                 }
 
@@ -381,6 +384,10 @@ $section_id = 'gallery-' . uniqid();
                             dots: false,
                             arrows: false,
                             infinite: true,
+                            autoplay: true,
+                            autoplaySpeed: 3000,
+                            pauseOnHover: true,
+                            pauseOnFocus: false,
                             speed: 300,
                             slidesToShow: 1,
                             adaptiveHeight: true,
@@ -391,6 +398,7 @@ $section_id = 'gallery-' . uniqid();
                             updateCounter();
                         });
                         $carousel.data('slick-initialized', true);
+                        $carousel.slick('slickPlay');
                     }
                     return true;
                 }
@@ -405,6 +413,7 @@ $section_id = 'gallery-' . uniqid();
                     if (ensureSlickInitModal()) {
                         jQuery(carousel).slick('slickGoTo', slideIndex, true);
                         jQuery(carousel).slick('setPosition');
+                        jQuery(carousel).slick('slickPlay');
                     } else {
                         showSlide(slideIndex);
                     }

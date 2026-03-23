@@ -122,6 +122,22 @@ $fields
         'ui' => 1,
         'default_value' => 0,
     ])
+    ->addNumber('daft_sync_batch_size', [
+        'label' => 'Sync Batch Size',
+        'instructions' => 'Number of listings processed per run (helps avoid staging timeouts).',
+        'default_value' => 10,
+        'min' => 1,
+        'max' => 200,
+        'step' => 1,
+    ])
+    ->addNumber('daft_sync_time_budget_seconds', [
+        'label' => 'Sync Time Budget (seconds)',
+        'instructions' => 'Importer stops this run when time budget is reached and continues next run.',
+        'default_value' => 20,
+        'min' => 5,
+        'max' => 120,
+        'step' => 1,
+    ])
     ->addAccordion('daft_settings_end')
     ->endpoint();
 

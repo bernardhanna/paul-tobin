@@ -25,6 +25,8 @@ $read_less_label = get_sub_field('read_less_label');
 
 $read_more_label = !empty($read_more_label) ? $read_more_label : 'Read more';
 $read_less_label = !empty($read_less_label) ? $read_less_label : 'Read less';
+$sector_label = is_singular('property') ? 'Property Type' : __('Sector', 'your-textdomain');
+$is_property_page = is_singular('property');
 
 // -------------------------
 // Build padding classes from the repeater
@@ -54,8 +56,16 @@ $section_id = 'section-' . wp_generate_uuid4();
 $content_id = $section_id . '-right-content';
 $button_id  = $section_id . '-readmore-btn';
 
-// Benchmark text (the exact sample you provided) — used for WORD COUNT cutoff
-$benchmark_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+// Property pages can comfortably show more text before collapsing.
+$benchmark_text = is_singular('property')
+    ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit .
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit ."
+    : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut aliquip adipiscing elit .";
 ?>
@@ -74,7 +84,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                             <div class="grid grid-cols-[auto,1fr] gap-x-6 gap-y-4">
                                 <?php if ($sector !== ''): ?>
                                     <div class="text-left text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] text-[#0a1119] font-secondary">
-                                        <?php echo esc_html__('Sector', 'your-textdomain'); ?>
+                                        <?php echo esc_html($sector_label); ?>
                                     </div>
                                     <div class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#0a1119] font-primary">
                                         <?php echo esc_html($sector); ?>
@@ -137,11 +147,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                 </div>
 
                 <!-- Right text + Read more after benchmark WORD COUNT -->
-                <div class="w-full md:w-1/2 lg:w-3/5">
+                <div class="w-full md:w-1/2 lg:w-3/5 entry-content">
                     <div
                         id="<?php echo esc_attr($content_id); ?>"
                         class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-primary wp_editor"
-                        data-expanded="true"
+                        data-expanded="false"
                     >
                         <?php
                         if (!empty($right_text)) {
@@ -170,6 +180,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   var buttonId   = <?php echo json_encode($button_id); ?>;
   var readMore   = <?php echo json_encode($read_more_label); ?>;
   var readLess   = <?php echo json_encode($read_less_label); ?>;
+  var paragraphAware = <?php echo $is_property_page ? 'true' : 'false'; ?>;
 
   // Benchmark text (definitive cutoff) — we cut after the same WORD COUNT as this text.
   var benchmarkText = <?php echo json_encode($benchmark_text); ?>;
@@ -188,6 +199,68 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   }
 
   var cutoffWords = wordCount(benchmarkText);
+
+  function splitAfterChildBoundaries(root, nWords) {
+    if (root.querySelector('[data-readmore-remainder="1"]')) return true;
+
+    var children = Array.prototype.slice.call(root.childNodes).filter(function(node) {
+      return (node.textContent || '').match(/\S/);
+    });
+
+    if (children.length < 2) return false;
+
+    // On property pages, keep heading + first 2 paragraphs visible.
+    if (paragraphAware) {
+      var paragraphCount = 0;
+      var splitAfterIndexByParagraph = -1;
+      for (var c = 0; c < children.length; c++) {
+        var tag = ((children[c].nodeName || '').toLowerCase());
+        if (tag === 'p') {
+          paragraphCount++;
+        }
+        if (paragraphCount >= 2) {
+          splitAfterIndexByParagraph = c;
+          break;
+        }
+      }
+
+      if (splitAfterIndexByParagraph >= 0 && splitAfterIndexByParagraph < children.length - 1) {
+        var remainderSpanByParagraph = document.createElement('span');
+        remainderSpanByParagraph.setAttribute('data-readmore-remainder', '1');
+        remainderSpanByParagraph.hidden = true;
+
+        for (var k = splitAfterIndexByParagraph + 1; k < children.length; k++) {
+          remainderSpanByParagraph.appendChild(children[k]);
+        }
+
+        root.appendChild(remainderSpanByParagraph);
+        return true;
+      }
+    }
+
+    var seen = 0;
+    var splitAfterIndex = -1;
+    for (var i = 0; i < children.length; i++) {
+      seen += wordCount(children[i].textContent || '');
+      if (seen >= nWords) {
+        splitAfterIndex = i;
+        break;
+      }
+    }
+
+    if (splitAfterIndex < 0 || splitAfterIndex >= children.length - 1) return false;
+
+    var remainderSpan = document.createElement('span');
+    remainderSpan.setAttribute('data-readmore-remainder', '1');
+    remainderSpan.hidden = true;
+
+    for (var j = splitAfterIndex + 1; j < children.length; j++) {
+      remainderSpan.appendChild(children[j]);
+    }
+
+    root.appendChild(remainderSpan);
+    return true;
+  }
 
   function getTextNodes(root) {
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -271,7 +344,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
   }
 
   // Init: split and decide
-  var needsToggle = splitAfterWords(container, cutoffWords);
+  var needsToggle = paragraphAware
+    ? splitAfterChildBoundaries(container, cutoffWords)
+    : splitAfterWords(container, cutoffWords);
 
   if (needsToggle) {
     btn.hidden = false;

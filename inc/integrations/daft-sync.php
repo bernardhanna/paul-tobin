@@ -204,6 +204,10 @@ function matrix_daft_render_admin_page(): void {
                                     $item_daft_id = (string) ($item['daft_id'] ?? '');
                                     $status_map = [
                                         'media_sync' => 'Media',
+                                        'media_enrich' => 'Media Enrich',
+                                        'media_image_count' => 'Media Image Count',
+                                        'media_call_shape' => 'Media Call Shape',
+                                        'media_ad_type' => 'Media Ad Type',
                                         'content_one_sync' => 'Content One',
                                         'gallery_sync' => 'Gallery',
                                         'content_one_followup_sync' => 'Content One Follow-up',
@@ -232,7 +236,7 @@ function matrix_daft_render_admin_page(): void {
                                         echo esc_html($item_title);
                                     }
                                     if ($item_daft_id !== '') {
-                                        echo ' <span style="color:#646970;">(' . esc_html('Daft ID ' . $item_daft_id . ')</span>');
+                                        echo ' <span style="color:#646970;">(' . esc_html('Daft ID ' . $item_daft_id) . ')</span>';
                                     }
                                     if (!empty($badges)) {
                                         echo '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">' . wp_kses(
@@ -244,6 +248,15 @@ function matrix_daft_render_admin_page(): void {
                                             ]
                                         ) . '</div>';
                                     }
+                                    if (!empty($item['media_error'])) {
+                                        $media_error = (string) $item['media_error'];
+                                        if (function_exists('mb_substr')) {
+                                            $media_error = mb_substr($media_error, 0, 400);
+                                        } else {
+                                            $media_error = substr($media_error, 0, 400);
+                                        }
+                                        echo '<details style="margin-top:6px;"><summary style="cursor:pointer;">Media debug</summary><pre style="margin-top:6px;padding:8px;background:#f6f7f7;border:1px solid #dcdcde;white-space:pre-wrap;">' . esc_html($media_error) . '</pre></details>';
+                                    }
                                     ?>
                                 </li>
                             <?php endforeach; ?>
@@ -251,6 +264,12 @@ function matrix_daft_render_admin_page(): void {
                     <?php endif; ?>
                     <?php if (!empty($report['error'])) : ?>
                         <p><strong>Error:</strong> <?php echo esc_html($report['error']); ?></p>
+                        <?php if (!empty($report['debug']) && is_array($report['debug'])) : ?>
+                            <details style="margin-top:8px;">
+                                <summary style="cursor:pointer;">Technical Error Details</summary>
+                                <pre style="margin-top:8px;padding:10px;background:#f6f7f7;border:1px solid #dcdcde;white-space:pre-wrap;word-break:break-word;"><?php echo esc_html(wp_json_encode($report['debug'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
+                            </details>
+                        <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -395,6 +414,8 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
     $soap_query_json = trim((string) matrix_daft_get_option('daft_soap_query_json', ''));
     $mock_payload_json = trim((string) matrix_daft_get_option('daft_mock_payload_json', ''));
     $mock_gallery_placeholders = (bool) matrix_daft_get_option('daft_mock_gallery_placeholders', true);
+    $batch_size = (int) matrix_daft_get_option('daft_sync_batch_size', 10);
+    $time_budget_seconds = (int) matrix_daft_get_option('daft_sync_time_budget_seconds', 20);
     $header_name = trim((string) matrix_daft_get_option('daft_api_key_header', 'x-api-key'));
     $header_prefix = trim((string) matrix_daft_get_option('daft_api_key_prefix', ''));
     $default_status = trim((string) matrix_daft_get_option('daft_status_default', 'For Sale'));
@@ -425,7 +446,7 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
 
         $soap_result = matrix_daft_request_soap($soap_wsdl_url, $soap_operation, $api_key, $soap_query_json);
         if (!$soap_result['success']) {
-            matrix_daft_store_report($trigger, 0, 0, 0, $soap_result['message']);
+            matrix_daft_store_report($trigger, 0, 0, 0, $soap_result['message'], [], (array) ($soap_result['debug'] ?? []));
             return ['success' => false, 'message' => $soap_result['message']];
         }
 
@@ -473,8 +494,24 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
     $items = matrix_daft_extract_listing_items($payload);
     if (empty($items)) {
         $message = 'No listing items were found in the Daft response.';
+        update_option('matrix_daft_sync_cursor', 0, false);
         matrix_daft_store_report($trigger, 0, 0, 0, $message);
         return ['success' => false, 'message' => $message];
+    }
+
+    $total_items = count($items);
+    $batch_size = $batch_size > 0 ? $batch_size : $total_items;
+    $time_budget_seconds = $time_budget_seconds >= 5 ? $time_budget_seconds : 20;
+    $cursor = (int) get_option('matrix_daft_sync_cursor', 0);
+    if ($cursor < 0 || $cursor >= $total_items) {
+        $cursor = 0;
+    }
+
+    $items_to_process = $items;
+    $cursor_start = 0;
+    if ($total_items > $batch_size) {
+        $items_to_process = array_slice($items, $cursor, $batch_size);
+        $cursor_start = $cursor;
     }
 
     $imported = 0;
@@ -482,14 +519,28 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
     $skipped = 0;
     $source_label = $request_mode === 'mock' ? 'daft_mock' : 'daft';
     $synced_items = [];
+    $processed_count = 0;
+    $started_at = microtime(true);
+    $hit_time_budget = false;
 
-    foreach ($items as $raw_item) {
+    foreach ($items_to_process as $raw_item) {
+        if ((microtime(true) - $started_at) >= $time_budget_seconds) {
+            $hit_time_budget = true;
+            break;
+        }
+        $processed_count++;
         if (!is_array($raw_item)) {
             $skipped++;
             continue;
         }
 
         $listing = matrix_daft_normalize_listing($raw_item);
+        if ($request_mode === 'soap' && empty($listing['ad_type'])) {
+            $listing['ad_type'] = matrix_daft_map_soap_operation_to_ad_type($soap_operation);
+        }
+        if ($request_mode === 'soap') {
+            $listing = matrix_daft_enrich_listing_media_from_soap($listing, $soap_wsdl_url, $api_key);
+        }
         if ($listing['daft_id'] === '' && $listing['title'] === '' && $listing['address'] === '') {
             $skipped++;
             continue;
@@ -565,8 +616,8 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
             ? ['status' => 'skipped-disabled-by-property-setting']
             : matrix_daft_sync_cta_block($post_id);
 
-        if (!empty($listing['image_url']) && empty($controls['disable_image_sync'])) {
-            matrix_daft_sync_featured_image($post_id, $listing['image_url'], $update_images);
+        if (!empty($listing['image_urls']) && is_array($listing['image_urls']) && empty($controls['disable_image_sync'])) {
+            matrix_daft_sync_featured_image($post_id, $listing['image_urls'], $update_images);
         }
 
         if (count($synced_items) < 12) {
@@ -582,8 +633,23 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
                 'gallery_carousel_sync' => (string) ($gallery_carousel_sync['status'] ?? ''),
                 'media_secondary_sync' => (string) ($media_secondary_sync['status'] ?? ''),
                 'cta_sync' => (string) ($cta_sync['status'] ?? ''),
+                'media_enrich' => (string) (($listing['_media_debug']['media_enrich'] ?? '')),
+                'media_image_count' => (string) (($listing['_media_debug']['media_image_count'] ?? '')),
+                'media_call_shape' => (string) (($listing['_media_debug']['media_call_shape'] ?? '')),
+                'media_ad_type' => (string) (($listing['_media_debug']['media_ad_type'] ?? '')),
+                'media_error' => (string) (($listing['_media_debug']['media_error'] ?? '')),
             ];
         }
+    }
+
+    if ($total_items > $batch_size) {
+        $next_cursor = $cursor_start + $processed_count;
+        if ($next_cursor >= $total_items) {
+            $next_cursor = 0;
+        }
+        update_option('matrix_daft_sync_cursor', $next_cursor, false);
+    } else {
+        update_option('matrix_daft_sync_cursor', 0, false);
     }
 
     $message = sprintf(
@@ -592,6 +658,20 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
         $updated,
         $skipped
     );
+    if ($total_items > $batch_size || $hit_time_budget) {
+        $window_start = $cursor_start + 1;
+        $window_end = $cursor_start + max(0, $processed_count);
+        $message .= sprintf(
+            ' Processed %d/%d listings this run (window %d-%d). Run sync again to continue.',
+            $processed_count,
+            $total_items,
+            $window_start,
+            max($window_start, $window_end)
+        );
+        if ($hit_time_budget) {
+            $message .= sprintf(' Stopped at %ds time budget.', $time_budget_seconds);
+        }
+    }
 
     matrix_daft_store_report($trigger, $imported, $updated, $skipped, '', $synced_items);
     return ['success' => true, 'message' => $message];
@@ -773,6 +853,7 @@ function matrix_daft_normalize_listing(array $item): array {
 
     return [
         'daft_id' => (string) matrix_daft_pick($item, ['id', 'listingId', 'listing_id', 'adId', 'ad_id', 'daftId'], ''),
+        'ad_type' => (string) matrix_daft_pick($item, ['ad_type', 'adType', 'type'], ''),
         'title' => $title,
         'address' => (string) $address,
         'description' => $description,
@@ -789,6 +870,19 @@ function matrix_daft_normalize_listing(array $item): array {
         'video_url' => $video_url,
         'video_urls' => $video_urls,
     ];
+}
+
+function matrix_daft_map_soap_operation_to_ad_type(string $operation): string {
+    $map = [
+        'search_sale' => 'sale',
+        'search_rental' => 'rental',
+        'search_commercial' => 'commercial',
+        'search_new_development' => 'new_development',
+        'search_shortterm' => 'shortterm',
+        'search_sharing' => 'sharing',
+        'search_parking' => 'parking',
+    ];
+    return (string) ($map[$operation] ?? '');
 }
 
 function matrix_daft_pick(array $source, array $paths, $default = '') {
@@ -822,25 +916,27 @@ function matrix_daft_get_by_path(array $source, string $path) {
 function matrix_daft_extract_image_urls(array $item): array {
     $urls = [];
     $candidates = matrix_daft_pick($item, ['images', 'photos', 'media.images', 'media.photos', 'photoUrls'], []);
-    $single = matrix_daft_pick($item, ['small_thumbnail_url', 'large_thumbnail_url'], '');
-    if (is_string($single) && filter_var($single, FILTER_VALIDATE_URL)) {
-        $urls[] = $single;
-    }
-    if (!is_array($candidates)) {
-        return array_values(array_unique($urls));
-    }
 
-    foreach ($candidates as $candidate) {
-        if (is_string($candidate) && filter_var($candidate, FILTER_VALIDATE_URL)) {
-            $urls[] = $candidate;
-            continue;
+    foreach (['large_thumbnail_url', 'small_thumbnail_url', 'thumbnail_url', 'image_url'] as $thumb_key) {
+        $thumb_value = matrix_daft_pick($item, [$thumb_key], '');
+        if (is_string($thumb_value) && filter_var($thumb_value, FILTER_VALIDATE_URL)) {
+            $urls[] = $thumb_value;
         }
+    }
 
-        if (is_array($candidate)) {
-            foreach (['url', 'src', 'large', 'small', 'thumbnail'] as $key) {
-                if (!empty($candidate[$key]) && is_string($candidate[$key]) && filter_var($candidate[$key], FILTER_VALIDATE_URL)) {
-                    $urls[] = $candidate[$key];
-                    break;
+    if (is_array($candidates)) {
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) && filter_var($candidate, FILTER_VALIDATE_URL)) {
+                $urls[] = $candidate;
+                continue;
+            }
+
+            if (is_array($candidate)) {
+                foreach (['url', 'src', 'large', 'small', 'thumbnail', 'image_url'] as $key) {
+                    if (!empty($candidate[$key]) && is_string($candidate[$key]) && filter_var($candidate[$key], FILTER_VALIDATE_URL)) {
+                        $urls[] = $candidate[$key];
+                        break;
+                    }
                 }
             }
         }
@@ -861,7 +957,43 @@ function matrix_daft_extract_image_urls(array $item): array {
         matrix_daft_collect_urls($branch, $urls);
     }
 
-    return array_values(array_unique($urls));
+    $urls = array_values(array_unique(array_filter($urls)));
+    usort($urls, static function ($a, $b): int {
+        return matrix_daft_score_image_url((string) $b) <=> matrix_daft_score_image_url((string) $a);
+    });
+
+    return $urls;
+}
+
+function matrix_daft_score_image_url(string $url): int {
+    $score = 0;
+    $url_lc = strtolower($url);
+
+    if (str_contains($url_lc, 'large') || str_contains($url_lc, 'xl') || str_contains($url_lc, 'full')) {
+        $score += 30;
+    }
+    if (str_contains($url_lc, 'small') || str_contains($url_lc, 'thumb') || str_contains($url_lc, 'thumbnail')) {
+        $score -= 25;
+    }
+
+    $parts = wp_parse_url($url);
+    if (is_array($parts) && !empty($parts['query'])) {
+        parse_str((string) $parts['query'], $q);
+        foreach (['w', 'width'] as $k) {
+            if (!empty($q[$k]) && is_numeric($q[$k])) {
+                $score += (int) min(40, floor(((int) $q[$k]) / 100));
+                break;
+            }
+        }
+        foreach (['h', 'height'] as $k) {
+            if (!empty($q[$k]) && is_numeric($q[$k])) {
+                $score += (int) min(20, floor(((int) $q[$k]) / 100));
+                break;
+            }
+        }
+    }
+
+    return $score;
 }
 
 function matrix_daft_extract_video_urls(array $item): array {
@@ -889,6 +1021,239 @@ function matrix_daft_extract_video_urls(array $item): array {
 
     matrix_daft_collect_video_urls($item, $urls);
     return array_values(array_unique(array_filter($urls)));
+}
+
+function matrix_daft_enrich_listing_media_from_soap(array $listing, string $wsdl_url, string $api_key): array {
+    $daft_id = (string) ($listing['daft_id'] ?? '');
+    $ad_type = trim((string) ($listing['ad_type'] ?? ''));
+    if ($daft_id === '' || !is_numeric($daft_id) || $ad_type === '') {
+        return $listing;
+    }
+
+    $media = matrix_daft_request_soap_media($wsdl_url, $api_key, (int) $daft_id, $ad_type);
+    if (!empty($media['debug']) && is_array($media['debug'])) {
+        $listing['_media_debug'] = $media['debug'];
+    }
+    if (empty($media['image_urls']) && empty($media['video_urls'])) {
+        return $listing;
+    }
+
+    $current_images = is_array($listing['image_urls'] ?? null) ? $listing['image_urls'] : [];
+    $current_videos = is_array($listing['video_urls'] ?? null) ? $listing['video_urls'] : [];
+
+    $merged_images = array_values(array_unique(array_filter(array_merge($media['image_urls'], $current_images))));
+    $merged_videos = array_values(array_unique(array_filter(array_merge($media['video_urls'], $current_videos))));
+
+    usort($merged_images, static function ($a, $b): int {
+        return matrix_daft_score_image_url((string) $b) <=> matrix_daft_score_image_url((string) $a);
+    });
+
+    $listing['image_urls'] = $merged_images;
+    if (!empty($merged_images)) {
+        $listing['image_url'] = (string) $merged_images[0];
+    }
+    $listing['video_urls'] = $merged_videos;
+    if (!empty($merged_videos)) {
+        $listing['video_url'] = (string) $merged_videos[0];
+    }
+
+    return $listing;
+}
+
+function matrix_daft_request_soap_media(string $wsdl_url, string $api_key, int $ad_id, string $ad_type): array {
+    if ($ad_id <= 0 || $ad_type === '' || !class_exists('SoapClient')) {
+        return ['image_urls' => [], 'video_urls' => [], 'debug' => ['media_enrich' => 'skipped-invalid-ad-id-or-type']];
+    }
+
+    try {
+        $client = new SoapClient($wsdl_url, [
+            'features' => SOAP_SINGLE_ELEMENT_ARRAYS,
+            'cache_wsdl' => WSDL_CACHE_NONE,
+            'connection_timeout' => 20,
+            'trace' => false,
+        ]);
+        $attempts = [
+            [
+                'name' => 'object-int-adid',
+                'args' => [(object) [
+                    'api_key' => $api_key,
+                    'ad_type' => $ad_type,
+                    'ad_id' => (int) $ad_id,
+                ]],
+            ],
+            [
+                'name' => 'array-int-adid',
+                'args' => [[
+                    'api_key' => $api_key,
+                    'ad_type' => $ad_type,
+                    'ad_id' => (int) $ad_id,
+                ]],
+            ],
+            [
+                'name' => 'object-string-adid',
+                'args' => [(object) [
+                    'api_key' => $api_key,
+                    'ad_type' => $ad_type,
+                    'ad_id' => (string) $ad_id,
+                ]],
+            ],
+            [
+                'name' => 'array-string-adid',
+                'args' => [[
+                    'api_key' => $api_key,
+                    'ad_type' => $ad_type,
+                    'ad_id' => (string) $ad_id,
+                ]],
+            ],
+        ];
+
+        $errors = [];
+        foreach ($attempts as $attempt) {
+            try {
+                $result = $client->__soapCall('media', $attempt['args']);
+                $payload = json_decode(wp_json_encode($result), true);
+                if (!is_array($payload)) {
+                    $errors[] = $attempt['name'] . ': invalid payload';
+                    continue;
+                }
+
+                $image_urls = [];
+                $video_urls = [];
+                matrix_daft_collect_media_image_fields($payload, $image_urls);
+                matrix_daft_collect_media_video_urls($payload, $video_urls);
+                $image_urls = array_values(array_unique(array_filter($image_urls)));
+                $video_urls = array_values(array_unique(array_filter($video_urls)));
+
+                if (empty($image_urls) && empty($video_urls)) {
+                    $errors[] = $attempt['name'] . ': no media in response';
+                    continue;
+                }
+
+                return [
+                    'image_urls' => $image_urls,
+                    'video_urls' => $video_urls,
+                    'debug' => [
+                        'media_enrich' => 'ok',
+                        'media_call_shape' => $attempt['name'],
+                        'media_ad_type' => $ad_type,
+                        'media_image_count' => count($image_urls),
+                        'media_video_count' => count($video_urls),
+                    ],
+                ];
+            } catch (Throwable $inner) {
+                $errors[] = $attempt['name'] . ': ' . $inner->getMessage();
+            }
+        }
+
+        return [
+            'image_urls' => [],
+            'video_urls' => [],
+            'debug' => [
+                'media_enrich' => 'soap-error',
+                'media_ad_type' => $ad_type,
+                'media_error' => implode(' | ', $errors),
+            ],
+        ];
+    } catch (Throwable $e) {
+        return [
+            'image_urls' => [],
+            'video_urls' => [],
+            'debug' => [
+                'media_enrich' => 'soap-error',
+                'media_error' => $e->getMessage(),
+            ],
+        ];
+    }
+}
+
+function matrix_daft_collect_media_image_fields($node, array &$image_urls): void {
+    if (!is_array($node)) {
+        return;
+    }
+
+    $preferred_keys = ['large_url', 'ipad_url', 'ipad_gallery_url', 'medium_url', 'iphone_url', 'ipad_search_url', 'small_url', 'url'];
+    $chosen_url = '';
+    foreach ($preferred_keys as $key) {
+        if (!empty($node[$key]) && is_string($node[$key])) {
+            $normalized = matrix_daft_normalize_remote_url($node[$key]);
+            if ($normalized !== '' && filter_var($normalized, FILTER_VALIDATE_URL)) {
+                $chosen_url = $normalized;
+                break;
+            }
+        }
+    }
+
+    if ($chosen_url !== '') {
+        $image_urls[] = $chosen_url;
+        return;
+    }
+
+    foreach ($node as $value) {
+        if (is_array($value)) {
+            matrix_daft_collect_media_image_fields($value, $image_urls);
+        }
+    }
+}
+
+function matrix_daft_collect_media_video_urls($node, array &$video_urls): void {
+    if (is_string($node)) {
+        $normalized = matrix_daft_normalize_remote_url($node);
+        if ($normalized === '' || !filter_var($normalized, FILTER_VALIDATE_URL)) {
+            return;
+        }
+        $host = strtolower((string) wp_parse_url($normalized, PHP_URL_HOST));
+        $path = strtolower((string) wp_parse_url($normalized, PHP_URL_PATH));
+        if (
+            str_contains($host, 'youtube.com')
+            || str_contains($host, 'youtu.be')
+            || str_contains($host, 'vimeo.com')
+            || str_contains($host, 'player.vimeo.com')
+            || str_contains($path, '.mp4')
+            || str_contains($path, '.webm')
+        ) {
+            $video_urls[] = $normalized;
+        }
+        return;
+    }
+
+    if (!is_array($node)) {
+        return;
+    }
+
+    foreach ($node as $value) {
+        if (is_array($value) || is_string($value)) {
+            matrix_daft_collect_media_video_urls($value, $video_urls);
+        }
+    }
+}
+
+function matrix_daft_normalize_remote_url(string $url): string {
+    $url = trim(html_entity_decode($url, ENT_QUOTES | ENT_HTML5));
+    if ($url === '') {
+        return '';
+    }
+    if (str_starts_with($url, '//')) {
+        return 'https:' . $url;
+    }
+    if (str_starts_with($url, '/')) {
+        return 'https://www.daft.ie' . $url;
+    }
+    return $url;
+}
+
+function matrix_daft_media_compare_key(string $url): string {
+    $normalized = matrix_daft_normalize_remote_url($url);
+    if ($normalized === '' || !filter_var($normalized, FILTER_VALIDATE_URL)) {
+        return '';
+    }
+    $parts = wp_parse_url($normalized);
+    if (!is_array($parts) || empty($parts['host']) || empty($parts['path'])) {
+        return rtrim($normalized, '/');
+    }
+    $scheme = !empty($parts['scheme']) ? strtolower((string) $parts['scheme']) : 'https';
+    $host = strtolower((string) $parts['host']);
+    $path = (string) $parts['path'];
+    return rtrim($scheme . '://' . $host . $path, '/');
 }
 
 function matrix_daft_collect_video_urls($node, array &$urls): void {
@@ -997,6 +1362,52 @@ function matrix_daft_normalize_type(string $type): string {
     return ucwords(strtolower($value));
 }
 
+function matrix_daft_format_price_display(string $price): string {
+    $price = trim($price);
+    if ($price === '') {
+        return '';
+    }
+
+    if (str_contains($price, '€') || stripos($price, 'eur') !== false) {
+        return $price;
+    }
+
+    $numeric_candidate = preg_replace('/[^\d.]/', '', $price);
+    if ($numeric_candidate !== '' && is_numeric($numeric_candidate)) {
+        $value = (float) $numeric_candidate;
+        if ((int) $value === (float) $value) {
+            return '€' . number_format((int) $value);
+        }
+        return '€' . number_format($value, 2);
+    }
+
+    return $price;
+}
+
+function matrix_daft_format_description_html(string $description): string {
+    $description = trim(str_replace(["\r\n", "\r"], "\n", $description));
+    if ($description === '') {
+        return '';
+    }
+
+    $paragraphs = preg_split("/\n\s*\n+/", $description);
+    if (!is_array($paragraphs)) {
+        $paragraphs = [$description];
+    }
+
+    $html_parts = [];
+    foreach ($paragraphs as $paragraph) {
+        $paragraph = trim((string) $paragraph);
+        if ($paragraph === '') {
+            continue;
+        }
+        $paragraph = preg_replace('/\s+/', ' ', $paragraph);
+        $html_parts[] = '<p>' . esc_html((string) $paragraph) . '</p>';
+    }
+
+    return implode("\n", $html_parts);
+}
+
 function matrix_daft_request_soap(string $wsdl_url, string $operation, string $api_key, string $query_json = ''): array {
     if (!class_exists('SoapClient')) {
         return [
@@ -1039,16 +1450,22 @@ function matrix_daft_request_soap(string $wsdl_url, string $operation, string $a
         ];
     }
 
-    $parameters = [
-        'api_key' => $api_key,
-    ];
-
+    $query_payload = [];
     if ($query_json !== '') {
         $query = json_decode($query_json, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($query)) {
-            $parameters['query'] = $query;
+            // Avoid sending empty query objects; some Daft ops reject unknown "query" member.
+            $query_payload = array_filter($query, static function ($value) {
+                return $value !== null && $value !== '' && $value !== [];
+            });
         }
     }
+
+    $parameters = [
+        'api_key' => $api_key,
+        // Required by Daft search_* SOAP operations. Send empty object when no filters supplied.
+        'query' => !empty($query_payload) ? json_decode(wp_json_encode($query_payload)) : new stdClass(),
+    ];
 
     try {
         $client = new SoapClient($wsdl_url, [
@@ -1058,15 +1475,35 @@ function matrix_daft_request_soap(string $wsdl_url, string $operation, string $a
             'trace' => false,
         ]);
 
-        if (!method_exists($client, $operation)) {
-            return [
-                'success' => false,
-                'message' => sprintf('SOAP operation "%s" is not available on %s.', $operation, $wsdl_url),
-                'payload' => [],
-            ];
+        $functions = [];
+        try {
+            $functions = $client->__getFunctions();
+        } catch (Throwable $e) {
+            $functions = [];
         }
 
-        $result = $client->{$operation}($parameters);
+        if (!empty($functions) && is_array($functions)) {
+            $available = false;
+            foreach ($functions as $signature) {
+                if (is_string($signature) && preg_match('/\b' . preg_quote($operation, '/') . '\s*\(/', $signature)) {
+                    $available = true;
+                    break;
+                }
+            }
+            if (!$available) {
+                return [
+                    'success' => false,
+                    'message' => sprintf('SOAP operation "%s" is not available on %s.', $operation, $wsdl_url),
+                    'payload' => [],
+                ];
+            }
+        }
+
+        // SoapClient resolves operations dynamically via __call.
+        $result = $client->__soapCall($operation, [$parameters]);
+        if (!is_array($result) && !is_object($result)) {
+            $result = (array) $result;
+        }
         $payload = json_decode(wp_json_encode($result), true);
 
         if (!is_array($payload)) {
@@ -1081,12 +1518,56 @@ function matrix_daft_request_soap(string $wsdl_url, string $operation, string $a
             'success' => true,
             'message' => '',
             'payload' => $payload,
+            'debug' => [
+                'soap_mode' => 'wrapped_query',
+                'operation' => $operation,
+                'wsdl' => $wsdl_url,
+                'query_keys' => array_keys($query_payload),
+                'functions_count' => is_array($functions) ? count($functions) : 0,
+            ],
         ];
     } catch (Throwable $e) {
+        $message = $e->getMessage();
+        $debug = [
+            'soap_mode' => 'wrapped_query',
+            'operation' => $operation,
+            'wsdl' => $wsdl_url,
+            'query_keys' => array_keys($query_payload),
+            'error' => $message,
+        ];
+
+        // Daft schema variant: some operations expect query fields at top-level, not under "query".
+        $query_property_error = (bool) preg_match('/has no\s+[\'"]?query[\'"]?\s+property/i', $message);
+        if (!empty($query_payload) && $query_property_error && isset($client) && $client instanceof SoapClient) {
+            try {
+                $flat_parameters = array_merge(['api_key' => $api_key], $query_payload);
+                $retry_result = $client->__soapCall($operation, [$flat_parameters]);
+                $retry_payload = json_decode(wp_json_encode($retry_result), true);
+                if (is_array($retry_payload)) {
+                    return [
+                        'success' => true,
+                        'message' => '',
+                        'payload' => $retry_payload,
+                        'debug' => [
+                            'soap_mode' => 'flat_query_retry',
+                            'operation' => $operation,
+                            'wsdl' => $wsdl_url,
+                            'query_keys' => array_keys($query_payload),
+                            'retry_reason' => 'query property not accepted',
+                        ],
+                    ];
+                }
+            } catch (Throwable $retry_error) {
+                $message = $retry_error->getMessage();
+                $debug['flat_retry_error'] = $message;
+            }
+        }
+
         return [
             'success' => false,
-            'message' => sprintf('SOAP request failed (%s %s): %s', $operation, $wsdl_url, $e->getMessage()),
+            'message' => sprintf('SOAP request failed (%s %s): %s', $operation, $wsdl_url, $message),
             'payload' => [],
+            'debug' => $debug,
         ];
     }
 }
@@ -1168,46 +1649,29 @@ function matrix_daft_sync_property_data_block(int $post_id, array $listing): voi
     $bathrooms = trim((string) ($listing['bathrooms'] ?? ''));
     $status = trim((string) ($listing['status'] ?? ''));
     $price = trim((string) ($listing['price'] ?? ''));
+    $price_display = matrix_daft_format_price_display($price);
     $address = trim((string) ($listing['address'] ?? ''));
     $description = trim((string) ($listing['description'] ?? ''));
-
-    $overview_bits = [];
-    if ($property_type !== '') {
-        $overview_bits[] = esc_html($property_type) . ': Property Type';
-    }
-    if ($bedrooms !== '') {
-        $overview_bits[] = 'Bedrooms ' . esc_html($bedrooms);
-    }
-    if ($bathrooms !== '') {
-        $overview_bits[] = 'Bathroom ' . esc_html($bathrooms);
-    }
-    if ($area !== '') {
-        $overview_bits[] = esc_html($area);
-    }
+    $description_html = matrix_daft_format_description_html($description);
 
     $right_text_parts = [];
-    $meta_line = [];
-    if ($price !== '') {
-        $meta_line[] = '<strong>' . esc_html($price) . '</strong>';
-    }
-    if ($status !== '') {
-        $meta_line[] = esc_html($status);
-    }
     if ($address !== '') {
-        $meta_line[] = esc_html($address);
+        $right_text_parts[] = '<h2>' . esc_html($address) . '</h2>';
     }
-    if (!empty($meta_line)) {
-        $right_text_parts[] = '<p>' . implode('<br>', $meta_line) . '</p>';
-    }
-    if (!empty($overview_bits)) {
-        $right_text_parts[] = '<h3>Overview</h3><p>' . implode('<br>', $overview_bits) . '</p>';
-    }
-    if ($description !== '') {
-        $right_text_parts[] = '<h3>Description</h3><p>' . esc_html($description) . '</p>';
+    if ($description_html !== '') {
+        $description_html = preg_replace('/<p>/', '<p style="padding-top:0.75rem;">', $description_html, 1);
+        $right_text_parts[] = $description_html;
     }
     $right_text = implode("\n", $right_text_parts);
 
     $extra_rows = [];
+    if ($price_display !== '') {
+        $extra_rows[] = [
+            'label' => 'Price',
+            'value' => '<p>' . esc_html($price_display) . '</p>',
+            'uppercase_value' => 0,
+        ];
+    }
     if ($bedrooms !== '') {
         $extra_rows[] = [
             'label' => 'Bedrooms',
@@ -1229,11 +1693,18 @@ function matrix_daft_sync_property_data_block(int $post_id, array $listing): voi
             'uppercase_value' => 0,
         ];
     }
+    if ($area !== '') {
+        $extra_rows[] = [
+            'label' => 'Area',
+            'value' => '<p>' . esc_html($area) . '</p>',
+            'uppercase_value' => 0,
+        ];
+    }
 
     $property_data_row = [
         'acf_fc_layout' => 'property_data',
         'sector' => $property_type,
-        'size' => $area !== '' ? '<p>Area: ' . esc_html($area) . '</p>' : '',
+        'size' => '',
         'extra_rows' => $extra_rows,
         'right_text' => wp_kses_post($right_text),
         'read_more_label' => 'Read more',
@@ -1264,29 +1735,18 @@ function matrix_daft_sync_full_width_media_block(int $post_id, array $listing): 
     }
 
     $image_urls = is_array($listing['image_urls'] ?? null) ? $listing['image_urls'] : [];
-    $normalize_url = static function ($url): string {
-        if (!is_string($url) || $url === '') {
-            return '';
-        }
-        $url = trim($url);
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return '';
-        }
-        return rtrim($url, '/');
-    };
-
     $rows = get_field('flexible_content_blocks', $post_id);
     if (!is_array($rows)) {
         $rows = [];
     }
 
-    $primary_hero_url = $normalize_url((string) ($listing['image_url'] ?? ''));
+    $primary_hero_url = matrix_daft_media_compare_key((string) ($listing['image_url'] ?? ''));
     $featured_url = '';
     $thumb_id = get_post_thumbnail_id($post_id);
     if ($thumb_id) {
         $featured_src = wp_get_attachment_image_url($thumb_id, 'full');
         if (is_string($featured_src)) {
-            $featured_url = $normalize_url($featured_src);
+            $featured_url = matrix_daft_media_compare_key($featured_src);
         }
     }
 
@@ -1310,7 +1770,7 @@ function matrix_daft_sync_full_width_media_block(int $post_id, array $listing): 
             if ($existing_id > 0) {
                 $existing_src = wp_get_attachment_image_url($existing_id, 'full');
                 if (is_string($existing_src)) {
-                    $existing_media_url = $normalize_url($existing_src);
+                    $existing_media_url = matrix_daft_media_compare_key($existing_src);
                 }
             }
         }
@@ -1318,18 +1778,36 @@ function matrix_daft_sync_full_width_media_block(int $post_id, array $listing): 
 
     // IMPORTANT: Never duplicate the hero/featured image in full_width_media.
     $media_url = '';
+    $attachment_id = 0;
     foreach ($image_urls as $candidate) {
         if (!is_string($candidate)) {
             continue;
         }
-        $candidate_url = $normalize_url($candidate);
+        $candidate_key = matrix_daft_media_compare_key($candidate);
+        if ($candidate_key === '') {
+            continue;
+        }
+        if (in_array($candidate_key, $hero_urls, true)) {
+            continue;
+        }
+        $candidate_url = matrix_daft_normalize_remote_url($candidate);
         if ($candidate_url === '') {
             continue;
         }
-        if (in_array($candidate_url, $hero_urls, true)) {
+        $candidate_attachment_id = matrix_daft_resolve_media_attachment_for_post(
+            $post_id,
+            $candidate_url,
+            '_matrix_daft_full_width_media'
+        );
+        if (is_wp_error($candidate_attachment_id) || !is_numeric($candidate_attachment_id)) {
+            continue;
+        }
+        $candidate_attachment_id = (int) $candidate_attachment_id;
+        if (matrix_daft_attachment_is_portrait($candidate_attachment_id)) {
             continue;
         }
         $media_url = $candidate_url;
+        $attachment_id = $candidate_attachment_id;
         break;
     }
 
@@ -1341,16 +1819,6 @@ function matrix_daft_sync_full_width_media_block(int $post_id, array $listing): 
             return ['status' => 'removed-duplicate-hero'];
         }
         return ['status' => 'skipped-no-distinct-secondary-image'];
-    }
-
-    $attachment_id = matrix_daft_resolve_media_attachment_for_post(
-        $post_id,
-        $media_url,
-        '_matrix_daft_full_width_media'
-    );
-
-    if (is_wp_error($attachment_id) || !is_numeric($attachment_id)) {
-        return ['status' => 'skipped-image-download-failed'];
     }
 
     $media_row = [
@@ -1456,45 +1924,29 @@ function matrix_daft_sync_gallery_block(int $post_id, array $listing, bool $allo
         return ['status' => 'skipped-no-acf'];
     }
 
-    $normalize_url = static function ($url): string {
-        if (!is_string($url) || $url === '') {
-            return '';
-        }
-        $url = trim($url);
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return '';
-        }
-        $parts = wp_parse_url($url);
-        if (!is_array($parts) || empty($parts['host']) || empty($parts['path'])) {
-            return rtrim($url, '/');
-        }
-        $scheme = !empty($parts['scheme']) ? strtolower((string) $parts['scheme']) : 'https';
-        $host = strtolower((string) $parts['host']);
-        $path = (string) $parts['path'];
-        return rtrim($scheme . '://' . $host . $path, '/');
-    };
-
     $image_urls = is_array($listing['image_urls'] ?? null) ? $listing['image_urls'] : [];
-    $hero_url = $normalize_url((string) ($listing['image_url'] ?? ''));
-    $full_width_media_url = $normalize_url((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
+    $hero_url = matrix_daft_media_compare_key((string) ($listing['image_url'] ?? ''));
+    $full_width_media_url = matrix_daft_media_compare_key((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
 
     // Use the next 4 images after hero/full-width selections.
     $gallery_urls = [];
+    $gallery_keys = [];
     foreach ($image_urls as $candidate) {
-        $candidate_url = $normalize_url($candidate);
-        if ($candidate_url === '') {
+        $candidate_key = matrix_daft_media_compare_key((string) $candidate);
+        if ($candidate_key === '') {
             continue;
         }
-        if ($hero_url !== '' && $candidate_url === $hero_url) {
+        if ($hero_url !== '' && $candidate_key === $hero_url) {
             continue;
         }
-        if ($full_width_media_url !== '' && $candidate_url === $full_width_media_url) {
+        if ($full_width_media_url !== '' && $candidate_key === $full_width_media_url) {
             continue;
         }
-        if (in_array($candidate_url, $gallery_urls, true)) {
+        if (in_array($candidate_key, $gallery_keys, true)) {
             continue;
         }
-        $gallery_urls[] = $candidate_url;
+        $gallery_urls[] = matrix_daft_normalize_remote_url((string) $candidate);
+        $gallery_keys[] = $candidate_key;
         if (count($gallery_urls) >= 4) {
             break;
         }
@@ -1778,24 +2230,6 @@ function matrix_daft_sync_gallery_carousel_block(int $post_id, array $listing): 
         return ['status' => 'skipped-no-acf'];
     }
 
-    $normalize_url = static function ($url): string {
-        if (!is_string($url) || $url === '') {
-            return '';
-        }
-        $url = trim($url);
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return '';
-        }
-        $parts = wp_parse_url($url);
-        if (!is_array($parts) || empty($parts['host']) || empty($parts['path'])) {
-            return rtrim($url, '/');
-        }
-        $scheme = !empty($parts['scheme']) ? strtolower((string) $parts['scheme']) : 'https';
-        $host = strtolower((string) $parts['host']);
-        $path = (string) $parts['path'];
-        return rtrim($scheme . '://' . $host . $path, '/');
-    };
-
     $rows = get_field('flexible_content_blocks', $post_id);
     if (!is_array($rows)) {
         $rows = [];
@@ -1829,22 +2263,24 @@ function matrix_daft_sync_gallery_carousel_block(int $post_id, array $listing): 
     }
 
     $image_urls = is_array($listing['image_urls'] ?? null) ? $listing['image_urls'] : [];
-    $hero_url = $normalize_url((string) ($listing['image_url'] ?? ''));
-    $first_media_url = $normalize_url((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
+    $hero_url = matrix_daft_media_compare_key((string) ($listing['image_url'] ?? ''));
+    $first_media_url = matrix_daft_media_compare_key((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
     $primary_gallery_urls = json_decode((string) get_post_meta($post_id, '_matrix_daft_gallery_primary_urls', true), true);
     if (!is_array($primary_gallery_urls)) {
         $primary_gallery_urls = [];
     }
-    $primary_gallery_urls = array_values(array_filter(array_map($normalize_url, $primary_gallery_urls)));
+    $primary_gallery_urls = array_values(array_filter(array_map('matrix_daft_media_compare_key', $primary_gallery_urls)));
 
     $exclude = array_values(array_filter(array_unique(array_merge([$hero_url, $first_media_url], $primary_gallery_urls))));
     $carousel_urls = [];
+    $carousel_keys = [];
     foreach ($image_urls as $candidate) {
-        $candidate_url = $normalize_url($candidate);
-        if ($candidate_url === '' || in_array($candidate_url, $exclude, true) || in_array($candidate_url, $carousel_urls, true)) {
+        $candidate_key = matrix_daft_media_compare_key((string) $candidate);
+        if ($candidate_key === '' || in_array($candidate_key, $exclude, true) || in_array($candidate_key, $carousel_keys, true)) {
             continue;
         }
-        $carousel_urls[] = $candidate_url;
+        $carousel_urls[] = matrix_daft_normalize_remote_url((string) $candidate);
+        $carousel_keys[] = $candidate_key;
         if (count($carousel_urls) >= 4) {
             break;
         }
@@ -1903,24 +2339,6 @@ function matrix_daft_sync_secondary_full_width_media_block(int $post_id, array $
     if (!function_exists('get_field') || !function_exists('update_field')) {
         return ['status' => 'skipped-no-acf'];
     }
-
-    $normalize_url = static function ($url): string {
-        if (!is_string($url) || $url === '') {
-            return '';
-        }
-        $url = trim($url);
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return '';
-        }
-        $parts = wp_parse_url($url);
-        if (!is_array($parts) || empty($parts['host']) || empty($parts['path'])) {
-            return rtrim($url, '/');
-        }
-        $scheme = !empty($parts['scheme']) ? strtolower((string) $parts['scheme']) : 'https';
-        $host = strtolower((string) $parts['host']);
-        $path = (string) $parts['path'];
-        return rtrim($scheme . '://' . $host . $path, '/');
-    };
 
     $rows = get_field('flexible_content_blocks', $post_id);
     if (!is_array($rows)) {
@@ -1985,8 +2403,8 @@ function matrix_daft_sync_secondary_full_width_media_block(int $post_id, array $
     }
 
     $image_urls = is_array($listing['image_urls'] ?? null) ? $listing['image_urls'] : [];
-    $hero_url = $normalize_url((string) ($listing['image_url'] ?? ''));
-    $first_media_url = $normalize_url((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
+    $hero_url = matrix_daft_media_compare_key((string) ($listing['image_url'] ?? ''));
+    $first_media_url = matrix_daft_media_compare_key((string) get_post_meta($post_id, '_matrix_daft_full_width_media_url', true));
     $primary_gallery_urls = json_decode((string) get_post_meta($post_id, '_matrix_daft_gallery_primary_urls', true), true);
     $carousel_gallery_urls = json_decode((string) get_post_meta($post_id, '_matrix_daft_gallery_carousel_urls', true), true);
     if (!is_array($primary_gallery_urls)) {
@@ -1998,17 +2416,31 @@ function matrix_daft_sync_secondary_full_width_media_block(int $post_id, array $
 
     $exclude = array_values(array_filter(array_unique(array_merge(
         [$hero_url, $first_media_url],
-        array_map($normalize_url, $primary_gallery_urls),
-        array_map($normalize_url, $carousel_gallery_urls)
+        array_map('matrix_daft_media_compare_key', $primary_gallery_urls),
+        array_map('matrix_daft_media_compare_key', $carousel_gallery_urls)
     ))));
 
     $secondary_image_url = '';
+    $secondary_attachment_id = 0;
     foreach ($image_urls as $candidate) {
-        $candidate_url = $normalize_url($candidate);
-        if ($candidate_url === '' || in_array($candidate_url, $exclude, true)) {
+        $candidate_key = matrix_daft_media_compare_key((string) $candidate);
+        if ($candidate_key === '' || in_array($candidate_key, $exclude, true)) {
+            continue;
+        }
+        $candidate_url = matrix_daft_normalize_remote_url((string) $candidate);
+        if ($candidate_url === '') {
+            continue;
+        }
+        $candidate_attachment_id = matrix_daft_resolve_media_attachment_for_post($post_id, $candidate_url, '_matrix_daft_full_width_media_secondary');
+        if (is_wp_error($candidate_attachment_id) || !is_numeric($candidate_attachment_id)) {
+            continue;
+        }
+        $candidate_attachment_id = (int) $candidate_attachment_id;
+        if (matrix_daft_attachment_is_portrait($candidate_attachment_id)) {
             continue;
         }
         $secondary_image_url = $candidate_url;
+        $secondary_attachment_id = $candidate_attachment_id;
         break;
     }
 
@@ -2026,14 +2458,10 @@ function matrix_daft_sync_secondary_full_width_media_block(int $post_id, array $
             'click_toggle_pause' => 1,
         ];
     } elseif ($allow_image_fallback && $secondary_image_url !== '') {
-        $attachment_id = matrix_daft_resolve_media_attachment_for_post($post_id, $secondary_image_url, '_matrix_daft_full_width_media_secondary');
-        if (is_wp_error($attachment_id) || !is_numeric($attachment_id)) {
-            return ['status' => 'skipped-secondary-image-download-failed'];
-        }
         $media_row = [
             'acf_fc_layout' => 'full_width_media',
             'media_type' => 'image',
-            'image' => (int) $attachment_id,
+            'image' => (int) $secondary_attachment_id,
             'height_xs' => 400,
             'height_md' => 500,
         ];
@@ -2241,13 +2669,17 @@ function matrix_daft_sync_taxonomies(int $post_id, array $listing): void {
     }
 }
 
-function matrix_daft_sync_featured_image(int $post_id, string $image_url, bool $force_update = false): void {
-    if (!filter_var($image_url, FILTER_VALIDATE_URL)) {
+function matrix_daft_sync_featured_image(int $post_id, array $image_urls, bool $force_update = false): void {
+    $image_urls = array_values(array_filter(array_map('strval', $image_urls)));
+    if (empty($image_urls)) {
         return;
     }
 
     if (!$force_update && has_post_thumbnail($post_id)) {
-        return;
+        $existing_thumb_id = (int) get_post_thumbnail_id($post_id);
+        if ($existing_thumb_id > 0 && !matrix_daft_attachment_is_too_small($existing_thumb_id)) {
+            return;
+        }
     }
 
     if (!function_exists('media_sideload_image')) {
@@ -2256,11 +2688,50 @@ function matrix_daft_sync_featured_image(int $post_id, string $image_url, bool $
         require_once ABSPATH . 'wp-admin/includes/image.php';
     }
 
-    $attachment_id = matrix_daft_sideload_image_from_url($post_id, $image_url);
+    foreach ($image_urls as $image_url) {
+        if (!filter_var($image_url, FILTER_VALIDATE_URL)) {
+            continue;
+        }
+        $attachment_id = matrix_daft_sideload_image_from_url($post_id, $image_url);
+        if (is_wp_error($attachment_id) || !is_numeric($attachment_id)) {
+            continue;
+        }
 
-    if (!is_wp_error($attachment_id) && is_numeric($attachment_id)) {
-        set_post_thumbnail($post_id, (int) $attachment_id);
+        $attachment_id = (int) $attachment_id;
+        if (matrix_daft_attachment_is_too_small($attachment_id)) {
+            continue;
+        }
+
+        set_post_thumbnail($post_id, $attachment_id);
+        return;
     }
+}
+
+function matrix_daft_attachment_is_too_small(int $attachment_id): bool {
+    $meta = wp_get_attachment_metadata($attachment_id);
+    if (!is_array($meta)) {
+        return false;
+    }
+    $width = (int) ($meta['width'] ?? 0);
+    $height = (int) ($meta['height'] ?? 0);
+    if ($width <= 0 || $height <= 0) {
+        return false;
+    }
+    // Reject tiny thumbnails as featured images.
+    return ($width < 700 || $height < 450);
+}
+
+function matrix_daft_attachment_is_portrait(int $attachment_id): bool {
+    $meta = wp_get_attachment_metadata($attachment_id);
+    if (!is_array($meta)) {
+        return false;
+    }
+    $width = (int) ($meta['width'] ?? 0);
+    $height = (int) ($meta['height'] ?? 0);
+    if ($width <= 0 || $height <= 0) {
+        return false;
+    }
+    return $height > $width;
 }
 
 function matrix_daft_resolve_media_attachment_for_post(int $post_id, string $image_url, string $meta_prefix) {
@@ -2304,7 +2775,10 @@ function matrix_daft_sideload_image_fallback(int $post_id, string $image_url) {
 
     $tmp_file = download_url($image_url, 30);
     if (is_wp_error($tmp_file)) {
-        return $tmp_file;
+        $tmp_file = matrix_daft_download_image_with_headers($image_url);
+        if (is_wp_error($tmp_file)) {
+            return $tmp_file;
+        }
     }
 
     $mime_type = '';
@@ -2339,13 +2813,53 @@ function matrix_daft_sideload_image_fallback(int $post_id, string $image_url) {
     return $attachment_id;
 }
 
+function matrix_daft_download_image_with_headers(string $image_url) {
+    $response = wp_remote_get($image_url, [
+        'timeout' => 30,
+        'redirection' => 5,
+        'headers' => [
+            'Accept' => 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+            'User-Agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url('/'),
+            'Referer' => home_url('/'),
+        ],
+    ]);
+
+    if (is_wp_error($response)) {
+        return $response;
+    }
+
+    $status = (int) wp_remote_retrieve_response_code($response);
+    if ($status < 200 || $status >= 300) {
+        return new WP_Error('daft_image_http_error', sprintf('Image download failed with HTTP %d.', $status));
+    }
+
+    $body = (string) wp_remote_retrieve_body($response);
+    if ($body === '') {
+        return new WP_Error('daft_image_empty_body', 'Image download returned an empty body.');
+    }
+
+    $tmp_file = wp_tempnam('daft-image');
+    if (!$tmp_file) {
+        return new WP_Error('daft_temp_file_failed', 'Unable to create temporary file for image download.');
+    }
+
+    $written = @file_put_contents($tmp_file, $body);
+    if ($written === false || $written <= 0) {
+        @unlink($tmp_file);
+        return new WP_Error('daft_temp_write_failed', 'Unable to write downloaded image to temporary file.');
+    }
+
+    return $tmp_file;
+}
+
 function matrix_daft_store_report(
     string $trigger,
     int $imported,
     int $updated,
     int $skipped,
     string $error = '',
-    array $items = []
+    array $items = [],
+    array $debug = []
 ): void {
     update_option('matrix_daft_last_report', [
         'synced_at' => current_time('mysql'),
@@ -2355,6 +2869,7 @@ function matrix_daft_store_report(
         'skipped' => $skipped,
         'error' => $error,
         'items' => array_values($items),
+        'debug' => $debug,
     ], false);
 }
 
