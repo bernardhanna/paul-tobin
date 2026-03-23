@@ -39,6 +39,49 @@ if (have_rows('padding_settings')) {
 if (empty($heading_tag)) {
     $heading_tag = 'h2';
 }
+
+// On single Property pages, always provide a CTA to book consultation and prefill form context.
+$effective_button_link = $button_link;
+if (
+    is_singular('property')
+    && (
+        empty($button_link)
+        || !is_array($button_link)
+        || empty($button_link['url'])
+        || empty($button_link['title'])
+    )
+) {
+    $property_id = get_queried_object_id();
+    $property_title = $property_id ? get_the_title($property_id) : '';
+    $property_address = $property_id ? ((string) get_post_meta($property_id, 'daft_address', true)) : '';
+    if ($property_address === '') {
+        $property_address = $property_title;
+    }
+
+    $property_type_terms = $property_id ? get_the_terms($property_id, 'property_type') : [];
+    $property_type_name = (!empty($property_type_terms) && !is_wp_error($property_type_terms)) ? (string) $property_type_terms[0]->name : '';
+    $bedrooms = $property_id ? (string) get_post_meta($property_id, 'bedrooms', true) : '';
+    $bathrooms = $property_id ? (string) get_post_meta($property_id, 'bathrooms', true) : '';
+    $property_url = $property_id ? get_permalink($property_id) : '';
+
+    $consult_url = add_query_arg([
+        'from_property' => 1,
+        'query_type' => 'request_a_call',
+        'query_type_label' => 'Request a call',
+        'property_id' => $property_id ?: '',
+        'property_url' => $property_url,
+        'property_address' => $property_address,
+        'property_type' => $property_type_name,
+        'bedrooms' => $bedrooms,
+        'bathrooms' => $bathrooms,
+    ], home_url('/book-a-consultation/'));
+
+    $effective_button_link = [
+        'url' => $consult_url,
+        'title' => 'Request a call',
+        'target' => '_self',
+    ];
+}
 ?>
 
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden bg-[#ededed]">
@@ -77,15 +120,15 @@ if (empty($heading_tag)) {
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($button_link) && is_array($button_link) && !empty($button_link['url']) && !empty($button_link['title'])) : ?>
+                    <?php if (!empty($effective_button_link) && is_array($effective_button_link) && !empty($effective_button_link['url']) && !empty($effective_button_link['title'])) : ?>
                         <a
-                            href="<?php echo esc_url($button_link['url']); ?>"
-                            class="btn mt-6 inline-flex w-fit items-center justify-center gap-2 bg-[#0f172a] px-8 py-3.5 text-[0.875rem] font-[600] leading-[1.375rem] text-white transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-[#40bff5] hover:text-black lg:h-[2.75rem] max-w-[165px]"
-                            target="<?php echo esc_attr(!empty($button_link['target']) ? $button_link['target'] : '_self'); ?>"
-                            aria-label="<?php echo esc_attr($button_link['title']); ?>"
+                            href="<?php echo esc_url($effective_button_link['url']); ?>"
+                            class="btn mt-6 inline-flex w-fit items-center justify-center gap-2 bg-[#0f172a] px-8 py-3.5 text-[0.875rem] font-[600] leading-[1.375rem] text-white transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-[#40bff5] hover:text-black lg:h-[2.75rem] max-w-max"
+                            target="<?php echo esc_attr(!empty($effective_button_link['target']) ? $effective_button_link['target'] : '_self'); ?>"
+                            aria-label="<?php echo esc_attr($effective_button_link['title']); ?>"
                         >
                             <span class="font-primary">
-                                <?php echo esc_html($button_link['title']); ?>
+                                <?php echo esc_html($effective_button_link['title']); ?>
                             </span>
                         </a>
                     <?php endif; ?>

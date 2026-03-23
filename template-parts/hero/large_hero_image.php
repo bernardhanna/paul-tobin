@@ -37,6 +37,22 @@ if (is_array($hero_image)) {
     $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : (isset($hero_image['url']) ? $hero_image['url'] : '');
 }
 
+// On single Property pages, prefer the post featured image (used by Daft import)
+// so the hero reflects listing data automatically.
+if (is_singular('property')) {
+    $property_post_id = get_queried_object_id();
+    if ($property_post_id) {
+        $thumb_id = get_post_thumbnail_id($property_post_id);
+        if ($thumb_id) {
+            $image_id = (int) $thumb_id;
+            $featured_url = wp_get_attachment_image_url($image_id, 'full');
+            if ($featured_url) {
+                $image_url = $featured_url;
+            }
+        }
+    }
+}
+
 if ($image_id > 0) {
     $image_alt   = get_post_meta($image_id, '_wp_attachment_image_alt', true);
     $image_title = get_the_title($image_id);

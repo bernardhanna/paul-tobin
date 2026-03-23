@@ -167,6 +167,21 @@ if (!function_exists('matrix_sector_like_default_stack')) {
 }
 
 /**
+ * Default flexible stack for single Property pages.
+ * Keep this minimal so imported/manual properties render consistently:
+ * - property_data: primary details section
+ * - recently_sold: related/recent properties section
+ */
+if (!function_exists('matrix_property_default_stack')) {
+    function matrix_property_default_stack(): array {
+        return [
+            ['acf_fc_layout' => 'property_data'],
+            ['acf_fc_layout' => 'recently_sold'],
+        ];
+    }
+}
+
+/**
  * ✅ CRASH GUARD
  * Intercept flexible content loading BEFORE ACF's own load_value runs.
  * Sanitize raw layout list, then run ACF loader with clean data.
@@ -269,6 +284,11 @@ add_filter('acf/load_value/name=hero_content_blocks', function ($value, $post_id
         return [ ['acf_fc_layout' => 'hero_001'] ];
     }
 
+    if ($type === 'property') {
+        update_post_meta((int)$post_id, '_matrix_hero_default_applied', 1);
+        return [ ['acf_fc_layout' => 'large_hero_image'] ];
+    }
+
     return $value;
 }, 10, 3);
 /**
@@ -287,6 +307,10 @@ add_filter('acf/load_value/name=flexible_content_blocks', function ($value, $pos
 
     if ($type === 'post') {
         return [ ['acf_fc_layout' => 'single_post_content'] ];
+    }
+
+    if ($type === 'property') {
+        return matrix_property_default_stack();
     }
 
     return $value;

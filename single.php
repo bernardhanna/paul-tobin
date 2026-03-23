@@ -21,7 +21,7 @@ get_header();
     <?php
     if (have_posts()) :
         while (have_posts()) : the_post();
-            if (trim(get_the_content()) != '') : ?>
+            if (get_post_type() !== 'property' && trim(get_the_content()) != '') : ?>
                 <div class="mx-auto w-full max-w-[60rem] max-xl:px-5">
                     <?php
                     get_template_part('template-parts/content/content', 'page');

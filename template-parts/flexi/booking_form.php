@@ -468,6 +468,124 @@ if ($form_markup) {
       if (messages) { messages.classList.remove('hidden'); messages.textContent = 'Please correct the highlighted fields.'; }
     }
   });
+
+  // Prefill/hide for visitors coming from property CTAs.
+  (function prefillFromPropertyCTA() {
+    const params = new URLSearchParams(window.location.search);
+    const isFromProperty = ['1', 'true', 'yes'].includes((params.get('from_property') || '').toLowerCase());
+    if (!isFromProperty) return;
+
+    const propertyId = (params.get('property_id') || '').trim();
+    const propertyUrl = (params.get('property_url') || '').trim();
+    const queryType = (params.get('query_type') || '').trim();
+    const queryTypeLabel = (params.get('query_type_label') || '').trim();
+    const propertyAddress = (params.get('property_address') || '').trim();
+    const propertyType = (params.get('property_type') || '').trim();
+    const bedrooms = (params.get('bedrooms') || '').trim();
+    const bathrooms = (params.get('bathrooms') || '').trim();
+
+    const qTypeEl = byId('query-type');
+    const addressEl = byId('property-address');
+    const pTypeEl = byId('property-type');
+    const conditionEl = byId('property-condition');
+    const bedsEl = byId('bedrooms');
+    const bathsEl = byId('bathrooms');
+
+    const normalize = (str) => String(str || '')
+      .toLowerCase()
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const setSelectByValueOrLabel = (el, value, label) => {
+      if (!el) return;
+
+      // If query type was authored as a text input, set directly.
+      const tag = (el.tagName || '').toLowerCase();
+      if (tag !== 'select') {
+        const fallbackValue = (value || label || '').trim();
+        if (fallbackValue !== '') {
+          el.value = fallbackValue;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        return;
+      }
+
+      const options = Array.from(el.options || []);
+      if (!options.length) return;
+
+      const wantValue = normalize(value);
+      const wantLabel = normalize(label);
+      let match = null;
+
+      if (wantValue) {
+        match = options.find(o => normalize(o.value) === wantValue);
+      }
+      if (!match && wantLabel) {
+        match = options.find(o => normalize((o.textContent || '').trim()) === wantLabel);
+      }
+      if (!match && (wantValue || wantLabel)) {
+        const needle = wantValue || wantLabel;
+        match = options.find(o =>
+          normalize(o.value).includes(needle) || normalize((o.textContent || '').trim()).includes(needle)
+        );
+      }
+
+      // Last resort for query-type style selects: pick a call/callback option.
+      if (!match && el.id === 'query-type') {
+        match = options.find(o => {
+          const text = normalize((o.textContent || '').trim());
+          const val = normalize(o.value);
+          return text.includes('call') || text.includes('callback') || val.includes('call') || val.includes('callback');
+        });
+      }
+
+      if (match && String(match.value).trim() !== '') {
+        el.value = match.value;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    };
+
+    if (qTypeEl) setSelectByValueOrLabel(qTypeEl, queryType, queryTypeLabel || 'Request a call');
+    if (addressEl && propertyAddress) {
+      addressEl.value = propertyAddress;
+      addressEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (pTypeEl && propertyType) setSelectByValueOrLabel(pTypeEl, propertyType, propertyType);
+    if (bedsEl && bedrooms) setSelectByValueOrLabel(bedsEl, bedrooms, bedrooms);
+    if (bathsEl && bathrooms) setSelectByValueOrLabel(bathsEl, bathrooms, bathrooms);
+
+    const hideField = (el) => {
+      if (!el) return;
+      const wrap = el.closest('.field-container') || el.closest('.grid') || el.parentElement;
+      if (!wrap) return;
+      wrap.style.display = 'none';
+      el.removeAttribute('required');
+      el.setAttribute('aria-required', 'false');
+    };
+
+    hideField(pTypeEl);
+    hideField(conditionEl);
+    hideField(bedsEl);
+    hideField(bathsEl);
+
+    // Persist source context into submission/email/DB (non-underscore keys are kept by handler).
+    const ensureHidden = (name, value) => {
+      if (!value) return;
+      let el = form.querySelector(`input[name="${name}"]`);
+      if (!el) {
+        el = document.createElement('input');
+        el.type = 'hidden';
+        el.name = name;
+        form.appendChild(el);
+      }
+      el.value = value;
+    };
+    ensureHidden('origin_property_id', propertyId);
+    ensureHidden('origin_property_url', propertyUrl);
+    ensureHidden('origin_property_address', propertyAddress);
+    ensureHidden('origin_source', 'property_cta');
+  })();
 })();
 
 /* Accordion + per-location map initialization */

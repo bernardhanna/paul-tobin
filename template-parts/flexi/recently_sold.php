@@ -17,6 +17,11 @@ if (!in_array($heading_tag, $allowed_tags, true)) {
     $heading_tag = 'h2';
 }
 
+// On single property pages, always use fixed related heading.
+if (is_singular('property')) {
+    $heading = 'Related properties';
+}
+
 // ================== Build padding classes ==================
 $padding_classes = [];
 if (have_rows('padding_settings')) {

@@ -65,6 +65,7 @@ require_once get_template_directory() . '/inc/enqueue-scripts.php';
 require_once get_template_directory() . '/inc/hero-functions.php';
 require_once get_template_directory() . '/inc/flexible-content-functions.php';
 require_once get_template_directory() . '/inc/helpers/utils/menu-icon.php';
+require_once get_template_directory() . '/inc/integrations/daft-sync.php';
 
 /**
  * CPTs & taxonomies
@@ -230,9 +231,6 @@ add_action('after_setup_theme', function () {
     $path = trailingslashit( get_stylesheet_directory() ) . 'acf-fields/register-team-fields.php';
     if ( file_exists( $path ) ) {
         require_once $path;
-    } else {
-        // Optional: log instead of fatal error
-        error_log('[ACF] Missing file: ' . $path);
     }
 });
 

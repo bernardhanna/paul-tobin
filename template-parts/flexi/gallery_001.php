@@ -6,9 +6,80 @@
  * - Left overflow prevented; right side can peek
  */
 
-$gallery_images   = get_sub_field('gallery_images');
+$gallery_images_raw = get_sub_field('gallery_images');
+$build_svg_placeholder = static function (string $label, string $bg, string $fg = '#334155'): string {
+    $svg = sprintf(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000"><rect width="1600" height="1000" fill="%s"/><text x="50%%" y="50%%" dominant-baseline="middle" text-anchor="middle" fill="%s" font-family="Arial, Helvetica, sans-serif" font-size="56">%s</text></svg>',
+        esc_attr($bg),
+        esc_attr($fg),
+        esc_html($label)
+    );
+    return 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
+};
+$default_placeholder_urls = [
+    $build_svg_placeholder('Gallery Image 1', '#E5E7EB'),
+    $build_svg_placeholder('Gallery Image 2', '#DBEAFE'),
+    $build_svg_placeholder('Gallery Image 3', '#FEF3C7'),
+    $build_svg_placeholder('Gallery Image 4', '#D1FAE5'),
+];
+
+$is_mock_placeholder_mode = false;
+if (is_singular('property') && function_exists('get_field')) {
+    $mode_value = get_field('daft_request_mode', 'option');
+    $is_mock_mode = ((string) $mode_value === 'mock');
+
+    $placeholder_opt = get_field('daft_mock_gallery_placeholders', 'option');
+    // Default ON for local testing if option has not been saved yet.
+    $placeholders_enabled = ($placeholder_opt === null || $placeholder_opt === '') ? true : (bool) $placeholder_opt;
+
+    $source = (string) get_post_meta(get_the_ID(), '_matrix_property_source', true);
+    $is_mock_property = ($source === 'daft_mock');
+
+    $is_mock_placeholder_mode = ($placeholders_enabled && ($is_mock_mode || $is_mock_property));
+}
+
+$gallery_images = [];
+if (is_array($gallery_images_raw)) {
+    foreach ($gallery_images_raw as $index => $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $image_id = (int) ($row['image'] ?? 0);
+        $placeholder_url = (string) ($row['placeholder_url'] ?? '');
+        if ($placeholder_url === '' && $image_id === 0 && $is_mock_placeholder_mode) {
+            $placeholder_url = (string) ($default_placeholder_urls[$index % count($default_placeholder_urls)] ?? '');
+        }
+
+        if ($image_id > 0 || $placeholder_url !== '') {
+            $gallery_images[] = [
+                'image' => $image_id,
+                'placeholder_url' => $placeholder_url,
+            ];
+        }
+    }
+}
 $background_color = get_sub_field('background_color') ?: '#f9fafb';
 $display_mode     = get_sub_field('display_mode') ?: 'grid'; // 'grid' or 'carousel'
+$safe_image_src = static function (string $url): string {
+    $url = trim($url);
+    if ($url === '') {
+        return '';
+    }
+    // Allow inline SVG placeholders for local/mock testing.
+    if (str_starts_with($url, 'data:image/')) {
+        return esc_attr($url);
+    }
+    return esc_url($url);
+};
+
+if (empty($gallery_images) && $is_mock_placeholder_mode) {
+    $gallery_images = [
+        ['image' => 0, 'placeholder_url' => $default_placeholder_urls[0]],
+        ['image' => 0, 'placeholder_url' => $default_placeholder_urls[1]],
+        ['image' => 0, 'placeholder_url' => $default_placeholder_urls[2]],
+        ['image' => 0, 'placeholder_url' => $default_placeholder_urls[3]],
+    ];
+}
 
 // Padding controls
 $padding_classes = ['pt-5', 'pb-5'];
@@ -43,10 +114,11 @@ $section_id = 'gallery-' . uniqid();
                 <div class="w-full">
                     <div class="gallery-main-slick">
                         <?php foreach ($gallery_images as $index => $image_data) :
-                            $image_id    = $image_data['image'];
-                            $image_alt   = get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($index + 1);
-                            $image_url   = wp_get_attachment_image_url($image_id, 'large');
-                            $image_title = get_the_title($image_id) ?: 'Gallery image ' . ($index + 1);
+                            $image_id    = (int) ($image_data['image'] ?? 0);
+                            $placeholder = (string) ($image_data['placeholder_url'] ?? '');
+                            $image_alt   = $image_id > 0 ? (get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($index + 1)) : 'Gallery image ' . ($index + 1);
+                            $image_url   = $image_id > 0 ? wp_get_attachment_image_url($image_id, 'large') : $placeholder;
+                            $image_title = $image_id > 0 ? (get_the_title($image_id) ?: 'Gallery image ' . ($index + 1)) : 'Gallery image ' . ($index + 1);
                         ?>
                             <!-- right-only gutter so left side stays clean -->
                             <div class="pr-4">
@@ -57,7 +129,7 @@ $section_id = 'gallery-' . uniqid();
                                     aria-label="<?php echo esc_attr($image_alt); ?>"
                                 >
                                     <img
-                                        src="<?php echo esc_url($image_url); ?>"
+                                        src="<?php echo $safe_image_src((string) $image_url); ?>"
                                         alt="<?php echo esc_attr($image_alt); ?>"
                                         class="object-cover w-full h-full"
                                         loading="<?php echo $index < 2 ? 'eager' : 'lazy'; ?>"
@@ -135,10 +207,11 @@ $section_id = 'gallery-' . uniqid();
             ?>
 
             <?php foreach ($gallery_images as $i => $image_data) :
-                $image_id    = $image_data['image'];
-                $image_url_l = $image_id ? wp_get_attachment_image_url($image_id, 'large') : '';
-                $image_alt   = $image_id ? (get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($i + 1)) : 'Gallery image';
-                $image_title = $image_id ? (get_the_title($image_id) ?: 'Gallery image ' . ($i + 1)) : 'Gallery image';
+                $image_id    = (int) ($image_data['image'] ?? 0);
+                $placeholder = (string) ($image_data['placeholder_url'] ?? '');
+                $image_url_l = $image_id ? wp_get_attachment_image_url($image_id, 'large') : $placeholder;
+                $image_alt   = $image_id ? (get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($i + 1)) : 'Gallery image ' . ($i + 1);
+                $image_title = $image_id ? (get_the_title($image_id) ?: 'Gallery image ' . ($i + 1)) : 'Gallery image ' . ($i + 1);
                 if (!$image_url_l) {
                     $image_url_l = 'https://via.placeholder.com/1200x800/e5e7eb/6b7280?text=Image';
                 }
@@ -154,7 +227,7 @@ $section_id = 'gallery-' . uniqid();
                     >
                         <div class="relative flex flex-col justify-end items-start overflow-hidden max-md:h-[18.75rem] h-[31.25rem]">
                             <!-- Background image -->
-                            <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('<?php echo esc_url($image_url_l); ?>');"></div>
+                            <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('<?php echo $safe_image_src((string) $image_url_l); ?>');"></div>
 
                             <!-- Gradient overlay on hover/focus -->
                             <div
@@ -206,15 +279,16 @@ $section_id = 'gallery-' . uniqid();
                     <!-- Gallery Carousel (modal) -->
                     <div class="gallery-carousel">
                         <?php foreach ($gallery_images as $index => $image_data) :
-                            $image_id    = $image_data['image'];
-                            $image_alt   = get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($index + 1);
-                            $image_url   = wp_get_attachment_image_url($image_id, 'full');
-                            $image_title = get_the_title($image_id) ?: 'Gallery image ' . ($index + 1);
+                            $image_id    = (int) ($image_data['image'] ?? 0);
+                            $placeholder = (string) ($image_data['placeholder_url'] ?? '');
+                            $image_alt   = $image_id > 0 ? (get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Gallery image ' . ($index + 1)) : 'Gallery image ' . ($index + 1);
+                            $image_url   = $image_id > 0 ? wp_get_attachment_image_url($image_id, 'full') : $placeholder;
+                            $image_title = $image_id > 0 ? (get_the_title($image_id) ?: 'Gallery image ' . ($index + 1)) : 'Gallery image ' . ($index + 1);
                         ?>
                             <div class="gallery-slide">
                                 <figure class="flex flex-col items-center">
                                     <img
-                                        src="<?php echo esc_url($image_url); ?>"
+                                        src="<?php echo $safe_image_src((string) $image_url); ?>"
                                         alt="<?php echo esc_attr($image_alt); ?>"
                                         class="max-w-full max-h-[80vh] object-cover w-full h-full"
                                         loading="lazy"
@@ -432,10 +506,6 @@ $section_id = 'gallery-' . uniqid();
             });
             </script>
 
-        <?php else : ?>
-            <div class="py-12 text-center">
-                <p class="text-lg text-gray-500">No gallery images available.</p>
-            </div>
         <?php endif; ?>
     </div>
 </section>

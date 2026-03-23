@@ -1,0 +1,82 @@
+{
+  "pagination": {
+    "results": 3,
+    "pages": 1
+  },
+  "search_sentence": "Mock properties for development",
+  "ads": [
+    {
+      "id": "MOCK-1001",
+      "title": "3 Bed Semi-Detached, Rathfarnham, Dublin 14",
+      "full_address": "Rathfarnham, Dublin 14",
+      "description": "Bright three-bedroom home with private garden and off-street parking.",
+      "price_s": "EUR 595,000",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "area": "118 sqm",
+      "property_type": "House",
+      "status": "For Sale",
+      "small_thumbnail_url": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1600&q=80"
+      ],
+      "url": "https://www.daft.ie/for-sale/mock-1001"
+    },
+    {
+      "id": "MOCK-1002",
+      "title": "2 Bed Apartment, Grand Canal Dock, Dublin 2",
+      "full_address": "Grand Canal Dock, Dublin 2",
+      "description": "Modern apartment with balcony, concierge, and gym access.",
+      "price_s": "EUR 2,750 / month",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "area": "82 sqm",
+      "property_type": "Apartment",
+      "status": "For Rent",
+      "small_thumbnail_url": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "video_url": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+      "images": [
+        "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1486304873000-235643847519?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1464890100898-a385f744067f?auto=format&fit=crop&w=1600&q=80"
+      ],
+      "url": "https://www.daft.ie/for-rent/mock-1002"
+    },
+    {
+      "id": "MOCK-1003",
+      "title": "4 Bed Detached, Salthill, Galway",
+      "full_address": "Salthill, Galway",
+      "description": "Spacious detached property near promenade with sea views.",
+      "price_s": "EUR 745,000",
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "area": "176 sqm",
+      "property_type": "House",
+      "status": "Sold",
+      "small_thumbnail_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600047508788-786f3f5dcb87?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600047509358-9dc75507daeb?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600047509782-20d39509f26d?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1600&q=80",
+        "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1600&q=80"
+      ],
+      "url": "https://www.daft.ie/for-sale/mock-1003"
+    }
+  ]
+}

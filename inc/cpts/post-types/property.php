@@ -12,7 +12,7 @@ add_action('init', function () {
         'property',
         [
             'menu_icon'       => 'dashicons-admin-home',
-            'supports'        => ['title','editor','excerpt','thumbnail','revisions'],
+            'supports'        => ['title','excerpt','thumbnail','revisions'],
             'public'          => true,
             'show_ui'         => true,
             'show_in_menu'    => true,
