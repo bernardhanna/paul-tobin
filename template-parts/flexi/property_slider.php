@@ -115,20 +115,20 @@ $next_id    = $slider_id . '-next';
                   </div>
                 <?php endif; ?>
 
-                <div class="max-md:order-2  relative p-8 max-w-full text-base leading-7 bg-[#F9FAFB] max-md:bg-[#EDEDED]  w-full md:w-[417px] max-md:px-5">
-                  <h4 class="text-[#0A1119] text-2xl font-semibold leading-[26px] tracking-[-0.16px] font-secondary">
+                <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5">
+                  <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
                     <?php echo esc_html($property_title); ?>
                   </h4>
 
                   <?php if ($property_excerpt): ?>
-                    <p class="mt-4 text-[#434B53] font-primary text-base font-normal leading-[26px] tracking-normal">
+                    <p class="mt-4 text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
                       <?php echo esc_html($property_excerpt); ?>
                     </p>
                   <?php endif; ?>
 
                   <a
                     href="<?php echo esc_url($property_link); ?>"
-                    class="inline-block mt-4 font-primary text-base font-normal leading-[26px] tracking-normal underline decoration-auto decoration-solid text-primary underline-offset-auto btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:no-underline"
+                    class="inline-block mt-4 font-primary text-[0.9375rem] font-normal leading-6 tracking-normal underline decoration-auto decoration-solid text-primary underline-offset-auto btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:no-underline"
                     aria-label="<?php echo esc_attr('Read success story for ' . $property_title); ?>"
                   >
                     Read our success story
@@ -157,6 +157,31 @@ $next_id    = $slider_id . '-next';
                       <span class="max-md:justify-start self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($area); ?></span>
                     <?php endif; ?>
                   </div>
+
+                  <!-- Desktop arrows inside the black info bar -->
+                  <?php if ($slide_count > 1): ?>
+                  <nav class="hidden md:flex gap-4 md:ml-auto md:justify-end" aria-label="Property navigation">
+                    <button id="<?php echo esc_attr($prev_id); ?>"
+                            type="button"
+                            class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                            aria-label="Previous property">
+                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect width="40" height="40" fill="#F9FAFB"/>
+                        <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+
+                    <button id="<?php echo esc_attr($next_id); ?>"
+                            type="button"
+                            class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                            aria-label="Next property">
+                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <rect width="40" height="40" fill="#F9FAFB"/>
+                        <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+                  </nav>
+                  <?php endif; ?>
 
                   <!-- DISPLAY ON MOBILE THE SLIDE ARROWS HERE -->
                   <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
@@ -189,31 +214,6 @@ $next_id    = $slider_id . '-next';
           <?php endforeach; ?>
         </div>
 
-        <?php if ($slide_count > 1): ?>
-          <!-- Desktop nav only (keep as the official prev/next for Slick) -->
-          <nav class="max-md:hidden flex absolute right-[3rem] bottom-[2.4rem] z-40 gap-4 justify-end items-center"
-               aria-label="Property navigation">
-            <button id="<?php echo esc_attr($prev_id); ?>"
-                    type="button"
-                    class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
-                    aria-label="Previous property">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect width="40" height="40" fill="#F9FAFB"/>
-                <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-
-            <button id="<?php echo esc_attr($next_id); ?>"
-                    type="button"
-                    class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
-                    aria-label="Next property">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect width="40" height="40" fill="#F9FAFB"/>
-                <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </nav>
-        <?php endif; ?>
       </div>
     <?php endif; ?>
   </div>

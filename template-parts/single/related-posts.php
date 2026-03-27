@@ -145,15 +145,15 @@ $section_id = 'related-posts-' . wp_generate_uuid4();
               ></div>
 
               <div class="box-border flex flex-col justify-end items-start p-8 w-full flex-[1_0_0] max-sm:p-6 relative z-10">
-                <div class="flex flex-col items-start px-8 py-4 bg-gray-200 max-md:px-6 max-md:py-3 max-sm:px-5 max-sm:py-3">
-                  <span class="font-secondary font-semibold text-[2.125rem] leading-[2.5rem] tracking-[-0.01rem] text-[#0A1119]">
+                <div class="flex flex-col items-start px-8 py-4 max-md:px-6 max-md:py-3 max-sm:px-5 max-sm:py-3" style="background-color:#e5e7ebe5;">
+                  <span class="font-secondary font-semibold text-[1.5rem] leading-[30px] tracking-[-0.01rem] text-[#0A1119]">
                     <div class="transition-colors duration-200">
                       <h3 class="text-[inherit] leading-[inherit] font-[inherit]">
                         <?php echo esc_html($title); ?>
                       </h3>
                     </div>
                   </span>
-                  <p class="font-normal text-[1rem] leading-[1.625rem] text-[#434B53]">
+                  <p class="font-normal text-[0.9375rem] leading-6 text-[#434B53]">
                     <?php echo esc_html($date_txt); ?> • <?php echo esc_html($read_time); ?>
                   </p>
                 </div>

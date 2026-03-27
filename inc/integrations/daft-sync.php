@@ -27,6 +27,66 @@ function matrix_daft_get_option(string $name, $default = '') {
     return get_option($name, $default);
 }
 
+function matrix_daft_get_selected_soap_operations(): array {
+    $raw = matrix_daft_get_option('daft_soap_operation', ['search_sale']);
+    if (is_string($raw) && trim($raw) === 'search_sale') {
+        $raw = ['search_sale', 'search_rental'];
+    } elseif (is_string($raw) && $raw !== '') {
+        $raw = [$raw];
+    }
+    if (!is_array($raw)) {
+        $raw = ['search_sale'];
+    }
+
+    $allowed = [
+        'search_sale',
+        'search_rental',
+        'search_commercial',
+        'search_new_development',
+        'search_shortterm',
+        'search_sharing',
+        'search_parking',
+    ];
+
+    $ops = [];
+    foreach ($raw as $op) {
+        $op = trim((string) $op);
+        if ($op !== '' && in_array($op, $allowed, true)) {
+            $ops[] = $op;
+        }
+    }
+
+    if (empty($ops)) {
+        $ops[] = 'search_sale';
+    }
+
+    return array_values(array_unique($ops));
+}
+
+function matrix_daft_merge_operation_item_groups(array $operation_item_groups): array {
+    $merged = [];
+    $group_count = count($operation_item_groups);
+    if ($group_count === 0) {
+        return $merged;
+    }
+
+    $indexes = array_fill(0, $group_count, 0);
+    do {
+        $added_in_pass = false;
+        foreach ($operation_item_groups as $group_index => $group_items) {
+            $item_index = $indexes[$group_index] ?? 0;
+            if (!isset($group_items[$item_index])) {
+                continue;
+            }
+            $merged[] = $group_items[$item_index];
+            $indexes[$group_index] = $item_index + 1;
+            $added_in_pass = true;
+        }
+    } while ($added_in_pass);
+
+    return $merged;
+}
+
 function matrix_daft_register_admin_page(): void {
     add_submenu_page(
         'edit.php?post_type=property',
@@ -127,7 +187,8 @@ function matrix_daft_render_admin_page(): void {
     $configured_endpoint = (string) matrix_daft_get_option('daft_endpoint_url', '');
     $configured_method = strtoupper((string) matrix_daft_get_option('daft_http_method', 'GET'));
     $soap_wsdl_url = (string) matrix_daft_get_option('daft_soap_wsdl_url', 'http://api.daft.ie/v2/wsdl.xml');
-    $soap_operation = (string) matrix_daft_get_option('daft_soap_operation', 'search_sale');
+    $soap_operations = matrix_daft_get_selected_soap_operations();
+    $soap_operation = $soap_operations[0] ?? 'search_sale';
     $diagnostics = matrix_daft_get_connectivity_diagnostics($soap_wsdl_url);
     $known_ips_raw = (string) matrix_daft_get_option('daft_known_server_ips', "164.92.198.42");
     $known_ips = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $known_ips_raw))));
@@ -150,7 +211,7 @@ function matrix_daft_render_admin_page(): void {
                 <?php if ($request_mode === 'mock') : ?>
                     Mock payload mode (local development)
                 <?php elseif ($request_mode === 'soap') : ?>
-                    SOAP `<?php echo esc_html($soap_operation); ?>` via <?php echo esc_html($soap_wsdl_url); ?>
+                    SOAP `<?php echo esc_html(implode(', ', $soap_operations)); ?>` via <?php echo esc_html($soap_wsdl_url); ?>
                 <?php else : ?>
                     REST <?php echo $configured_endpoint !== '' ? esc_html($configured_endpoint) : 'Not set'; ?> (<?php echo esc_html($configured_method); ?>)
                 <?php endif; ?>
@@ -203,6 +264,7 @@ function matrix_daft_render_admin_page(): void {
                                     $item_id = (int) ($item['post_id'] ?? 0);
                                     $item_daft_id = (string) ($item['daft_id'] ?? '');
                                     $status_map = [
+                                        'source_operation' => 'Source Operation',
                                         'media_sync' => 'Media',
                                         'media_enrich' => 'Media Enrich',
                                         'media_image_count' => 'Media Image Count',
@@ -264,12 +326,12 @@ function matrix_daft_render_admin_page(): void {
                     <?php endif; ?>
                     <?php if (!empty($report['error'])) : ?>
                         <p><strong>Error:</strong> <?php echo esc_html($report['error']); ?></p>
-                        <?php if (!empty($report['debug']) && is_array($report['debug'])) : ?>
-                            <details style="margin-top:8px;">
-                                <summary style="cursor:pointer;">Technical Error Details</summary>
-                                <pre style="margin-top:8px;padding:10px;background:#f6f7f7;border:1px solid #dcdcde;white-space:pre-wrap;word-break:break-word;"><?php echo esc_html(wp_json_encode($report['debug'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
-                            </details>
-                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (!empty($report['debug']) && is_array($report['debug'])) : ?>
+                        <details style="margin-top:8px;">
+                            <summary style="cursor:pointer;"><?php echo !empty($report['error']) ? 'Technical Error Details' : 'Sync Diagnostics'; ?></summary>
+                            <pre style="margin-top:8px;padding:10px;background:#f6f7f7;border:1px solid #dcdcde;white-space:pre-wrap;word-break:break-word;"><?php echo esc_html(wp_json_encode($report['debug'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
+                        </details>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -410,7 +472,8 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
     }
     $body_json = trim((string) matrix_daft_get_option('daft_request_body_json', ''));
     $soap_wsdl_url = trim((string) matrix_daft_get_option('daft_soap_wsdl_url', 'http://api.daft.ie/v2/wsdl.xml'));
-    $soap_operation = trim((string) matrix_daft_get_option('daft_soap_operation', 'search_sale'));
+    $soap_operations = matrix_daft_get_selected_soap_operations();
+    $soap_operation = $soap_operations[0] ?? 'search_sale';
     $soap_query_json = trim((string) matrix_daft_get_option('daft_soap_query_json', ''));
     $mock_payload_json = trim((string) matrix_daft_get_option('daft_mock_payload_json', ''));
     $mock_gallery_placeholders = (bool) matrix_daft_get_option('daft_mock_gallery_placeholders', true);
@@ -429,6 +492,8 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
     }
 
     $payload = [];
+    $items = [];
+    $report_debug = [];
     if ($request_mode === 'mock') {
         $mock_result = matrix_daft_request_mock_data($mock_payload_json);
         if (!$mock_result['success']) {
@@ -437,20 +502,50 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
         }
 
         $payload = $mock_result['payload'];
+        $items = matrix_daft_extract_listing_items($payload);
     } elseif ($request_mode === 'soap') {
-        if ($soap_wsdl_url === '' || $soap_operation === '') {
+        if ($soap_wsdl_url === '' || empty($soap_operations)) {
             $message = 'SOAP WSDL URL or SOAP operation is missing.';
             matrix_daft_store_report($trigger, 0, 0, 0, $message);
             return ['success' => false, 'message' => $message];
         }
 
-        $soap_result = matrix_daft_request_soap($soap_wsdl_url, $soap_operation, $api_key, $soap_query_json);
-        if (!$soap_result['success']) {
-            matrix_daft_store_report($trigger, 0, 0, 0, $soap_result['message'], [], (array) ($soap_result['debug'] ?? []));
-            return ['success' => false, 'message' => $soap_result['message']];
-        }
+        $report_debug = [
+            'request_mode' => 'soap',
+            'soap_operations_selected' => array_values($soap_operations),
+            'soap_operations' => [],
+        ];
+        $operation_item_groups = [];
+        foreach ($soap_operations as $soap_operation_name) {
+            $soap_result = matrix_daft_request_soap($soap_wsdl_url, $soap_operation_name, $api_key, $soap_query_json);
+            if (!$soap_result['success']) {
+                matrix_daft_store_report($trigger, 0, 0, 0, $soap_result['message'], [], (array) ($soap_result['debug'] ?? []));
+                return ['success' => false, 'message' => $soap_result['message']];
+            }
 
-        $payload = $soap_result['payload'];
+            $payload = $soap_result['payload'];
+            $operation_items = matrix_daft_extract_listing_items($payload);
+            $soap_debug = is_array($soap_result['debug'] ?? null) ? $soap_result['debug'] : [];
+            $report_debug['soap_operations'][$soap_operation_name] = [
+                'items_extracted' => count($operation_items),
+                'pages_fetched' => (int) ($soap_debug['pages_fetched'] ?? 1),
+                'num_pages' => (int) ($soap_debug['num_pages'] ?? 1),
+                'total_results' => (int) ($soap_debug['total_results'] ?? count($operation_items)),
+                'perpage' => (int) ($soap_debug['perpage'] ?? 0),
+                'page_fetch_error' => (string) ($soap_debug['page_fetch_error'] ?? ''),
+                'page_fetch_error_page' => (int) ($soap_debug['page_fetch_error_page'] ?? 0),
+                'query_keys' => array_values((array) ($soap_debug['query_keys'] ?? [])),
+            ];
+            foreach ($operation_items as $operation_item) {
+                if (!is_array($operation_item)) {
+                    continue;
+                }
+                $operation_item['_matrix_daft_source_operation'] = $soap_operation_name;
+                $operation_item_groups[$soap_operation_name][] = $operation_item;
+            }
+        }
+        $items = matrix_daft_merge_operation_item_groups(array_values($operation_item_groups));
+        $report_debug['items_merged_total'] = count($items);
     } else {
         if ($endpoint === '') {
             $message = 'REST endpoint URL is missing.';
@@ -489,9 +584,8 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
             matrix_daft_store_report($trigger, 0, 0, 0, $message);
             return ['success' => false, 'message' => $message];
         }
+        $items = matrix_daft_extract_listing_items($payload);
     }
-
-    $items = matrix_daft_extract_listing_items($payload);
     if (empty($items)) {
         $message = 'No listing items were found in the Daft response.';
         update_option('matrix_daft_sync_cursor', 0, false);
@@ -535,8 +629,9 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
         }
 
         $listing = matrix_daft_normalize_listing($raw_item);
+        $source_operation = (string) ($raw_item['_matrix_daft_source_operation'] ?? $soap_operation);
         if ($request_mode === 'soap' && empty($listing['ad_type'])) {
-            $listing['ad_type'] = matrix_daft_map_soap_operation_to_ad_type($soap_operation);
+            $listing['ad_type'] = matrix_daft_map_soap_operation_to_ad_type($source_operation);
         }
         if ($request_mode === 'soap') {
             $listing = matrix_daft_enrich_listing_media_from_soap($listing, $soap_wsdl_url, $api_key);
@@ -550,6 +645,11 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
             $listing['daft_id'] = md5(wp_json_encode([$listing['title'], $listing['address']]));
         }
 
+        if ($listing['status'] === '') {
+            $listing['status'] = ($request_mode === 'soap')
+                ? matrix_daft_map_soap_operation_to_default_status($source_operation)
+                : '';
+        }
         if ($listing['status'] === '') {
             $listing['status'] = $default_status;
         }
@@ -638,6 +738,7 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
                 'media_call_shape' => (string) (($listing['_media_debug']['media_call_shape'] ?? '')),
                 'media_ad_type' => (string) (($listing['_media_debug']['media_ad_type'] ?? '')),
                 'media_error' => (string) (($listing['_media_debug']['media_error'] ?? '')),
+                'source_operation' => $source_operation,
             ];
         }
     }
@@ -673,7 +774,7 @@ function matrix_daft_run_import(string $trigger = 'manual'): array {
         }
     }
 
-    matrix_daft_store_report($trigger, $imported, $updated, $skipped, '', $synced_items);
+    matrix_daft_store_report($trigger, $imported, $updated, $skipped, '', $synced_items, $report_debug);
     return ['success' => true, 'message' => $message];
 }
 
@@ -834,6 +935,7 @@ function matrix_daft_normalize_listing(array $item): array {
     $price = matrix_daft_pick($item, [
         'displayPrice',
         'price',
+        'rent',
         'pricing.display',
         'pricing.price',
         'price_s',
@@ -881,6 +983,16 @@ function matrix_daft_map_soap_operation_to_ad_type(string $operation): string {
         'search_shortterm' => 'shortterm',
         'search_sharing' => 'sharing',
         'search_parking' => 'parking',
+    ];
+    return (string) ($map[$operation] ?? '');
+}
+
+function matrix_daft_map_soap_operation_to_default_status(string $operation): string {
+    $map = [
+        'search_sale' => 'For Sale',
+        'search_rental' => 'For Rent',
+        'search_shortterm' => 'For Rent',
+        'search_sharing' => 'For Rent',
     ];
     return (string) ($map[$operation] ?? '');
 }
@@ -1408,6 +1520,179 @@ function matrix_daft_format_description_html(string $description): string {
     return implode("\n", $html_parts);
 }
 
+function matrix_daft_parse_soap_query_payload(string $query_json = ''): array {
+    $query_payload = [];
+    if ($query_json !== '') {
+        $query = json_decode($query_json, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($query)) {
+            $query_payload = array_filter($query, static function ($value) {
+                return $value !== null && $value !== '' && $value !== [];
+            });
+        }
+    }
+
+    return $query_payload;
+}
+
+function matrix_daft_build_soap_parameters(string $api_key, array $query_payload): array {
+    return [
+        'api_key' => $api_key,
+        'query' => !empty($query_payload) ? json_decode(wp_json_encode($query_payload)) : new stdClass(),
+    ];
+}
+
+function matrix_daft_perform_soap_operation(SoapClient $client, string $operation, string $api_key, array $query_payload, string $wsdl_url): array {
+    try {
+        $parameters = matrix_daft_build_soap_parameters($api_key, $query_payload);
+        $result = $client->__soapCall($operation, [$parameters]);
+        if (!is_array($result) && !is_object($result)) {
+            $result = (array) $result;
+        }
+
+        $payload = json_decode(wp_json_encode($result), true);
+        if (!is_array($payload)) {
+            return [
+                'success' => false,
+                'message' => 'SOAP response could not be converted to an array.',
+                'payload' => [],
+                'debug' => [
+                    'soap_mode' => 'wrapped_query',
+                    'operation' => $operation,
+                    'wsdl' => $wsdl_url,
+                    'query_keys' => array_keys($query_payload),
+                ],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => '',
+            'payload' => $payload,
+            'debug' => [
+                'soap_mode' => 'wrapped_query',
+                'operation' => $operation,
+                'wsdl' => $wsdl_url,
+                'query_keys' => array_keys($query_payload),
+            ],
+        ];
+    } catch (Throwable $e) {
+        $message = $e->getMessage();
+        $debug = [
+            'soap_mode' => 'wrapped_query',
+            'operation' => $operation,
+            'wsdl' => $wsdl_url,
+            'query_keys' => array_keys($query_payload),
+            'error' => $message,
+        ];
+
+        $query_property_error = (bool) preg_match('/has no\s+[\'"]?query[\'"]?\s+property/i', $message);
+        if (!empty($query_payload) && $query_property_error) {
+            try {
+                $flat_parameters = array_merge(['api_key' => $api_key], $query_payload);
+                $retry_result = $client->__soapCall($operation, [$flat_parameters]);
+                $retry_payload = json_decode(wp_json_encode($retry_result), true);
+                if (is_array($retry_payload)) {
+                    return [
+                        'success' => true,
+                        'message' => '',
+                        'payload' => $retry_payload,
+                        'debug' => [
+                            'soap_mode' => 'flat_query_retry',
+                            'operation' => $operation,
+                            'wsdl' => $wsdl_url,
+                            'query_keys' => array_keys($query_payload),
+                            'retry_reason' => 'query property not accepted',
+                        ],
+                    ];
+                }
+            } catch (Throwable $retry_error) {
+                $message = $retry_error->getMessage();
+                $debug['flat_retry_error'] = $message;
+            }
+        }
+
+        return [
+            'success' => false,
+            'message' => sprintf('SOAP request failed (%s %s): %s', $operation, $wsdl_url, $message),
+            'payload' => [],
+            'debug' => $debug,
+        ];
+    }
+}
+
+function matrix_daft_paginate_soap_search_results(SoapClient $client, string $operation, string $api_key, array $query_payload, array $payload, string $wsdl_url): array {
+    if (!str_starts_with($operation, 'search_')) {
+        return [
+            'success' => true,
+            'message' => '',
+            'payload' => $payload,
+            'debug' => [
+                'pages_fetched' => 1,
+            ],
+        ];
+    }
+
+    $pagination = is_array($payload['pagination'] ?? null) ? $payload['pagination'] : [];
+    $num_pages = (int) ($pagination['num_pages'] ?? 1);
+    if ($num_pages <= 1) {
+        return [
+            'success' => true,
+            'message' => '',
+            'payload' => $payload,
+            'debug' => [
+                'pages_fetched' => 1,
+                'num_pages' => $num_pages,
+                'total_results' => (int) ($pagination['total_results'] ?? 0),
+            ],
+        ];
+    }
+
+    $merged_payload = $payload;
+    $merged_ads = is_array($payload['ads'] ?? null) ? $payload['ads'] : [];
+    $pages_fetched = 1;
+    $max_pages = min($num_pages, 25);
+
+    for ($page = 2; $page <= $max_pages; $page++) {
+        $page_query = $query_payload;
+        $page_query['page'] = $page;
+        $page_result = matrix_daft_perform_soap_operation($client, $operation, $api_key, $page_query, $wsdl_url);
+        if (!$page_result['success']) {
+            return [
+                'success' => true,
+                'message' => '',
+                'payload' => $merged_payload,
+                'debug' => [
+                    'pages_fetched' => $pages_fetched,
+                    'num_pages' => $num_pages,
+                    'total_results' => (int) ($pagination['total_results'] ?? 0),
+                    'page_fetch_error' => $page_result['message'],
+                    'page_fetch_error_page' => $page,
+                ],
+            ];
+        }
+
+        $page_payload = is_array($page_result['payload'] ?? null) ? $page_result['payload'] : [];
+        $page_ads = is_array($page_payload['ads'] ?? null) ? $page_payload['ads'] : [];
+        if (!empty($page_ads)) {
+            $merged_ads = array_merge($merged_ads, $page_ads);
+        }
+        $pages_fetched++;
+    }
+
+    $merged_payload['ads'] = $merged_ads;
+
+    return [
+        'success' => true,
+        'message' => '',
+        'payload' => $merged_payload,
+        'debug' => [
+            'pages_fetched' => $pages_fetched,
+            'num_pages' => $num_pages,
+            'total_results' => (int) ($pagination['total_results'] ?? count($merged_ads)),
+        ],
+    ];
+}
+
 function matrix_daft_request_soap(string $wsdl_url, string $operation, string $api_key, string $query_json = ''): array {
     if (!class_exists('SoapClient')) {
         return [
@@ -1450,22 +1735,15 @@ function matrix_daft_request_soap(string $wsdl_url, string $operation, string $a
         ];
     }
 
-    $query_payload = [];
-    if ($query_json !== '') {
-        $query = json_decode($query_json, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($query)) {
-            // Avoid sending empty query objects; some Daft ops reject unknown "query" member.
-            $query_payload = array_filter($query, static function ($value) {
-                return $value !== null && $value !== '' && $value !== [];
-            });
+    $query_payload = matrix_daft_parse_soap_query_payload($query_json);
+    if (str_starts_with($operation, 'search_')) {
+        if (empty($query_payload['perpage'])) {
+            $query_payload['perpage'] = 100;
+        }
+        if (empty($query_payload['page'])) {
+            $query_payload['page'] = 1;
         }
     }
-
-    $parameters = [
-        'api_key' => $api_key,
-        // Required by Daft search_* SOAP operations. Send empty object when no filters supplied.
-        'query' => !empty($query_payload) ? json_decode(wp_json_encode($query_payload)) : new stdClass(),
-    ];
 
     try {
         $client = new SoapClient($wsdl_url, [
@@ -1499,75 +1777,47 @@ function matrix_daft_request_soap(string $wsdl_url, string $operation, string $a
             }
         }
 
-        // SoapClient resolves operations dynamically via __call.
-        $result = $client->__soapCall($operation, [$parameters]);
-        if (!is_array($result) && !is_object($result)) {
-            $result = (array) $result;
+        $result = matrix_daft_perform_soap_operation($client, $operation, $api_key, $query_payload, $wsdl_url);
+        if (!$result['success']) {
+            return $result;
         }
-        $payload = json_decode(wp_json_encode($result), true);
 
-        if (!is_array($payload)) {
-            return [
-                'success' => false,
-                'message' => 'SOAP response could not be converted to an array.',
-                'payload' => [],
-            ];
-        }
+        $payload = is_array($result['payload'] ?? null) ? $result['payload'] : [];
+        $pagination_result = matrix_daft_paginate_soap_search_results($client, $operation, $api_key, $query_payload, $payload, $wsdl_url);
+        $payload = is_array($pagination_result['payload'] ?? null) ? $pagination_result['payload'] : $payload;
+        $pagination_debug = is_array($pagination_result['debug'] ?? null) ? $pagination_result['debug'] : [];
 
         return [
             'success' => true,
             'message' => '',
             'payload' => $payload,
             'debug' => [
-                'soap_mode' => 'wrapped_query',
+                'soap_mode' => (string) (($result['debug']['soap_mode'] ?? 'wrapped_query')),
                 'operation' => $operation,
                 'wsdl' => $wsdl_url,
                 'query_keys' => array_keys($query_payload),
                 'functions_count' => is_array($functions) ? count($functions) : 0,
+                'perpage' => (int) ($query_payload['perpage'] ?? 0),
+                'page' => (int) ($query_payload['page'] ?? 1),
+                'pages_fetched' => (int) ($pagination_debug['pages_fetched'] ?? 1),
+                'num_pages' => (int) ($pagination_debug['num_pages'] ?? 1),
+                'total_results' => (int) ($pagination_debug['total_results'] ?? 0),
+                'page_fetch_error' => (string) ($pagination_debug['page_fetch_error'] ?? ''),
+                'page_fetch_error_page' => (int) ($pagination_debug['page_fetch_error_page'] ?? 0),
             ],
         ];
     } catch (Throwable $e) {
-        $message = $e->getMessage();
-        $debug = [
-            'soap_mode' => 'wrapped_query',
-            'operation' => $operation,
-            'wsdl' => $wsdl_url,
-            'query_keys' => array_keys($query_payload),
-            'error' => $message,
-        ];
-
-        // Daft schema variant: some operations expect query fields at top-level, not under "query".
-        $query_property_error = (bool) preg_match('/has no\s+[\'"]?query[\'"]?\s+property/i', $message);
-        if (!empty($query_payload) && $query_property_error && isset($client) && $client instanceof SoapClient) {
-            try {
-                $flat_parameters = array_merge(['api_key' => $api_key], $query_payload);
-                $retry_result = $client->__soapCall($operation, [$flat_parameters]);
-                $retry_payload = json_decode(wp_json_encode($retry_result), true);
-                if (is_array($retry_payload)) {
-                    return [
-                        'success' => true,
-                        'message' => '',
-                        'payload' => $retry_payload,
-                        'debug' => [
-                            'soap_mode' => 'flat_query_retry',
-                            'operation' => $operation,
-                            'wsdl' => $wsdl_url,
-                            'query_keys' => array_keys($query_payload),
-                            'retry_reason' => 'query property not accepted',
-                        ],
-                    ];
-                }
-            } catch (Throwable $retry_error) {
-                $message = $retry_error->getMessage();
-                $debug['flat_retry_error'] = $message;
-            }
-        }
-
         return [
             'success' => false,
-            'message' => sprintf('SOAP request failed (%s %s): %s', $operation, $wsdl_url, $message),
+            'message' => sprintf('SOAP request failed (%s %s): %s', $operation, $wsdl_url, $e->getMessage()),
             'payload' => [],
-            'debug' => $debug,
+            'debug' => [
+                'soap_mode' => 'request_soap_outer',
+                'operation' => $operation,
+                'wsdl' => $wsdl_url,
+                'query_keys' => array_keys($query_payload),
+                'error' => $e->getMessage(),
+            ],
         ];
     }
 }

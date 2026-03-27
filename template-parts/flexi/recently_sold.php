@@ -228,8 +228,8 @@ $has_heading = !empty($heading);
                                 ></div>
 
                                 <div class="box-border flex flex-col justify-end items-start p-8 w-full flex-[1_0_0] max-sm:p-6 relative z-10">
-                                    <div class="flex flex-col items-start px-8 py-4 bg-gray-200 max-md:px-6 max-md:py-3 max-sm:px-5 max-sm:py-3">
-                                        <span class="font-secondary font-semibold text-[2.125rem] leading-[2.5rem] tracking-[-0.01rem] text-[#0A1119]">
+                                    <div class="flex flex-col items-start px-8 py-4 max-md:px-6 max-md:py-3 max-sm:px-5 max-sm:py-3" style="background-color:#e5e7ebe5;">
+                                        <span class="font-secondary font-semibold text-[1.5rem] leading-[30px] tracking-[-0.01rem] text-[#0A1119]">
                                             <div class="transition-colors duration-200" aria-describedby="property-type-<?php echo esc_attr($property_id); ?>">
                                                 <?php echo esc_html($property_title); ?>
                                             </div>

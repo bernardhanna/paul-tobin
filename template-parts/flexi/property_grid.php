@@ -146,11 +146,11 @@ function property_grid_span_classes($index) {
                                         aria-hidden="true"
                                     ></div>
 
-                                    <div class="relative p-3 px-6 m-4 bg-white sm:m-8 sm:p-4 sm:px-8">
-                                        <h3 class="font-secondary font-semibold text-xl sm:text-[32px] leading-tight sm:leading-[40px] tracking-[-0.16px] text-[#0A1119]">
+                                    <div class="relative p-3 px-6 m-4 sm:m-8 sm:p-4 sm:px-8" style="background-color:#e5e7ebe5;">
+                                        <h3 class="font-secondary font-semibold text-[1.5rem] leading-[30px] tracking-[-0.16px] text-[#0A1119]">
                                             <?php echo esc_html($title); ?>
                                         </h3>
-                                        <p class="font-primary text-sm sm:text-base leading-relaxed sm:leading-[26px] text-slate-600">
+                                        <p class="font-primary text-[0.875rem] sm:text-[0.9375rem] leading-relaxed sm:leading-6 text-slate-600">
                                             <?php echo esc_html($type_label); ?>
                                         </p>
                                     </div>

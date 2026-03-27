@@ -29,7 +29,8 @@ $fields
         'default_value' => 'http://api.daft.ie/v2/wsdl.xml',
     ])->conditional('daft_request_mode', '==', 'soap')
     ->addSelect('daft_soap_operation', [
-        'label' => 'SOAP Operation',
+        'label' => 'SOAP Operations',
+        'instructions' => 'Select one or more Daft SOAP search feeds to sync.',
         'choices' => [
             'search_sale' => 'search_sale',
             'search_rental' => 'search_rental',
@@ -39,7 +40,8 @@ $fields
             'search_sharing' => 'search_sharing',
             'search_parking' => 'search_parking',
         ],
-        'default_value' => 'search_sale',
+        'default_value' => ['search_sale', 'search_rental'],
+        'multiple' => 1,
         'ui' => 1,
         'return_format' => 'value',
     ])->conditional('daft_request_mode', '==', 'soap')
