@@ -25,6 +25,7 @@ if (have_rows('padding_settings')) {
 
 // Unique section ID
 $section_id = 'locations-find-us-' . wp_generate_uuid4();
+$needs_leaflet = false;
 ?>
 
 <section
@@ -56,6 +57,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
       <div class="grid grid-cols-1 gap-10 mt-12 w-full md:grid-cols-2 max-md:mt-10">
         <?php while (have_rows('locations')): the_row();
           $office_name   = get_sub_field('office_name');
+          $show_map      = (bool) (get_sub_field('show_map') ?? true);
           $address       = get_sub_field('address');
           $phone_numbers = get_sub_field('phone_numbers');
           $email         = get_sub_field('email');
@@ -79,11 +81,16 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
           $map_iframe_html = get_sub_field('map_iframe_html');
 
           $location_id   = 'location-' . wp_generate_uuid4();
+
+          $card_classes = 'p-8 w-full bg-[#B6C0CB] min-h-[332px]';
+          if ($show_map) {
+              $card_classes .= ' h-full';
+          }
         ?>
           <article class="flex flex-col" aria-labelledby="<?php echo esc_attr($location_id); ?>-title">
 
             <!-- Contact Information Card -->
-            <div class="p-8 w-full bg-[#B6C0CB] min-h-[332px] h-full">
+            <div class="<?php echo esc_attr($card_classes); ?>">
               <header class="pb-4">
                 <div class="flex justify-between items-center py-4 w-full">
                   <span id="<?php echo esc_attr($location_id); ?>-title" class="font-secondary text-[1.2rem] font-[600] leading-6 tracking-[0.005rem]">
@@ -139,8 +146,10 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
             </div>
 
             <!-- Map/Embed/Image -->
+            <?php if ($show_map): ?>
             <div class="w-full">
               <?php if ($map_type === 'leaflet' && $lat && $lng): ?>
+                <?php $needs_leaflet = true; ?>
                 <div
                   id="<?php echo esc_attr($location_id); ?>__map"
                   class="w-full h-[500px] overflow-hidden"
@@ -183,6 +192,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
                 </div>
               <?php endif; ?>
             </div>
+            <?php endif; ?>
 
           </article>
         <?php endwhile; ?>
@@ -199,6 +209,7 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
   .accordion-content.expanded  { max-height: 1000px; opacity: 1; }
 </style>
 
+<?php if ($needs_leaflet): ?>
 <!-- Leaflet assets (once) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -253,3 +264,4 @@ $section_id = 'locations-find-us-' . wp_generate_uuid4();
   });
 })();
 </script>
+<?php endif; ?>

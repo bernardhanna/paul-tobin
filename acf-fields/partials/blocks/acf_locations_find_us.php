@@ -29,6 +29,11 @@ $locations_find_us
                 'label' => 'Office Name',
                 'required' => 0,
             ])
+            ->addTrueFalse('show_map', [
+                'label' => 'Show map',
+                'ui' => 1,
+                'default_value' => 1,
+            ])
             ->addTextarea('address', [
                 'label' => 'Address',
                 'rows' => 4,
@@ -51,6 +56,9 @@ $locations_find_us
                     'image'   => 'Static Image',
                 ],
                 'default_value' => 'image',
+                'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']]
+                ],
             ])
 
             // Static image option
@@ -61,6 +69,7 @@ $locations_find_us
                 'preview_size' => 'medium',
                 'required' => 0,
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'image']]
                 ],
             ])
@@ -70,6 +79,7 @@ $locations_find_us
                 'label' => 'Latitude',
                 'step' => 0.000001,
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]
                 ],
             ])
@@ -77,6 +87,7 @@ $locations_find_us
                 'label' => 'Longitude',
                 'step' => 0.000001,
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]
                 ],
             ])
@@ -85,6 +96,7 @@ $locations_find_us
                 'min' => 3, 'max' => 20,
                 'default_value' => 15,
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]
                 ],
             ])
@@ -93,6 +105,7 @@ $locations_find_us
                 'return_format' => 'id',
                 'preview_size' => 'thumbnail',
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]
                 ],
             ])
@@ -101,6 +114,10 @@ $locations_find_us
                   'instructions' => 'Paste your Jawg Maps access token.',
                   'default_value' => 'zxWPtYn9xCoXLAzkN6ckqMOHRw7Xf0zsTWBN0EmR7BSjUMW2F0hsBScanw15iLpX',
                   'required' => 0,
+                  'conditional_logic' => [
+                      [['field' => 'show_map','operator'=>'==','value'=>'1']],
+                      [['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]
+                  ],
               ])
             // iframe embed option
             ->addTextarea('map_iframe_html', [
@@ -108,6 +125,7 @@ $locations_find_us
                 'instructions' => 'Paste the full iframe embed code (Google Maps, etc.)',
                 'rows' => 3,
                 'conditional_logic' => [
+                    [['field' => 'show_map','operator'=>'==','value'=>'1']],
                     [['field' => 'map_display_type','operator'=>'==','value'=>'iframe']]
                 ],
             ])

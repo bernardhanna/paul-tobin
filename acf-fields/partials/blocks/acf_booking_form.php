@@ -50,6 +50,11 @@ $booking_form
         'min' => 1,
     ])
       ->addText('office_name', ['label' => 'Office Name', 'required' => 0])
+      ->addTrueFalse('show_map', [
+          'label' => 'Show map',
+          'ui' => 1,
+          'default_value' => 1,
+      ])
       ->addTextarea('address', ['label' => 'Address', 'rows' => 4, 'required' => 0])
       ->addTextarea('phone_numbers', ['label' => 'Phone Numbers (one per line)', 'rows' => 3])
       ->addEmail('email', ['label' => 'Email Address'])
@@ -64,35 +69,51 @@ $booking_form
               'image'   => 'Static Image',
           ],
           'default_value' => 'leaflet',
+          'conditional_logic' => [[['field' => 'show_map','operator'=>'==','value'=>'1']]],
       ])
 
       // Leaflet settings (per-location)
       ->addNumber('latitude', [
           'label' => 'Latitude',
           'step' => 0.000001,
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']
+          ]],
       ])
       ->addNumber('longitude', [
           'label' => 'Longitude',
           'step' => 0.000001,
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']
+          ]],
       ])
       ->addNumber('map_zoom', [
           'label' => 'Zoom (3–20)',
           'min' => 3, 'max' => 20, 'step' => 1,
           'default_value' => 15,
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']
+          ]],
       ])
       ->addImage('map_icon', [
           'label' => 'Marker Icon (optional)',
           'return_format' => 'id',
           'preview_size' => 'thumbnail',
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']
+          ]],
       ])
       ->addText('tile_api_key', [
           'label' => 'Jawg Maps Token (optional override)',
           'instructions' => 'Leave empty to use the global default (Theme Options).',
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'leaflet']
+          ]],
       ])
 
       // iframe map
@@ -100,7 +121,10 @@ $booking_form
           'label' => 'Embed iframe HTML',
           'instructions' => 'Paste the full embed code (Google Maps, etc.)',
           'rows' => 3,
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'iframe']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'iframe']
+          ]],
       ])
 
       // static image map
@@ -108,7 +132,10 @@ $booking_form
           'label' => 'Map/Location Image',
           'return_format' => 'id',
           'preview_size' => 'medium',
-          'conditional_logic' => [[['field' => 'map_display_type','operator'=>'==','value'=>'image']]],
+          'conditional_logic' => [[
+              ['field' => 'show_map','operator'=>'==','value'=>'1'],
+              ['field' => 'map_display_type','operator'=>'==','value'=>'image']
+          ]],
       ])
 
       ->addTrueFalse('is_expanded', [

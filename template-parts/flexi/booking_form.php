@@ -38,6 +38,7 @@ if (!in_array($find_us_heading_tag, $allowed_tags, true)) { $find_us_heading_tag
 
 // Unique section id
 $section_id = 'booking-form-' . wp_generate_uuid4();
+$needs_leaflet = false;
 
 // =================== FORM PLUMBING INJECTION ======================
 if ($form_markup) {
@@ -182,6 +183,7 @@ if ($form_markup) {
                   $phone_numbers    = get_sub_field('phone_numbers');
                   $email            = get_sub_field('email');
                   $team_link        = get_sub_field('team_link');
+                  $show_map         = (bool) (get_sub_field('show_map') ?? true);
 
                   // Per-location map controls (gracefully handle missing fields)
                   $loc_map_type     = get_sub_field('map_display_type') ?: 'leaflet'; // leaflet | iframe | image
@@ -196,6 +198,9 @@ if ($form_markup) {
                   $marker_icon_url  = $marker_icon_id ? wp_get_attachment_image_url($marker_icon_id, 'full') : '';
 
                   $map_image_id     = get_sub_field('map_image'); // for image mode fallback
+                  if ($show_map && $loc_map_type === 'leaflet') {
+                      $needs_leaflet = true;
+                  }
 
                   $is_expanded      = (bool) get_sub_field('is_expanded');
 
@@ -324,6 +329,7 @@ if ($form_markup) {
                         </div>
                       <?php endif; ?>
 
+                      <?php if ($show_map): ?>
                       <!-- Per-location MAP -->
                       <div class="w-full">
                         <?php if ($loc_map_type === 'iframe' && !empty($loc_iframe)): ?>
@@ -367,6 +373,7 @@ if ($form_markup) {
                         <?php endif; ?>
                       </div>
                       <!-- /Per-location MAP -->
+                      <?php endif; ?>
                     </div>
                   </div>
                 </article>
@@ -389,15 +396,25 @@ if ($form_markup) {
   .accordion-content.expanded  { max-height: 1000px; opacity: 1; }
 </style>
 
+<?php if ($needs_leaflet): ?>
 <!-- Leaflet assets (once) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<?php endif; ?>
 
 <script>
 /* Form validation (unchanged) */
 (function() {
   const form = document.querySelector('form[role="form"]');
   if (!form) return;
+
+  // Enforce mandatory fields for genuine enquiries (even if pasted markup changes).
+  ['first-name', 'last-name', 'email-address', 'phone-number', 'property-address'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.setAttribute('required', '');
+    el.setAttribute('aria-required', 'true');
+  });
 
   const byId = (id) => document.getElementById(id);
   const getErrorEl = (field) => field && byId(field.id + '-error');
@@ -590,6 +607,31 @@ if ($form_markup) {
 
 /* Accordion + per-location map initialization */
 (function() {
+  if (<?php echo $needs_leaflet ? 'false' : 'true'; ?>) {
+    // No leaflet maps are rendered; keep accordion behavior but skip Leaflet init.
+    const triggers = document.querySelectorAll('[data-accordion-trigger]');
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        const contentId  = this.getAttribute('aria-controls');
+        const content    = document.getElementById(contentId);
+        const icon       = this.querySelector('svg');
+
+        this.setAttribute('aria-expanded', !isExpanded);
+        if (content) {
+          content.classList.toggle('expanded', !isExpanded);
+          content.classList.toggle('collapsed', isExpanded);
+        }
+        if (icon) icon.classList.toggle('rotate-180', !isExpanded);
+      });
+
+      trigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+      });
+    });
+    return;
+  }
+
   const TEST_JAWG_TOKEN = 'zxWPtYn9xCoXLAzkN6ckqMOHRw7Xf0zsTWBN0EmR7BSjUMW2F0hsBScanw15iLpX';
 
   function initLeafletMap(container) {
