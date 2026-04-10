@@ -192,24 +192,22 @@ $next_id    = $slider_id . '-next';
         <?php if ($slide_count > 1): ?>
         <!-- Desktop arrows: same bottom strip + padding as slide black bar (bg-primary row) so they sit on the bar, not below it -->
         <nav class="property-slider-nav pointer-events-none" aria-label="Property navigation">
-          <div class="flex gap-4 items-center justify-end pointer-events-auto pr-12 pl-8 md:pr-16 lg:pr-20">
+          <div class="property-slider-nav__inner flex w-full items-center justify-end gap-2 pointer-events-auto md:gap-3 md:pr-8">
           <button id="<?php echo esc_attr($prev_id); ?>"
                   type="button"
-                  class="flex shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="property-slider-nav__btn flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/5 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 md:h-10 md:w-10"
                   aria-label="Previous property">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <rect width="40" height="40" fill="#F9FAFB"/>
-              <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+            <svg class="h-4 w-4 md:h-[18px] md:w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
 
           <button id="<?php echo esc_attr($next_id); ?>"
                   type="button"
-                  class="flex shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="property-slider-nav__btn flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/5 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 md:h-10 md:w-10"
                   aria-label="Next property">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <rect width="40" height="40" fill="#F9FAFB"/>
-              <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+            <svg class="h-4 w-4 md:h-[18px] md:w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           </div>
@@ -314,7 +312,7 @@ $next_id    = $slider_id . '-next';
 }
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
-/* Fixed overlay: Slick must not own these buttons (arrows: false) — no DOM reparenting on fade */
+/* Fixed overlay: match slide md:p-8 so controls sit on the black bar, not past it */
 #<?php echo esc_attr($section_id); ?> .property-slider-nav {
   position: absolute;
   left: 0;
@@ -328,13 +326,13 @@ $next_id    = $slider_id . '-next';
     display: flex;
     align-items: center;
     min-height: 4.75rem;
+    left: 2rem;
+    right: 2rem;
   }
 }
-#<?php echo esc_attr($section_id); ?> .property-slider-nav > div {
-  width: 100%;
+#<?php echo esc_attr($section_id); ?> .property-slider-nav > .property-slider-nav__inner {
   min-height: 4.75rem;
-  display: flex;
-  align-items: center;
+  box-sizing: border-box;
 }
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-list {
   position: relative;
