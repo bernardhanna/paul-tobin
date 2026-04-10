@@ -325,6 +325,15 @@ jQuery(function($){
   height: auto !important;
   display: flex !important;
   align-self: stretch;
+  box-sizing: border-box !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+@media (min-width: 768px) {
+  .testimonials-slider .slick-slide {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
 .testimonials-slider .slick-slide > div {
   display: flex !important;

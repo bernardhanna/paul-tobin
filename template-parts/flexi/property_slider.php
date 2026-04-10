@@ -191,10 +191,11 @@ $next_id    = $slider_id . '-next';
 
         <?php if ($slide_count > 1): ?>
         <!-- Desktop arrows: same bottom strip + padding as slide black bar (bg-primary row) so they sit on the bar, not below it -->
-        <nav class="hidden md:flex absolute inset-x-0 z-[60] gap-4 items-center justify-end px-8 pointer-events-none bottom-8 h-[4.75rem]" aria-label="Property navigation">
+        <nav class="property-slider-nav pointer-events-none" aria-label="Property navigation">
+          <div class="flex gap-4 items-center justify-end pointer-events-auto pr-12 pl-8 md:pr-16 lg:pr-20">
           <button id="<?php echo esc_attr($prev_id); ?>"
                   type="button"
-                  class="flex shrink-0 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="flex shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                   aria-label="Previous property">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="40" height="40" fill="#F9FAFB"/>
@@ -204,13 +205,14 @@ $next_id    = $slider_id . '-next';
 
           <button id="<?php echo esc_attr($next_id); ?>"
                   type="button"
-                  class="flex shrink-0 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="flex shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                   aria-label="Next property">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="40" height="40" fill="#F9FAFB"/>
               <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </button>
+          </div>
         </nav>
         <?php endif; ?>
 
@@ -228,14 +230,13 @@ $next_id    = $slider_id . '-next';
       var $scope     = $('#<?php echo esc_js($section_id); ?>');
       var slideCount = <?php echo (int) $slide_count; ?>;
       var $slider    = $scope.find('.property-slider');
-      var $prev      = $scope.find('#<?php echo esc_js($prev_id); ?>');
-      var $next      = $scope.find('#<?php echo esc_js($next_id); ?>');
 
       if (!$slider.length || $slider.hasClass('slick-initialized')) return;
       if (slideCount < 2) return;
 
     var opts = {
       dots: false,
+      arrows: false,
       speed: 350,
       cssEase: 'ease-out',
       autoplay: true,
@@ -244,8 +245,6 @@ $next_id    = $slider_id . '-next';
       slidesToScroll: 1,
       centerMode: false,
       variableWidth: false,
-      prevArrow: $prev,
-      nextArrow: $next,
       accessibility: true,
       focusOnSelect: false,
       pauseOnHover: true,
@@ -262,6 +261,15 @@ $next_id    = $slider_id . '-next';
     $slider.slick('setPosition');
     $slider.slick('slickPlay');
 
+    $scope.on('click', '#<?php echo esc_js($prev_id); ?>, #<?php echo esc_js($next_id); ?>', function (e) {
+      e.preventDefault();
+      if (this.id === '<?php echo esc_js($prev_id); ?>') {
+        $slider.slick('slickPrev');
+      } else {
+        $slider.slick('slickNext');
+      }
+    });
+
     $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
       e.preventDefault();
       $slider.slick('slickPrev');
@@ -271,7 +279,7 @@ $next_id    = $slider_id . '-next';
       $slider.slick('slickNext');
     });
 
-    $scope.on('keydown', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    $scope.on('keydown', '#<?php echo esc_js($prev_id); ?>, #<?php echo esc_js($next_id); ?>, [data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         $(this).trigger('click');
@@ -306,7 +314,28 @@ $next_id    = $slider_id . '-next';
 }
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
-#<?php echo esc_attr($section_id); ?> nav[aria-label="Property navigation"] { z-index: 50; }
+/* Fixed overlay: Slick must not own these buttons (arrows: false) — no DOM reparenting on fade */
+#<?php echo esc_attr($section_id); ?> .property-slider-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2rem;
+  z-index: 60;
+  display: none;
+}
+@media (min-width: 768px) {
+  #<?php echo esc_attr($section_id); ?> .property-slider-nav {
+    display: flex;
+    align-items: center;
+    min-height: 4.75rem;
+  }
+}
+#<?php echo esc_attr($section_id); ?> .property-slider-nav > div {
+  width: 100%;
+  min-height: 4.75rem;
+  display: flex;
+  align-items: center;
+}
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-list {
   position: relative;
   overflow: hidden !important;
