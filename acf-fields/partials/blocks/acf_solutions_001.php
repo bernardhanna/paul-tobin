@@ -41,6 +41,12 @@ $solutions_001
             'instructions' => 'Enter the main action word (e.g., rent, sell, buy).',
             'placeholder' => 'rent',
         ])
+        ->addText('subtitle', [
+            'label' => 'Subtitle',
+            'instructions' => 'Line shown under the action word (e.g. “my property”).',
+            'default_value' => 'my property',
+            'placeholder' => 'my property',
+        ])
         ->addWysiwyg('description', [
             'label' => 'Description',
             'instructions' => 'Enter the description text for this solution.',

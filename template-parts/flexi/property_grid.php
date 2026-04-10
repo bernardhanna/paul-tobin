@@ -146,7 +146,7 @@ function property_grid_span_classes($index) {
                                         aria-hidden="true"
                                     ></div>
 
-                                    <div class="relative p-3 px-6 m-4 bg-gray-200/90 sm:m-8 sm:p-4 sm:px-8">
+                                    <div class="relative p-3 px-6 m-4 sm:m-8 sm:p-4 sm:px-8" style="background-color:#e5e7ebe5;">
                                         <h3 class="font-secondary text-xl font-semibold leading-6 tracking-[-0.16px] text-[#0A1119]">
                                             <?php echo esc_html($title); ?>
                                         </h3>

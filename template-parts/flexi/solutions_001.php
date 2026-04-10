@@ -103,6 +103,10 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                 <div class="grid grid-cols-1 gap-8 items-stretch mt-12 w-full md:grid-cols-3 max-md:mt-10 max-md:max-w-full" role="list">
                     <?php foreach ($solutions as $index => $solution):
                         $action_word     = $solution['action_word'] ?? '';
+                        $subtitle        = isset($solution['subtitle']) ? trim((string) $solution['subtitle']) : '';
+                        if ($subtitle === '') {
+                            $subtitle = 'my property';
+                        }
                         $description     = $solution['description'] ?? '';
                         $button_link     = $solution['button_link'] ?? '';
                         $underline_color = $fixed_colors[$index] ?? $fixed_colors[0];
@@ -127,9 +131,6 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                     >
                         <div class="flex flex-col justify-center w-full text-center">
                             <div class="flex flex-col items-center w-full text-2xl font-semibold tracking-normal leading-none text-primary">
-                                <p>
-                                    I want to
-                                </p>
 
                                 <div class="flex flex-col justify-center items-center text-[4rem] font-bold leading-none whitespace-nowrap max-md:text-4xl">
                                     <span
@@ -142,7 +143,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                                 </div>
 
                                 <p>
-                                    my property
+                                    <?php echo esc_html($subtitle); ?>
                                 </p>
                             </div>
 

@@ -190,10 +190,11 @@ $next_id    = $slider_id . '-next';
         </div>
 
         <?php if ($slide_count > 1): ?>
-        <nav class="hidden md:flex gap-4 absolute z-[60] bottom-6 right-8 md:bottom-8 md:right-12 pointer-events-auto" aria-label="Property navigation">
+        <!-- Desktop arrows: same bottom strip + padding as slide black bar (bg-primary row) so they sit on the bar, not below it -->
+        <nav class="hidden md:flex absolute inset-x-0 bottom-0 z-[60] gap-4 items-center justify-end px-8 py-4 pointer-events-none max-md:px-5 md:bottom-8" aria-label="Property navigation">
           <button id="<?php echo esc_attr($prev_id); ?>"
                   type="button"
-                  class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="flex shrink-0 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                   aria-label="Previous property">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="40" height="40" fill="#F9FAFB"/>
@@ -203,7 +204,7 @@ $next_id    = $slider_id . '-next';
 
           <button id="<?php echo esc_attr($next_id); ?>"
                   type="button"
-                  class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  class="flex shrink-0 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                   aria-label="Next property">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="40" height="40" fill="#F9FAFB"/>
@@ -237,7 +238,7 @@ $next_id    = $slider_id . '-next';
       dots: false,
       speed: 500,
       cssEase: 'linear',
-      autoplay: slideCount > 1,
+      autoplay: true,
       autoplaySpeed: 5000,
       slidesToShow: 1,
       slidesToScroll: 1,
@@ -249,17 +250,14 @@ $next_id    = $slider_id . '-next';
       pauseOnFocus: false,
       swipe: true,
       touchMove: true,
-      infinite: slideCount > 1
+      infinite: true,
+      fade: false,
+      waitForAnimate: false
     };
-
-    if (slideCount >= 3) {
-      opts.fade = true;
-    } else {
-      opts.fade = false;
-    }
 
     $slider.slick(opts);
 
+    $slider.slick('setPosition');
     $slider.slick('slickPlay');
 
     $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
@@ -293,6 +291,7 @@ $next_id    = $slider_id . '-next';
   } else {
     initPropertySliderSlick();
   }
+  window.addEventListener('load', initPropertySliderSlick);
 })();
 </script>
 
@@ -306,4 +305,5 @@ $next_id    = $slider_id . '-next';
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
 #<?php echo esc_attr($section_id); ?> nav[aria-label="Property navigation"] { z-index: 50; }
+#<?php echo esc_attr($section_id); ?> .property-slider .slick-list { position: relative; }
 </style>
