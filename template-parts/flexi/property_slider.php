@@ -160,7 +160,7 @@ $slider_id  = $section_id;
                   <nav class="property-slider__desktop-nav flex shrink-0 items-center gap-0.5 max-md:hidden" aria-label="Property navigation">
                     <button
                       type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/10 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-[#F9FAFB] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
                       aria-label="Previous property"
                       data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
                     >
@@ -170,7 +170,7 @@ $slider_id  = $section_id;
                     </button>
                     <button
                       type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/10 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-[#F9FAFB] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
                       aria-label="Next property"
                       data-desktop-next="<?php echo esc_attr($slider_id); ?>"
                     >
@@ -233,10 +233,10 @@ $slider_id  = $section_id;
     var opts = {
       dots: false,
       arrows: false,
-      speed: 250,
+      speed: 500,
       cssEase: 'ease-out',
       autoplay: true,
-      autoplaySpeed: 1000,
+      autoplaySpeed: 2000,
       slidesToShow: 1,
       slidesToScroll: 1,
       centerMode: false,

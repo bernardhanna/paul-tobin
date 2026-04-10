@@ -1473,9 +1473,7 @@ blockquote.right {
   list-style: none;
 }
 
-.slick-active button {
-  @apply bg-primary; /* Active state using Tailwind's primary color */
-}
+/* Do not use bare .slick-active button — it matches every button inside the active slide (e.g. property carousel controls). Use .slick-dots li.slick-active button above. */
 
 .clinic-link {
    @apply py-2 text-secondary hover:underline;
