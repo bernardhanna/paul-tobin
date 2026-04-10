@@ -15,7 +15,7 @@ $padding_top = $not_found_settings['padding_top'] ?? 'py-10';
 $padding_bottom = $not_found_settings['padding_bottom'] ?? 'pb-10';
 ?>
 
-<main class="flex overflow-hidden justify-center items-center w-full min-h-screen site-main"
+<main id="primary" class="flex overflow-hidden justify-center items-center w-full min-h-screen site-main" tabindex="-1"
   style="background-color: <?php echo esc_attr($bg_color); ?>; color: <?php echo esc_attr($text_color); ?>;">
 
       <div

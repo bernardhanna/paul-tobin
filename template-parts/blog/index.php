@@ -321,7 +321,7 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
     </div>
 
     <!-- Blog Posts Grid - Updated to 3 columns -->
-    <main class="w-full" role="main" aria-label="Blog posts">
+    <main id="primary" class="w-full" role="main" aria-label="Blog posts" tabindex="-1">
       <div class="flex flex-col">
         <div class="flex flex-col items-center w-full max-md:max-w-full">
           <?php

@@ -32,7 +32,7 @@ $content_box_border_width = get_sub_field('content_box_border_width');
 // Layout settings
 $content_box_position = get_sub_field('content_box_position');
 
-// HEIGHT select ('500'|'665') -> fixed classes so Tailwind keeps them
+// HEIGHT select ('500'|'665'); inner pages use min-height so the section can grow with content
 $raw_max_height = get_sub_field('max_height');
 if (empty($raw_max_height) && function_exists('get_sub_field_object')) {
     $obj = get_sub_field_object('max_height');
@@ -45,7 +45,14 @@ $max_height_choice = (string) $raw_max_height;
 if ($max_height_choice === '665px') $max_height_choice = '665';
 if ($max_height_choice === '500px') $max_height_choice = '500';
 if (!in_array($max_height_choice, ['500','665'], true)) $max_height_choice = '500';
-$height_class = ($max_height_choice === '665') ? 'h-[665px]' : 'h-[500px]';
+
+// Front page keeps the original fixed-height / bottom-aligned box; inner pages use min-height + header clearance.
+$is_front_hero = is_front_page();
+if ($is_front_hero) {
+    $height_class = ($max_height_choice === '665') ? 'h-[665px]' : 'h-[500px]';
+} else {
+    $height_class = ($max_height_choice === '665') ? 'min-h-[665px] h-auto' : 'min-h-[500px] h-auto';
+}
 
 // Padding
 $padding_classes = [];
@@ -188,12 +195,36 @@ if ($content_box_border_color && $content_box_border_width) {
     $content_box_style .= "border-color: {$content_box_border_color}; border-width: {$content_box_border_width}px;";
 }
 
-// Content position
-$position_classes = match ($content_box_position) {
-    'center' => 'justify-center items-center',
-    'right'  => 'justify-end items-end',
-    default  => 'justify-start items-end',
-};
+// Content position: inner pages align from top + grow down; front page keeps bottom-aligned box
+if ($is_front_hero) {
+    $position_classes = match ($content_box_position) {
+        'center' => 'justify-center items-center',
+        'right'  => 'justify-end items-end',
+        default  => 'justify-start items-end',
+    };
+} else {
+    $position_classes = match ($content_box_position) {
+        'center' => 'justify-center items-center',
+        'right'  => 'justify-end items-start',
+        default  => 'justify-start items-start',
+    };
+}
+
+if ($is_front_hero) {
+    $hero_inner_row_class = 'relative z-20 flex max-w-container w-full mx-auto max-md:p-0';
+    $hero_box_class       = 'flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 md:m-[2rem] pt-[1rem]';
+    $hero_heading_class   = 'text-[#0A1119] font-secondary text-[38px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]';
+    $hero_divider_class   = 'flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]';
+    $hero_desc_class      = 'font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]';
+    $hero_btn_class       = 'relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn';
+} else {
+    $hero_inner_row_class = 'relative z-20 flex max-w-container w-full mx-auto max-md:p-0 md:py-8';
+    $hero_box_class       = 'flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 md:mx-[2rem] md:mb-[2rem] md:mt-[7rem]';
+    $hero_heading_class   = 'text-[#0A1119] font-secondary text-[38px] font-semibold leading-[40px] tracking-[-0.16px] w-full';
+    $hero_divider_class   = 'flex relative left-[-3px] justify-between items-start w-[71px] max-sm:w-[60px]';
+    $hero_desc_class      = 'font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor';
+    $hero_btn_class       = 'flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn';
+}
 
 // Content checks
 $has_heading     = !empty($heading);
@@ -205,8 +236,12 @@ $has_content     = $has_heading || $has_description || $has_button;
 <section
     id="<?php echo esc_attr($section_id); ?>"
     class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
-    <?php echo $has_heading ? 'aria-labelledby="' . esc_attr($section_id) . '-heading"' : ''; ?>
-    role="banner"
+    role="region"
+    <?php if ($has_heading): ?>
+    aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
+    <?php else: ?>
+    aria-label="<?php echo esc_attr__('Page hero', 'matrix-starter'); ?>"
+    <?php endif; ?>
 >
     <!-- Background layers -->
     <?php echo $image_desktop_bg; // md+ image layer ?>
@@ -223,22 +258,22 @@ $has_content     = $has_heading || $has_description || $has_button;
 
     <?php if ($has_content): ?>
     <!-- Content -->
-    <div class="relative z-20 flex max-w-container w-full mx-auto max-md:p-0 <?php echo esc_attr($position_classes); ?>">
+    <div class="<?php echo esc_attr($hero_inner_row_class . ' ' . $position_classes); ?>">
         <div class="w-full">
-            <div class="flex flex-col gap-6 items-start p-8 border-4 border-solid max-w-[425px] max-md:p-6 max-md:max-w-full max-sm:gap-5 max-sm:p-5 md:m-[2rem] pt-[1rem]"
+            <div class="<?php echo esc_attr($hero_box_class); ?>"
                  style="<?php echo esc_attr($content_box_style); ?>">
 
                 <?php if ($has_heading): ?>
                     <<?php echo esc_attr($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
-                        class="text-[#0A1119] font-secondary text-[38px] font-semibold leading-[40px] tracking-[-0.16px] w-full relative top-[0.8rem]"
+                        class="<?php echo esc_attr($hero_heading_class); ?>"
                     >
                         <?php echo esc_html($heading); ?>
                     </<?php echo esc_attr($heading_tag); ?>>
                 <?php endif; ?>
 
                 <?php if ($has_heading || $has_description || $has_button): ?>
-                    <div class="flex relative left-[-3px] top-[0.8rem] justify-between items-start w-[71px] max-sm:w-[60px]" aria-hidden="true">
+                    <div class="<?php echo esc_attr($hero_divider_class); ?>" aria-hidden="true">
                         <div class="bg-[#EF7B10] flex-1 h-[5px]"></div>
                         <div class="bg-[#0098D8] flex-1 h-[5px]"></div>
                         <div class="bg-[#B6C0C0] flex-1 h-[5px]"></div>
@@ -247,14 +282,14 @@ $has_content     = $has_heading || $has_description || $has_button;
                 <?php endif; ?>
 
                 <?php if ($has_description): ?>
-                    <div class="font-primary w-full text-base tracking-normal leading-7 text-[#434B53] max-sm:text-sm max-sm:leading-6 wp_editor relative top-[10px] left-[-3px]">
+                    <div class="<?php echo esc_attr($hero_desc_class); ?>">
                         <?php echo wp_kses_post($description); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($has_button): ?>
                     <a href="<?php echo esc_url($button['url']); ?>"
-                       class="relative top-[5px] left-[-2px] flex gap-2.5 justify-center items-center self-stretch px-6 py-0 w-full h-11 whitespace-nowrap transition-all duration-200 ease-in-out cursor-pointer bg-[#0A1119] text-slate-50 hover:bg-[#40BFF5] hover:text-black  focus:bg-[#40BFF5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A1119] max-sm:px-5 max-sm:h-12 btn"
+                       class="<?php echo esc_attr($hero_btn_class); ?>"
                        target="<?php echo esc_attr($button['target'] ?? '_self'); ?>"
                        aria-label="<?php echo esc_attr($button['title']); ?>">
                         <span class="text-sm font-semibold tracking-normal leading-6"><?php echo esc_html($button['title']); ?></span>

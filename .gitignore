@@ -35,4 +35,8 @@ yarn-error.log*
 # Test coverage
 coverage/
 
+# Playwright (local runs)
+test-results/
+tests/playwright-report/
+
 # Optional (depending on preference)

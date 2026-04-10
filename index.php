@@ -269,7 +269,7 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
         </div>
 
         <!-- Blog Posts Grid — property-card design -->
-        <main class="w-full" role="main" aria-label="Blog posts">
+        <main id="primary" class="w-full" role="main" aria-label="Blog posts" tabindex="-1">
           <!-- Below lg: 2 columns with the 3rd item spanning 2 cols; At lg: 3 equal columns -->
           <div class="grid grid-cols-1 gap-12 w-full sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 max-md:gap-8 max-sm:gap-6">
             <?php

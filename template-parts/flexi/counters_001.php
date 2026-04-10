@@ -19,6 +19,17 @@ if (have_rows('padding_settings')) {
     }
 }
 
+$allowed_section_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'];
+if (!in_array($heading_tag, $allowed_section_tags, true)) {
+    $heading_tag = 'h2';
+}
+$heading_levels = ['h1' => 1, 'h2' => 2, 'h3' => 3, 'h4' => 4, 'h5' => 5, 'h6' => 6];
+// Card titles: one level under the section heading when it is a real heading; else h2 (follows page h1).
+$card_heading_tag = 'h2';
+if (!empty($heading) && isset($heading_levels[$heading_tag])) {
+    $card_heading_tag = 'h' . min(6, $heading_levels[$heading_tag] + 1);
+}
+
 $counters = [];
 if (have_rows('counters')) {
     while (have_rows('counters')) {
@@ -86,9 +97,9 @@ if (have_rows('counters')) {
                             </div>
 
                             <?php if (!empty($counter['title'])): ?>
-                                <h3 class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-center font-secondary text-primary text-[24px] max-lg:text-2xl max-lg:font-semibold max-lg:leading-[26px] max-lg:tracking-[-0.16px]">
+                                <<?php echo esc_attr($card_heading_tag); ?> class="self-stretch text-2xl font-semibold tracking-normal leading-7 text-center font-secondary text-primary text-[24px] max-lg:text-2xl max-lg:font-semibold max-lg:leading-[26px] max-lg:tracking-[-0.16px]">
                                     <?php echo esc_html($counter['title']); ?>
-                                </h3>
+                                </<?php echo esc_attr($card_heading_tag); ?>>
                             <?php endif; ?>
 
                             <?php if (!empty($counter['description'])): ?>

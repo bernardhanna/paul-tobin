@@ -2,7 +2,7 @@
 get_header();
 ?>
   
-<main class="overflow-hidden mx-auto w-full">
+<main id="primary" class="overflow-hidden mx-auto w-full" tabindex="-1">
     <?php
     if (function_exists('load_hero_templates')) {
         load_hero_templates();

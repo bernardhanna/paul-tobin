@@ -85,7 +85,7 @@ $copyright_tpl = get_field('copyright_text', 'option') ?: '© {year} Paul Tobin 
 $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
 ?>
 
-<div class="flex overflow-hidden relative bg-gray-50" role="contentinfo" aria-label="Site footer">
+<div class="flex overflow-hidden relative bg-gray-50">
   <div class="flex flex-col gap-5 justify-center items-center px-8 pt-20 pb-12 w-full max-md:px-5 md:gap-12 max-sm:gap-8 max-sm:px-4 max-sm:pt-8 max-sm:pb-6">
 
     <!-- Main Footer Content -->
@@ -366,5 +366,3 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
     </div>
   </div>
 </div>
-
-<?php wp_footer(); ?>

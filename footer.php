@@ -1,5 +1,5 @@
 <?php get_template_part('template-parts/footer/newsletter'); ?>
-<footer class="overflow-hidden w-full bg-secondary">
+<footer class="overflow-hidden w-full bg-secondary" aria-label="<?php echo esc_attr__('Site footer', 'matrix-starter'); ?>">
     <?php get_template_part('template-parts/footer/footer'); ?>
 
     <?php get_template_part('template-parts/footer/copyright'); ?>

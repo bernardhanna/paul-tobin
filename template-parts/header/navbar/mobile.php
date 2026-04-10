@@ -55,8 +55,9 @@ $menu_array = $primary_navigation->toArray();
     :class="{ 'is-active z-50 bg-transparent hover:bg-transparent flex items-center justify-center': isOpen }"
     class="hamburger <?php echo esc_attr($hamburger_style); ?> lg:hidden"
     type="button"
-    aria-label="Menu"
-    aria-expanded="false"
+    aria-label="<?php echo esc_attr__('Open menu', 'matrix-starter'); ?>"
+    aria-controls="site-mobile-nav"
+    :aria-expanded="isOpen"
     @click="isOpen = !isOpen"
   >
     <span class="hamburger-box">
@@ -91,6 +92,7 @@ $menu_array = $primary_navigation->toArray();
 
   ?>
   <div
+    id="site-mobile-nav"
     x-data='{
       // Flyout state (hamburger’s isOpen lives on the parent)
       flyLevel: 0,          // 0: top, 1: second tier, 2: flattened descendants

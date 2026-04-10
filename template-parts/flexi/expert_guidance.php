@@ -15,6 +15,27 @@ $right_image_alt = get_post_meta($right_image, '_wp_attachment_image_alt', true)
 $cta_button = get_sub_field('cta_button');
 $background_color = get_sub_field('background_color');
 
+$allowed_heading_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span'];
+if (!in_array($heading_tag, $allowed_heading_tags, true)) {
+    $heading_tag = 'h2';
+}
+if (in_array($heading_tag, ['h3', 'h4', 'h5', 'h6'], true)) {
+    $heading_tag = 'h2';
+}
+if (!in_array($left_heading_tag, $allowed_heading_tags, true)) {
+    $left_heading_tag = 'h3';
+}
+if (!in_array($right_heading_tag, $allowed_heading_tags, true)) {
+    $right_heading_tag = 'h3';
+}
+// Column titles sit under the section heading; h4+ skips a level after a typical section h2.
+if (in_array($left_heading_tag, ['h4', 'h5', 'h6'], true)) {
+    $left_heading_tag = 'h3';
+}
+if (in_array($right_heading_tag, ['h4', 'h5', 'h6'], true)) {
+    $right_heading_tag = 'h3';
+}
+
 // Generate unique section ID
 $section_id = 'expert-guidance-' . wp_rand(1000, 9999);
 

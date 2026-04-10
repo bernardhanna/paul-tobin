@@ -89,7 +89,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
 
         <div class="mx-auto w-full max-w-7xl">
             <?php if (!empty($heading)) : ?>
-                <div class="flex flex-col gap-6 items-center mmb-12">
+                <div class="flex flex-col gap-6 items-center mb-12">
                     <<?php echo tag_escape($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
                         class="text-[2.125rem] font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
@@ -175,7 +175,8 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                         </svg>
                     </button>
 
-                    <!-- Slider -->
+                    <!-- Slider + mobile nav (arrows must not be inside each slide) -->
+                    <div class="flex flex-col flex-1 min-w-0">
                     <div class="overflow-hidden flex-1">
                         <div
                             id="<?php echo esc_attr($section_id); ?>-slider"
@@ -194,9 +195,9 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                 $title_compare       = trim(preg_replace('/\s+/', ' ', wp_strip_all_tags(html_entity_decode($title_raw, ENT_QUOTES, 'UTF-8'))));
                                 $show_title          = $title_compare !== '' && $title_compare !== $testimonial_compare;
                                 ?>
-                                <div class="flex flex-col h-full">
+                                <div class="flex flex-col w-full min-h-full h-full">
                                     <article
-                                        class="relative flex-1 p-8 bg-white  shadow-sm md:p-10 border border-neutral-200
+                                        class="relative flex flex-col flex-1 min-h-0 h-full p-8 bg-white shadow-sm md:p-10 border border-neutral-200
                                                before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2
                                                before:w-0 before:h-0 before:border-l-[20px] before:border-r-[20px] before:border-b-[20px]
                                                before:border-l-transparent before:border-r-transparent before:border-b-white
@@ -206,7 +207,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                                after:border-l-transparent after:border-r-transparent after:border-b-neutral-200
                                                after:-top-[22px] after:z-0">
 
-                                        <div class="flex relative z-10 flex-col gap-4">
+                                        <div class="flex relative z-10 flex-col flex-1 gap-4 min-h-0">
 
                                             <?php if (!empty($testimonial_raw)) : ?>
                                                 <div class="flex flex-row">
@@ -234,33 +235,34 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                             <?php endif; ?>
                                         </div>
                                     </article>
-
-                                    <!-- Mobile arrows -->
-                                    <div class="flex gap-4 justify-center mt-6 md:hidden">
-                                        <button
-                                            aria-label="Previous testimonial"
-                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
-                                            data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
-                                            type="button"
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                <path d="M9.83337 3.33335L5.16671 8.00002L9.83337 12.6667" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
-                                            </svg>
-                                        </button>
-                                        <button
-                                            aria-label="Next testimonial"
-                                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
-                                            data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
-                                            type="button"
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                <path d="M6.16666 12.6666L10.8333 7.99998L6.16666 3.33331" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
+                    </div>
+
+                    <!-- Mobile arrows: one row below slider (not per slide) -->
+                    <div class="flex gap-4 justify-center mt-6 md:hidden shrink-0">
+                        <button
+                            aria-label="Previous testimonial"
+                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
+                            data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
+                            type="button"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M9.83337 3.33335L5.16671 8.00002L9.83337 12.6667" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+                        </button>
+                        <button
+                            aria-label="Next testimonial"
+                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
+                            data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
+                            type="button"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6.16666 12.6666L10.8333 7.99998L6.16666 3.33331" stroke="#F6FAFF" stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+                        </button>
+                    </div>
                     </div>
 
                     <!-- Next (desktop) -->
@@ -293,8 +295,9 @@ jQuery(function($){
       dots: false,
       infinite: true,
       autoplay: false,
+      adaptiveHeight: false,
       responsive: [
-        { breakpoint: 1085, settings: { slidesToShow: 1, slidesToScroll: 1 } }
+        { breakpoint: 1085, settings: { slidesToShow: 1, slidesToScroll: 1, adaptiveHeight: false } }
       ],
       accessibility: true,
       pauseOnHover: true,
@@ -314,9 +317,23 @@ jQuery(function($){
 
 <?php if (!$is_kind_words_page) : ?>
 <style>
-.testimonials-slider .slick-track { display: flex; }
-.testimonials-slider .slick-slide { height: auto; }
-.testimonials-slider .slick-slide > div { height: 100%; }
+.testimonials-slider .slick-track {
+  display: flex !important;
+  align-items: stretch;
+}
+.testimonials-slider .slick-slide {
+  height: auto !important;
+  display: flex !important;
+  align-self: stretch;
+}
+.testimonials-slider .slick-slide > div {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
 .testimonials-slider .slick-list {
   padding-top: 28px;
   overflow: hidden;

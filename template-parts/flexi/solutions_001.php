@@ -31,6 +31,10 @@ $allowed_tags = ['h1','h2','h3','h4','h5','h6','p','span'];
 if (!in_array($heading_tag, $allowed_tags, true)) {
     $heading_tag = 'h2';
 }
+// Major section title after page h1: avoid h3–h6 here (skips levels vs typical hero h1).
+if (in_array($heading_tag, ['h3', 'h4', 'h5', 'h6'], true)) {
+    $heading_tag = 'h2';
+}
 
 $section_id = 'solutions_' . wp_rand(1000, 9999);
 ?>
@@ -123,21 +127,21 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                     >
                         <div class="flex flex-col justify-center w-full text-center">
                             <div class="flex flex-col items-center w-full text-2xl font-semibold tracking-normal leading-none text-primary">
-                                <p class="tracking-normal leading-7 text-primary font-secondary">
+                                <p>
                                     I want to
                                 </p>
 
-                                <div class="flex flex-col justify-center items-center text-7xl font-bold leading-none whitespace-nowrap max-md:text-4xl">
+                                <div class="flex flex-col justify-center items-center text-[4rem] font-bold leading-none whitespace-nowrap max-md:text-4xl">
                                     <span
                                         id="<?php echo esc_attr($card_id); ?>_heading"
-                                        class="self-stretch my-auto text-7xl font-primary tracking-normal leading-[92px] text-primary z-10 max-md:text-4xl"
+                                        class="self-stretch my-auto text-[4rem] font-primary tracking-normal leading-none text-primary z-10 max-md:text-4xl"
                                     >
                                         <?php echo esc_html($action_word); ?>
                                     </span>
-                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[110%] h-2 relative md:-top-[15px] mx-auto z-0"></div>
+                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[110%] h-2 relative md:-top-[12px] mx-auto z-0"></div>
                                 </div>
 
-                                <p class="tracking-normal leading-7 text-primary font-secondary">
+                                <p>
                                     my property
                                 </p>
                             </div>

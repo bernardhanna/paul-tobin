@@ -1,7 +1,7 @@
 <?php
 get_header();
 ?>
-<main class="overflow-hidden w-full min-h-screen site-main">
+<main id="primary" class="overflow-hidden w-full min-h-screen site-main" tabindex="-1">
     <?php get_template_part('template-parts/single/hero'); ?>
 
     <?php

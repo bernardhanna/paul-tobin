@@ -233,7 +233,8 @@ jQuery(function ($) {
     dots: false,
     speed: 500,
     cssEase: 'linear',
-    autoplay: false,
+    autoplay: slideCount > 1,
+    autoplaySpeed: 5000,
     slidesToShow: 1,
     slidesToScroll: 1,
     prevArrow: $prev,     // desktop arrows (persist)
