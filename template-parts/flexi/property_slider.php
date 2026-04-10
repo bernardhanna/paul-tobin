@@ -56,8 +56,6 @@ $slide_count = is_array($properties) ? count($properties) : 0;
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
 $slider_id  = $section_id;
-$prev_id    = $slider_id . '-prev';
-$next_id    = $slider_id . '-next';
 ?>
 
 <section
@@ -135,30 +133,55 @@ $next_id    = $slider_id . '-next';
                   </a>
                 </div>
 
-                <div class="flex relative flex-row px-8 py-4 mt-80 w-full md:items-center md:gap-10 md:justify-between max-md:items-start max-md:order-1 bg-primary max-md:px-5 max-md:mt-0 max-md:max-w-full">
-                  <div class="flex gap-4 items-center self-stretch my-auto text-base font-semibold tracking-normal text-gray-50 whitespace-nowrap md:gap-10 max-md:w-1/2 max-md:flex-col">
-                    <span class="max-md:text-left self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($property_type); ?></span>
+                <div class="property-slider__meta-bar relative z-20 mt-80 flex w-full flex-row flex-wrap items-center justify-between gap-y-3 bg-primary px-5 py-4 max-md:order-1 max-md:mt-0 max-md:max-w-full max-md:items-start md:flex-nowrap md:items-center md:gap-0 md:px-8 md:py-4">
+                  <div class="flex min-w-0 flex-1 flex-row flex-wrap items-center gap-4 text-base font-semibold tracking-normal text-gray-50 max-md:w-1/2 max-md:flex-col max-md:items-start max-md:gap-4 md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
+                    <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($property_type); ?></span>
 
-                    <div class="flex gap-2 justify-center items-center self-stretch my-auto max-md:justify-start" aria-label="Bedrooms">
-                      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <div class="flex items-center gap-2 max-md:justify-start" aria-label="Bedrooms">
+                      <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm12-3h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-1.1-.9-2-2-2z"/>
                       </svg>
-                      <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($bedrooms); ?></span>
+                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bedrooms); ?></span>
                     </div>
 
-                    <div class="flex gap-2 justify-center items-center self-stretch my-auto max-md:justify-start" aria-label="Bathrooms">
-                      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <div class="flex items-center gap-2 max-md:justify-start" aria-label="Bathrooms">
+                      <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M9 2v1h6V2h2v1h1c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2V5c-1.1 0-.9 2 .9 2h1V2h2zm9 16V8H6v10h12z"/>
                       </svg>
-                      <span class="self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($bathrooms); ?></span>
+                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bathrooms); ?></span>
                     </div>
 
                     <?php if ($area): ?>
-                      <span class="max-md:justify-start self-stretch my-auto text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px]"><?php echo esc_html($area); ?></span>
+                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($area); ?></span>
                     <?php endif; ?>
                   </div>
 
-                  <!-- DISPLAY ON MOBILE THE SLIDE ARROWS HERE -->
+                  <?php if ($slide_count > 1): ?>
+                  <nav class="property-slider__desktop-nav flex shrink-0 items-center gap-0.5 max-md:hidden" aria-label="Property navigation">
+                    <button
+                      type="button"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/10 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      aria-label="Previous property"
+                      data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
+                    >
+                      <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/10 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      aria-label="Next property"
+                      data-desktop-next="<?php echo esc_attr($slider_id); ?>"
+                    >
+                      <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </nav>
+                  <?php endif; ?>
+
+                  <!-- Mobile slide arrows -->
                   <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
                     <button
                       type="button"
@@ -189,31 +212,6 @@ $next_id    = $slider_id . '-next';
           <?php endforeach; ?>
         </div>
 
-        <?php if ($slide_count > 1): ?>
-        <!-- Desktop arrows: same bottom strip + padding as slide black bar (bg-primary row) so they sit on the bar, not below it -->
-        <nav class="property-slider-nav pointer-events-none" aria-label="Property navigation">
-          <div class="property-slider-nav__inner flex w-full items-center justify-end gap-2 pointer-events-auto md:gap-3 md:pr-8">
-          <button id="<?php echo esc_attr($prev_id); ?>"
-                  type="button"
-                  class="property-slider-nav__btn flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/5 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 md:h-10 md:w-10"
-                  aria-label="Previous property">
-            <svg class="h-4 w-4 md:h-[18px] md:w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <button id="<?php echo esc_attr($next_id); ?>"
-                  type="button"
-                  class="property-slider-nav__btn flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB] text-[#0A1119] shadow-sm ring-1 ring-black/5 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 md:h-10 md:w-10"
-                  aria-label="Next property">
-            <svg class="h-4 w-4 md:h-[18px] md:w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          </div>
-        </nav>
-        <?php endif; ?>
-
       </div>
     <?php endif; ?>
   </div>
@@ -235,10 +233,10 @@ $next_id    = $slider_id . '-next';
     var opts = {
       dots: false,
       arrows: false,
-      speed: 350,
+      speed: 250,
       cssEase: 'ease-out',
       autoplay: true,
-      autoplaySpeed: 4000,
+      autoplaySpeed: 1000,
       slidesToShow: 1,
       slidesToScroll: 1,
       centerMode: false,
@@ -259,25 +257,16 @@ $next_id    = $slider_id . '-next';
     $slider.slick('setPosition');
     $slider.slick('slickPlay');
 
-    $scope.on('click', '#<?php echo esc_js($prev_id); ?>, #<?php echo esc_js($next_id); ?>', function (e) {
-      e.preventDefault();
-      if (this.id === '<?php echo esc_js($prev_id); ?>') {
-        $slider.slick('slickPrev');
-      } else {
-        $slider.slick('slickNext');
-      }
-    });
-
-    $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    $scope.on('click', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
       e.preventDefault();
       $slider.slick('slickPrev');
     });
-    $scope.on('click', '[data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    $scope.on('click', '[data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
       e.preventDefault();
       $slider.slick('slickNext');
     });
 
-    $scope.on('keydown', '#<?php echo esc_js($prev_id); ?>, #<?php echo esc_js($next_id); ?>, [data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+    $scope.on('keydown', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         $(this).trigger('click');
@@ -294,12 +283,15 @@ $next_id    = $slider_id . '-next';
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPropertySliderSlick);
-  } else {
+  function scheduleInit() {
     initPropertySliderSlick();
+    setTimeout(initPropertySliderSlick, 50);
   }
-  window.addEventListener('load', initPropertySliderSlick);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleInit);
+  } else {
+    scheduleInit();
+  }
 })();
 </script>
 
@@ -312,33 +304,23 @@ $next_id    = $slider_id . '-next';
 }
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
-/* Fixed overlay: match slide md:p-8 so controls sit on the black bar, not past it */
-#<?php echo esc_attr($section_id); ?> .property-slider-nav {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2rem;
-  z-index: 60;
-  display: none;
-}
-@media (min-width: 768px) {
-  #<?php echo esc_attr($section_id); ?> .property-slider-nav {
-    display: flex;
-    align-items: center;
-    min-height: 4.75rem;
-    left: 2rem;
-    right: 2rem;
-  }
-}
-#<?php echo esc_attr($section_id); ?> .property-slider-nav > .property-slider-nav__inner {
-  min-height: 4.75rem;
-  box-sizing: border-box;
-}
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-list {
   position: relative;
   overflow: hidden !important;
 }
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-track {
   gap: 0 !important;
+}
+/* Desktop nav: avoid display:none !important from .hidden / theme nav rules beating Tailwind md:flex */
+#<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav {
+  display: none;
+}
+@media (min-width: 768px) {
+  #<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.125rem;
+  }
 }
 </style>
