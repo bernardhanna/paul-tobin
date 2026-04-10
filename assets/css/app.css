@@ -1436,11 +1436,11 @@ blockquote.right {
 }
 
 .slick-list {
-  overflow: visible !important; /* Allows elements outside the slider's bounds to be visible */
+  overflow: hidden !important;
 }
 
 .slick-track {
-  @apply  flex relative gap-4; /* Adjust the gap between slides */
+  @apply flex relative gap-0;
 }
 
 .slick-prev,

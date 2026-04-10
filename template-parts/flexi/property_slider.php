@@ -191,7 +191,7 @@ $next_id    = $slider_id . '-next';
 
         <?php if ($slide_count > 1): ?>
         <!-- Desktop arrows: same bottom strip + padding as slide black bar (bg-primary row) so they sit on the bar, not below it -->
-        <nav class="hidden md:flex absolute inset-x-0 bottom-0 z-[60] gap-4 items-center justify-end px-8 py-4 pointer-events-none max-md:px-5 md:bottom-8" aria-label="Property navigation">
+        <nav class="hidden md:flex absolute inset-x-0 z-[60] gap-4 items-center justify-end px-8 pointer-events-none bottom-8 h-[4.75rem]" aria-label="Property navigation">
           <button id="<?php echo esc_attr($prev_id); ?>"
                   type="button"
                   class="flex shrink-0 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
@@ -242,6 +242,8 @@ $next_id    = $slider_id . '-next';
       autoplaySpeed: 5000,
       slidesToShow: 1,
       slidesToScroll: 1,
+      centerMode: false,
+      variableWidth: false,
       prevArrow: $prev,
       nextArrow: $next,
       accessibility: true,
@@ -305,5 +307,11 @@ $next_id    = $slider_id . '-next';
 #<?php echo esc_attr($section_id); ?> .opacity-50 { opacity: 0.5; }
 #<?php echo esc_attr($section_id); ?> .pointer-events-none { pointer-events: none; }
 #<?php echo esc_attr($section_id); ?> nav[aria-label="Property navigation"] { z-index: 50; }
-#<?php echo esc_attr($section_id); ?> .property-slider .slick-list { position: relative; }
+#<?php echo esc_attr($section_id); ?> .property-slider .slick-list {
+  position: relative;
+  overflow: hidden !important;
+}
+#<?php echo esc_attr($section_id); ?> .property-slider .slick-track {
+  gap: 0 !important;
+}
 </style>
