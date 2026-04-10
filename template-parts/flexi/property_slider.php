@@ -158,31 +158,6 @@ $next_id    = $slider_id . '-next';
                     <?php endif; ?>
                   </div>
 
-                  <!-- Desktop arrows inside the black info bar -->
-                  <?php if ($slide_count > 1): ?>
-                  <nav class="hidden md:flex gap-4 md:ml-auto md:justify-end" aria-label="Property navigation">
-                    <button id="<?php echo esc_attr($prev_id); ?>"
-                            type="button"
-                            class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
-                            aria-label="Previous property">
-                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <rect width="40" height="40" fill="#F9FAFB"/>
-                        <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </button>
-
-                    <button id="<?php echo esc_attr($next_id); ?>"
-                            type="button"
-                            class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
-                            aria-label="Next property">
-                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <rect width="40" height="40" fill="#F9FAFB"/>
-                        <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </button>
-                  </nav>
-                  <?php endif; ?>
-
                   <!-- DISPLAY ON MOBILE THE SLIDE ARROWS HERE -->
                   <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
                     <button
@@ -214,82 +189,111 @@ $next_id    = $slider_id . '-next';
           <?php endforeach; ?>
         </div>
 
+        <?php if ($slide_count > 1): ?>
+        <nav class="hidden md:flex gap-4 absolute z-[60] bottom-6 right-8 md:bottom-8 md:right-12 pointer-events-auto" aria-label="Property navigation">
+          <button id="<?php echo esc_attr($prev_id); ?>"
+                  type="button"
+                  class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  aria-label="Previous property">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="40" height="40" fill="#F9FAFB"/>
+              <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <button id="<?php echo esc_attr($next_id); ?>"
+                  type="button"
+                  class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  aria-label="Next property">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="40" height="40" fill="#F9FAFB"/>
+              <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </nav>
+        <?php endif; ?>
+
       </div>
     <?php endif; ?>
   </div>
 </section>
 
 <script>
-jQuery(function ($) {
-  var $scope     = $('#<?php echo esc_js($section_id); ?>');
-  var slideCount = <?php echo (int) $slide_count; ?>;
-  var $slider    = $scope.find('.property-slider');
-  var $prev      = $scope.find('#<?php echo esc_js($prev_id); ?>');
-  var $next      = $scope.find('#<?php echo esc_js($next_id); ?>');
+(function () {
+  function initPropertySliderSlick() {
+    if (typeof jQuery === 'undefined' || !jQuery.fn.slick) return;
 
-  if (!$slider.length || !$.fn.slick) return;
+    jQuery(function ($) {
+      var $scope     = $('#<?php echo esc_js($section_id); ?>');
+      var slideCount = <?php echo (int) $slide_count; ?>;
+      var $slider    = $scope.find('.property-slider');
+      var $prev      = $scope.find('#<?php echo esc_js($prev_id); ?>');
+      var $next      = $scope.find('#<?php echo esc_js($next_id); ?>');
 
-  var opts = {
-    dots: false,
-    speed: 500,
-    cssEase: 'linear',
-    autoplay: slideCount > 1,
-    autoplaySpeed: 5000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    prevArrow: $prev,     // desktop arrows (persist)
-    nextArrow: $next,     // desktop arrows (persist)
-    accessibility: true,
-    focusOnSelect: false,
-    pauseOnHover: true,
-    pauseOnFocus: true,
-    swipe: true,
-    touchMove: true
-  };
+      if (!$slider.length || $slider.hasClass('slick-initialized')) return;
+      if (slideCount < 2) return;
 
-  if (slideCount >= 3) {
-    opts.fade     = true;
-    opts.infinite = true;
-  } else {
-    opts.fade     = false;
-    opts.infinite = (slideCount > 1);
-  }
+    var opts = {
+      dots: false,
+      speed: 500,
+      cssEase: 'linear',
+      autoplay: slideCount > 1,
+      autoplaySpeed: 5000,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      prevArrow: $prev,
+      nextArrow: $next,
+      accessibility: true,
+      focusOnSelect: false,
+      pauseOnHover: true,
+      pauseOnFocus: false,
+      swipe: true,
+      touchMove: true,
+      infinite: slideCount > 1
+    };
 
-  $slider.slick(opts);
-
-  // If only 1 slide, disable all arrows
-  if (slideCount < 2) {
-    $prev.prop('disabled', true).addClass('opacity-50 pointer-events-none');
-    $next.prop('disabled', true).addClass('opacity-50 pointer-events-none');
-  }
-
-  // Delegated handlers for MOBILE arrows inside slides (work even on clones)
-  $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
-    e.preventDefault();
-    $slider.slick('slickPrev');
-  });
-  $scope.on('click', '[data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
-    e.preventDefault();
-    $slider.slick('slickNext');
-  });
-
-  // Keyboard activation for mobile arrows
-  $scope.on('keydown', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      $(this).trigger('click');
+    if (slideCount >= 3) {
+      opts.fade = true;
+    } else {
+      opts.fade = false;
     }
-  });
 
-  // Screen reader announcement
-  $slider.on('afterChange', function (event, slick, currentSlide) {
-    var total = slick.slideCount, num = currentSlide + 1;
-    var $sr = $('<div>', { 'aria-live':'polite', 'aria-atomic':'true', 'class':'sr-only' })
-      .text('Showing property ' + num + ' of ' + total);
-    $('body').append($sr);
-    setTimeout(function(){ $sr.remove(); }, 1000);
-  });
-});
+    $slider.slick(opts);
+
+    $slider.slick('slickPlay');
+
+    $scope.on('click', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
+      e.preventDefault();
+      $slider.slick('slickPrev');
+    });
+    $scope.on('click', '[data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+      e.preventDefault();
+      $slider.slick('slickNext');
+    });
+
+    $scope.on('keydown', '[data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        $(this).trigger('click');
+      }
+    });
+
+    $slider.on('afterChange', function (event, slick, currentSlide) {
+      var total = slick.slideCount, num = currentSlide + 1;
+      var $sr = $('<div>', { 'aria-live':'polite', 'aria-atomic':'true', 'class':'sr-only' })
+        .text('Showing property ' + num + ' of ' + total);
+      $('body').append($sr);
+      setTimeout(function(){ $sr.remove(); }, 1000);
+    });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPropertySliderSlick);
+  } else {
+    initPropertySliderSlick();
+  }
+})();
 </script>
 
 <style>
