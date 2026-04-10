@@ -236,10 +236,10 @@ $next_id    = $slider_id . '-next';
 
     var opts = {
       dots: false,
-      speed: 500,
-      cssEase: 'linear',
+      speed: 350,
+      cssEase: 'ease-out',
       autoplay: true,
-      autoplaySpeed: 5000,
+      autoplaySpeed: 4000,
       slidesToShow: 1,
       slidesToScroll: 1,
       centerMode: false,
@@ -253,7 +253,7 @@ $next_id    = $slider_id . '-next';
       swipe: true,
       touchMove: true,
       infinite: true,
-      fade: false,
+      fade: true,
       waitForAnimate: false
     };
 
