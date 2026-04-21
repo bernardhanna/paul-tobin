@@ -9,7 +9,7 @@ get_header();
     <?php load_hero_templates(); ?>
         <section class="flex overflow-hidden relative">
             <div class="flex flex-col items-center w-full py-5 mx-auto max-w-[1085px] max-xl:px-5">
-                <div class="grid grid-cols-1 gap-10 mt-10 w-full md:grid-cols-2 lg:grid-cols-3">
+                <div class="grid grid-cols-1 gap-10 w-full md:grid-cols-2 lg:grid-cols-3">
                     <div class="w-full entry-content">
                         <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9 max-sm:leading-8">Pages</h2>
  
