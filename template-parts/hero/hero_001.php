@@ -51,7 +51,7 @@ $is_front_hero = is_front_page();
 if ($is_front_hero) {
     $height_class = ($max_height_choice === '665') ? 'h-[665px]' : 'h-[500px]';
 } else {
-    $height_class = ($max_height_choice === '665') ? 'min-h-[665px] h-auto' : 'min-h-[500px] h-auto';
+    $height_class = ($max_height_choice === '665') ? 'min-h-[665px] h-auto' : 'lg:min-h-[500px] h-auto';
 }
 
 // Padding
@@ -235,7 +235,7 @@ $has_content     = $has_heading || $has_description || $has_button;
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:min-h-0 max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+    class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
     role="region"
     <?php if ($has_heading): ?>
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
