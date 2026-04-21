@@ -322,5 +322,14 @@ $slider_id  = $section_id;
     align-items: center;
     gap: 0.125rem;
   }
+  #<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav button {
+    background-color: #ffffff !important;
+    color: #0A1119 !important;
+    border: 1px solid rgba(10, 17, 25, 0.12) !important;
+  }
+  #<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav button:hover {
+    background-color: #F9FAFB !important;
+    color: #0A1119 !important;
+  }
 }
 </style>

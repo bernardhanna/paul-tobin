@@ -2,12 +2,28 @@
 get_header();
 ?>
 <main id="primary" class="overflow-hidden w-full min-h-screen site-main" tabindex="-1">
-    <?php get_template_part('template-parts/single/hero'); ?>
-
     <?php
-    if (function_exists('load_hero_templates')) {
+    $is_blog_post = (get_post_type() === 'post');
+    $current_post_id = get_queried_object_id();
+
+    // Blog posts use the featured image as the top hero (no video/home hero block).
+    if ($is_blog_post && $current_post_id && has_post_thumbnail($current_post_id)) :
+        $featured_image_id  = get_post_thumbnail_id($current_post_id);
+        $featured_image_alt = get_post_meta($featured_image_id, '_wp_attachment_image_alt', true) ?: get_the_title($current_post_id);
+    ?>
+        <section class="flex overflow-hidden relative w-full">
+            <?php echo wp_get_attachment_image($featured_image_id, 'full', false, [
+                'alt' => esc_attr($featured_image_alt),
+                'class' => 'w-full h-[500px] md:h-[665px] object-cover',
+                'loading' => 'lazy',
+                'fetchpriority' => 'low',
+                'decoding' => 'async',
+            ]); ?>
+        </section>
+    <?php
+    elseif (function_exists('load_hero_templates')) :
         load_hero_templates();
-    }
+    endif;
     ?>
 
     <?php
@@ -36,11 +52,10 @@ get_header();
 
     <?php load_flexible_content_templates(); ?>
 
-    <?php 
-    // Only show author and related posts on blog posts (post type 'post')
-    if (get_post_type() === 'post') : 
+    <?php
+    // Blog posts: keep related posts, remove author/social bar section.
+    if ($is_blog_post) :
     ?>
-        <?php get_template_part('template-parts/single/author'); ?>
         <?php get_template_part('template-parts/single/related-posts'); ?>
     <?php endif; ?>
 </main>
