@@ -53,6 +53,21 @@ if ($auto_select_properties) {
 
 $slide_count = is_array($properties) ? count($properties) : 0;
 
+if (!function_exists('matrix_property_slider_clean_value')) {
+  /**
+   * Convert meta/WYSIWYG-ish values to plain text.
+   */
+  function matrix_property_slider_clean_value($value): string {
+    if (is_array($value)) {
+      $value = implode(' ', array_map('strval', $value));
+    }
+    $value = html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+    $value = wp_strip_all_tags($value);
+    $value = preg_replace('/\s+/u', ' ', $value);
+    return trim((string) $value);
+  }
+}
+
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
 $slider_id  = $section_id;
@@ -89,16 +104,41 @@ $slider_id  = $section_id;
             $property_post   = is_object($property) ? $property : get_post($property_id);
             $property_image  = get_post_thumbnail_id($property_id);
             $property_title  = get_the_title($property_id);
-            $property_excerpt= get_the_excerpt($property_id);
+            $property_excerpt= trim((string) get_the_excerpt($property_id));
             $property_link   = get_permalink($property_id);
 
-            $bedrooms        = get_field('bedrooms', $property_id) ?: '0';
-            $bathrooms       = get_field('bathrooms', $property_id) ?: '0';
-            $area            = get_field('area', $property_id) ?: '';
+            // Prefer synced post meta (source of truth used by Daft sync), then fallback to ACF field values.
+            $bedrooms_raw    = get_post_meta($property_id, 'bedrooms', true);
+            if ($bedrooms_raw === '' || $bedrooms_raw === null) {
+              $bedrooms_raw = get_field('bedrooms', $property_id);
+            }
+            $bathrooms_raw   = get_post_meta($property_id, 'bathrooms', true);
+            if ($bathrooms_raw === '' || $bathrooms_raw === null) {
+              $bathrooms_raw = get_field('bathrooms', $property_id);
+            }
+            $area_raw        = get_post_meta($property_id, 'area', true);
+            if ($area_raw === '' || $area_raw === null) {
+              $area_raw = get_field('area', $property_id);
+            }
+
+            $bedrooms        = matrix_property_slider_clean_value($bedrooms_raw);
+            $bathrooms       = matrix_property_slider_clean_value($bathrooms_raw);
+            $area            = matrix_property_slider_clean_value($area_raw);
+            // Normalize area labels like "Area: 65 m2" -> "65 m2".
+            $area            = preg_replace('/^\s*area\s*:\s*/iu', '', $area);
+
+            $bedrooms        = $bedrooms !== '' ? $bedrooms : '0';
+            $bathrooms       = $bathrooms !== '' ? $bathrooms : '0';
             $property_types  = get_the_terms($property_id, 'property_type');
             $property_type   = ($property_types && !is_wp_error($property_types)) ? $property_types[0]->name : 'Residential';
 
             $image_alt       = $property_image ? (get_post_meta($property_image, '_wp_attachment_image_alt', true) ?: $property_title) : $property_title;
+
+            // Hide excerpt when it only looks like a price/value (e.g. "€1,926,000").
+            $excerpt_plain = preg_replace('/\s+/u', ' ', wp_strip_all_tags($property_excerpt));
+            if ($excerpt_plain && preg_match('/^[€£$]?\s?\d[\d,\.\s]*[kKmM]?\s*$/u', $excerpt_plain)) {
+              $property_excerpt = '';
+            }
           ?>
             <article class="property-slide">
               <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px]  max-md:max-w-full justify-between">
@@ -233,10 +273,10 @@ $slider_id  = $section_id;
     var opts = {
       dots: false,
       arrows: false,
-      speed: 500,
+      speed: 450,
       cssEase: 'ease-out',
       autoplay: true,
-      autoplaySpeed: 2000,
+      autoplaySpeed: 3000,
       slidesToShow: 1,
       slidesToScroll: 1,
       centerMode: false,
@@ -256,6 +296,12 @@ $slider_id  = $section_id;
 
     $slider.slick('setPosition');
     $slider.slick('slickPlay');
+    // Kick off first movement quickly, then continue with autoplaySpeed cadence.
+    setTimeout(function () {
+      if ($slider.hasClass('slick-initialized')) {
+        $slider.slick('slickNext');
+      }
+    }, 700);
 
     $scope.on('click', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
       e.preventDefault();
