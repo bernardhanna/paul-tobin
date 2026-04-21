@@ -8,10 +8,10 @@ get_header();
 <main id="primary" class="overflow-hidden w-full min-h-screen site-main" tabindex="-1">
     <?php load_hero_templates(); ?>
         <section class="flex overflow-hidden relative">
-            <div class="flex flex-col items-center w-full py-5 mx-auto max-w-[1085px] max-lg:px-5">
+            <div class="flex flex-col items-center w-full py-5 mx-auto max-w-[1085px] max-xl:px-5">
                 <div class="grid grid-cols-1 gap-10 mt-10 w-full md:grid-cols-2 lg:grid-cols-3">
                     <div class="w-full entry-content">
-                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-lg:hidden">Pages</h2>
+                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9 max-sm:leading-8">Pages</h2>
  
                         <ul class="mt-4 space-y-2">
                             <?php
@@ -23,7 +23,7 @@ get_header();
                         </ul>
                     </div>
                     <div class="w-full entry-content">
-                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-lg:hidden">Posts</h2>
+                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9 max-sm:leading-8">Posts</h2>
 
                         <ul class="mt-4 space-y-2">
                             <?php
@@ -35,7 +35,7 @@ get_header();
                         </ul>
                     </div>
                     <div class="w-full entry-content">
-                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-lg:hidden">Properties</h2>
+                        <h2 class="text-[2.125rem] font-semibold tracking-normal leading-10 text-left font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9 max-sm:leading-8">Properties</h2>
 
                         <ul class="mt-4 space-y-2">
                             <?php
