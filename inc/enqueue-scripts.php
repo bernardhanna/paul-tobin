@@ -114,6 +114,8 @@ wp_add_inline_script(
   wp_register_script('flowbite','https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js',['alpine'],'1.6.5',true);
   wp_register_style('slick-css','https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css',[],'1.8.1');
   wp_register_script('slick-js','https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js',['jquery'],'1.8.1',true);
+  wp_register_style('nice-select-css','https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css',[],'1.1.0');
+  wp_register_script('nice-select-js','https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js',['jquery'],'1.1.0',true);
   wp_register_script('headroom','https://cdnjs.cloudflare.com/ajax/libs/headroom/0.12.0/headroom.min.js',[],'0.12.0',true);
 
   // Leaflet
@@ -148,6 +150,10 @@ wp_add_inline_script(
       wp_enqueue_script('turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, true);
     }
   }
+
+  // Booking form block enhancement (native select fallback if script unavailable).
+  wp_enqueue_style('nice-select-css');
+  wp_enqueue_script('nice-select-js');
 
   // Woo fragments
   if (class_exists('WooCommerce')) {

@@ -298,13 +298,12 @@ $copyright_txt = str_replace('{year}', date('Y'), $copyright_tpl);
                 $link   = $social['social_link'] ?? null; // array
                 $icon   = $social['social_icon'] ?? 0;    // ID
                 $url    = matrix_link_url($link);
-                $target = matrix_link_target($link);
                 if (!$url || !$icon) continue;
               ?>
                 <a
                   href="<?php echo esc_url($url); ?>"
-                  target="<?php echo esc_attr($target); ?>"
-                  rel="noopener"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="flex flex-col shrink-0 gap-2.5 justify-center items-center w-8 h-8 rounded-[32px] max-sm:w-7 max-sm:h-7 hover:opacity-50 bg-[#EDEDED] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 btn"
                   aria-label="<?php echo esc_attr($label); ?>"
                 >
