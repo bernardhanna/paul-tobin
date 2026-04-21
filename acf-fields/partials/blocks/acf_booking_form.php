@@ -171,17 +171,6 @@ $booking_form
         'default_value' => '<p>Thank you for requesting a property evaluation. We will get back to you as soon as possible.</p>',
         'conditional_logic' => [[['field' => 'enable_autoresponder', 'operator' => '==', 'value' => 1]]],
     ])
-    ->addImage('autoresponder_logo', [
-        'label' => 'Autoresponder Logo (optional)',
-        'return_format' => 'id',
-        'preview_size' => 'medium',
-        'conditional_logic' => [[['field' => 'enable_autoresponder', 'operator' => '==', 'value' => 1]]],
-    ])
-    ->addTextarea('autoresponder_footer_text', [
-        'label' => 'Autoresponder Footer Text (optional)',
-        'rows' => 3,
-        'conditional_logic' => [[['field' => 'enable_autoresponder', 'operator' => '==', 'value' => 1]]],
-    ])
 
   ->addTab('Design', ['label' => 'Design'])
     ->addColorPicker('background_color', ['label' => 'Background Color', 'default_value' => '#ffffff'])

@@ -75,15 +75,6 @@ class Theme_Forms {
     return $out;
   }
 
-  private function first_non_empty_field(array $fields, array $keys): string {
-    foreach ($keys as $key) {
-      if (!array_key_exists($key, $fields)) continue;
-      $val = trim((string) $fields[$key]);
-      if ($val !== '') return $val;
-    }
-    return '';
-  }
-
   private function is_ajax(): bool {
     return (isset($_POST['is_ajax']) && $_POST['is_ajax'] === '1')
         || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
@@ -296,49 +287,8 @@ class Theme_Forms {
     // 9) Autoresponder
     $auto_enabled = !empty($_POST['_cfg_auto_enabled']);
     if ($sent && $auto_enabled && !empty($fields['email']) && is_email($fields['email'])) {
-      $auto_subject_cfg = sanitize_text_field($_POST['_cfg_auto_subject'] ?? '');
+      $auto_subject = sanitize_text_field($_POST['_cfg_auto_subject'] ?? 'Thank you for your message');
       $auto_message = wp_kses_post($_POST['_cfg_auto_message'] ?? 'We received your message.');
-      $auto_logo_url = esc_url_raw((string) ($_POST['_cfg_auto_logo_url'] ?? ''));
-      $auto_footer_text = sanitize_textarea_field((string) ($_POST['_cfg_auto_footer_text'] ?? ''));
-
-      // Subject from query type if present; fallback: "New Query on {Property address}".
-      $query_type = $this->first_non_empty_field($fields, [
-        'query_type', 'query-type', 'query type',
-        'query_type_label', 'query-type-label', 'query type label',
-      ]);
-      $property_address = $this->first_non_empty_field($fields, [
-        'property_address', 'property-address', 'property address',
-        'origin_property_address', 'origin-property-address',
-      ]);
-
-      if ($query_type !== '') {
-        $auto_subject = $query_type;
-      } elseif ($property_address !== '') {
-        $auto_subject = 'New Query on ' . $property_address;
-      } elseif ($auto_subject_cfg !== '') {
-        $auto_subject = $auto_subject_cfg;
-      } else {
-        $auto_subject = 'Thank you for your message';
-      }
-
-      // Optional autoresponder wrapper: logo on top + footer text.
-      $auto_parts = [];
-      if ($auto_logo_url !== '') {
-        $auto_parts[] = sprintf(
-          '<div style="margin:0 0 16px;"><img src="%1$s" alt="%2$s" style="max-width:220px;height:auto;display:block;"></div>',
-          esc_url($auto_logo_url),
-          esc_attr(get_bloginfo('name'))
-        );
-      }
-      $auto_parts[] = $auto_message;
-      if ($auto_footer_text !== '') {
-        $auto_parts[] = sprintf(
-          '<div style="margin-top:16px;font-size:13px;line-height:1.5;color:#4b5563;">%s</div>',
-          nl2br(esc_html($auto_footer_text))
-        );
-      }
-      $auto_message_final = implode('', $auto_parts);
-
       $auto_headers = [ 'Content-Type: text/html; charset=utf-8', 'From: ' . sprintf('%s <%s>', $from_name, $from_email) ];
 
       $auto_from_filter      = function() use ($from_email) { return $from_email; };
@@ -346,7 +296,7 @@ class Theme_Forms {
       add_filter('wp_mail_from', $auto_from_filter);
       add_filter('wp_mail_from_name', $auto_from_name_filter);
 
-      wp_mail(sanitize_email($fields['email']), wp_strip_all_tags($auto_subject), $auto_message_final, $auto_headers);
+      wp_mail(sanitize_email($fields['email']), wp_strip_all_tags($auto_subject), $auto_message, $auto_headers);
 
       remove_filter('wp_mail_from', $auto_from_filter);
       remove_filter('wp_mail_from_name', $auto_from_name_filter);

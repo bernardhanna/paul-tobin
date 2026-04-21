@@ -68,77 +68,6 @@ if (!function_exists('matrix_property_slider_clean_value')) {
   }
 }
 
-if (!function_exists('matrix_property_slider_extract_property_data')) {
-  /**
-   * Pull values from the same Property Data flexi block used on single property pages.
-   * This keeps slider stats aligned with what editors see in the details panel.
-   */
-  function matrix_property_slider_extract_property_data(int $property_id): array {
-    $out = [
-      'type'      => '',
-      'bedrooms'  => '',
-      'bathrooms' => '',
-      'area'      => '',
-      'status'    => '',
-    ];
-
-    $rows = get_field('flexible_content_blocks', $property_id);
-    if (!is_array($rows) || empty($rows)) {
-      return $out;
-    }
-
-    foreach ($rows as $row) {
-      if (!is_array($row)) {
-        continue;
-      }
-      $layout = (string) ($row['acf_fc_layout'] ?? '');
-      if ($layout !== 'property_data') {
-        continue;
-      }
-
-      $out['type'] = matrix_property_slider_clean_value($row['sector'] ?? '');
-
-      if (!empty($row['size'])) {
-        $size_value = matrix_property_slider_clean_value($row['size']);
-        $size_value = preg_replace('/^\s*area\s*:\s*/iu', '', $size_value);
-        if ($size_value !== '') {
-          $out['area'] = $size_value;
-        }
-      }
-
-      $extra_rows = $row['extra_rows'] ?? [];
-      if (is_array($extra_rows)) {
-        foreach ($extra_rows as $extra) {
-          if (!is_array($extra)) {
-            continue;
-          }
-          $label = strtolower(matrix_property_slider_clean_value($extra['label'] ?? ''));
-          $value = matrix_property_slider_clean_value($extra['value'] ?? '');
-          if ($value === '') {
-            continue;
-          }
-          if ($label === 'bedrooms' || str_contains($label, 'bedroom')) {
-            $out['bedrooms'] = $value;
-          } elseif ($label === 'bathrooms' || str_contains($label, 'bathroom')) {
-            $out['bathrooms'] = $value;
-          } elseif ($label === 'status') {
-            $out['status'] = $value;
-          } elseif ($label === 'size' || $label === 'area') {
-            $out['area'] = preg_replace('/^\s*area\s*:\s*/iu', '', $value);
-          } elseif (($label === 'property type' || $label === 'type') && $out['type'] === '') {
-            $out['type'] = $value;
-          }
-        }
-      }
-
-      // We found and parsed the relevant property_data row.
-      break;
-    }
-
-    return $out;
-  }
-}
-
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
 $slider_id  = $section_id;
@@ -178,28 +107,16 @@ $slider_id  = $section_id;
             $property_excerpt= trim((string) get_the_excerpt($property_id));
             $property_link   = get_permalink($property_id);
 
-            $property_data_values = matrix_property_slider_extract_property_data($property_id);
-
-            // Prefer Property Data block values (what users see on single property page).
-            // Then fallback to synced post meta, then fallback to ACF field values.
+            // Prefer synced post meta (source of truth used by Daft sync), then fallback to ACF field values.
             $bedrooms_raw    = get_post_meta($property_id, 'bedrooms', true);
-            if (!empty($property_data_values['bedrooms'])) {
-              $bedrooms_raw = $property_data_values['bedrooms'];
-            }
             if ($bedrooms_raw === '' || $bedrooms_raw === null) {
               $bedrooms_raw = get_field('bedrooms', $property_id);
             }
             $bathrooms_raw   = get_post_meta($property_id, 'bathrooms', true);
-            if (!empty($property_data_values['bathrooms'])) {
-              $bathrooms_raw = $property_data_values['bathrooms'];
-            }
             if ($bathrooms_raw === '' || $bathrooms_raw === null) {
               $bathrooms_raw = get_field('bathrooms', $property_id);
             }
             $area_raw        = get_post_meta($property_id, 'area', true);
-            if (!empty($property_data_values['area'])) {
-              $area_raw = $property_data_values['area'];
-            }
             if ($area_raw === '' || $area_raw === null) {
               $area_raw = get_field('area', $property_id);
             }
@@ -214,9 +131,6 @@ $slider_id  = $section_id;
             $bathrooms       = $bathrooms !== '' ? $bathrooms : '0';
             $property_types  = get_the_terms($property_id, 'property_type');
             $property_type   = ($property_types && !is_wp_error($property_types)) ? $property_types[0]->name : 'Residential';
-            if (!empty($property_data_values['type'])) {
-              $property_type = $property_data_values['type'];
-            }
 
             $image_alt       = $property_image ? (get_post_meta($property_image, '_wp_attachment_image_alt', true) ?: $property_title) : $property_title;
 

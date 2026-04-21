@@ -83,13 +83,9 @@ if ($form_markup) {
     $hidden_cfg .= '<input type="hidden" name="_cfg_from_email" value="'.esc_attr($cfg_from_email).'">';
 
     if (get_sub_field('enable_autoresponder')) {
-        $auto_logo_id  = (int) (get_sub_field('autoresponder_logo') ?: 0);
-        $auto_logo_url = $auto_logo_id ? wp_get_attachment_image_url($auto_logo_id, 'medium') : '';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_enabled" value="1">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_subject" value="'.esc_attr(get_sub_field('autoresponder_subject') ?: '').'">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_message" value="'.esc_attr(get_sub_field('autoresponder_message') ?: '').'">';
-        $hidden_cfg .= '<input type="hidden" name="_cfg_auto_logo_url" value="'.esc_attr($auto_logo_url).'">';
-        $hidden_cfg .= '<input type="hidden" name="_cfg_auto_footer_text" value="'.esc_attr(get_sub_field('autoresponder_footer_text') ?: '').'">';
     }
 
     $form_markup = str_replace('</form>', ($hidden . $hidden_cfg) . '</form>', $form_markup);
@@ -398,8 +394,6 @@ if ($form_markup) {
   .accordion-content { overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out; }
   .accordion-content.collapsed { max-height: 0; opacity: 0; }
   .accordion-content.expanded  { max-height: 1000px; opacity: 1; }
-  /* Nice Select: hide old chevron icon once enhanced */
-  .nice-select-ready > i { display: none; }
 </style>
 
 <?php if ($needs_leaflet): ?>
@@ -413,29 +407,6 @@ if ($form_markup) {
 (function() {
   const form = document.querySelector('form[role="form"]');
   if (!form) return;
-
-  // Enhance selected dropdowns with Nice Select if available.
-  (function initNiceSelect() {
-    if (typeof jQuery === 'undefined') return;
-    const ids = ['query-type', 'property-type', 'property-condition', 'bedrooms', 'bathrooms'];
-    const selectors = ids.map((id) => '#' + id).join(',');
-    const $targets = jQuery(form).find(selectors);
-    if (!$targets.length) return;
-
-    if (jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
-      $targets.each(function () {
-        const $select = jQuery(this);
-        if (!$select.hasClass('nice-select-initialized')) {
-          $select.niceSelect();
-          $select.addClass('nice-select-initialized');
-        } else {
-          $select.niceSelect('update');
-        }
-        const wrapper = this.closest('.relative');
-        if (wrapper) wrapper.classList.add('nice-select-ready');
-      });
-    }
-  })();
 
   // Enforce mandatory fields for genuine enquiries (even if pasted markup changes).
   ['first-name', 'last-name', 'email-address', 'phone-number', 'property-address'].forEach((id) => {
@@ -589,9 +560,6 @@ if ($form_markup) {
       if (match && String(match.value).trim() !== '') {
         el.value = match.value;
         el.dispatchEvent(new Event('change', { bubbles: true }));
-        if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
-          jQuery(el).niceSelect('update');
-        }
       }
     };
 
