@@ -71,12 +71,16 @@ if ($form_markup) {
 
     // Mail config (posted)
     $cfg_to        = get_sub_field('email_to') ?: get_option('admin_email');
+    $cfg_cc        = get_sub_field('email_cc') ?: '';
     $cfg_bcc       = get_sub_field('email_bcc') ?: '';
     $cfg_subject   = get_sub_field('email_subject') ?: '';
     $cfg_from_name = get_sub_field('from_name') ?: '';
     $cfg_from_email= get_sub_field('from_email') ?: '';
+    $cfg_enable_cc_bcc = (bool) get_sub_field('enable_cc_bcc');
 
     $hidden_cfg  = '<input type="hidden" name="_cfg_to" value="'.esc_attr($cfg_to).'">';
+    $hidden_cfg .= '<input type="hidden" name="_cfg_enable_cc_bcc" value="'.($cfg_enable_cc_bcc ? '1' : '0').'">';
+    $hidden_cfg .= '<input type="hidden" name="_cfg_cc" value="'.esc_attr($cfg_cc).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_bcc" value="'.esc_attr($cfg_bcc).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_subject" value="'.esc_attr($cfg_subject).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_from_name" value="'.esc_attr($cfg_from_name).'">';
@@ -411,6 +415,40 @@ if ($form_markup) {
 (function() {
   const form = document.querySelector('form[role="form"]');
   if (!form) return;
+
+  // Enhance selected dropdowns with Nice Select if available.
+  const initNiceSelect = () => {
+    if (typeof jQuery === 'undefined') return false;
+    if (!jQuery.fn || typeof jQuery.fn.niceSelect !== 'function') return false;
+
+    const ids = ['query-type', 'property-type', 'property-condition', 'bedrooms', 'bathrooms'];
+    const selectors = ids.map((id) => '#' + id).join(',');
+    const $targets = jQuery(form).find(selectors);
+    if (!$targets.length) return false;
+
+    $targets.each(function () {
+      const $select = jQuery(this);
+      if (!$select.hasClass('nice-select-initialized')) {
+        $select.niceSelect();
+        $select.addClass('nice-select-initialized');
+      } else {
+        $select.niceSelect('update');
+      }
+      const wrapper = this.closest('.relative');
+      if (wrapper) wrapper.classList.add('nice-select-ready');
+    });
+    return true;
+  };
+
+  // Try now, then retry briefly for deferred/late-loaded scripts.
+  initNiceSelect();
+  document.addEventListener('DOMContentLoaded', initNiceSelect);
+  let niceSelectRetries = 0;
+  const retryTimer = setInterval(() => {
+    const ok = initNiceSelect();
+    niceSelectRetries += 1;
+    if (ok || niceSelectRetries > 20) clearInterval(retryTimer); // ~4s max
+  }, 200);
 
   // Enforce mandatory fields for genuine enquiries (even if pasted markup changes).
   ['first-name', 'last-name', 'email-address', 'phone-number', 'property-address'].forEach((id) => {

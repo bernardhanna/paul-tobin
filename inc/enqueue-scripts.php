@@ -178,6 +178,7 @@ wp_add_inline_script(
       // Theme + Woo essentials
       'jquery','jquery-core','jquery-migrate',
       'matrix-starter','theme-forms','matrix-newsletter',
+      'nice-select-js',
       'wc-cart-fragments','woocommerce',
       'recaptcha','turnstile',
       'alpine-intersect','alpine',

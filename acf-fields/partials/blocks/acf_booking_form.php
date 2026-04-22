@@ -154,7 +154,21 @@ $booking_form
         'default_value' => get_option('admin_email'),
         'instructions' => 'Separate multiple with commas or semicolons.',
     ])
-    ->addText('email_bcc', ['label' => 'BCC', 'instructions' => 'Optional; separate with commas/semicolons.'])
+    ->addTrueFalse('enable_cc_bcc', [
+        'label' => 'Enable CC/BCC?',
+        'ui' => 1,
+        'default_value' => 1,
+    ])
+    ->addText('email_cc', [
+        'label' => 'CC',
+        'instructions' => 'Optional; separate multiple with commas/semicolons.',
+        'conditional_logic' => [[['field' => 'enable_cc_bcc', 'operator' => '==', 'value' => 1]]],
+    ])
+    ->addText('email_bcc', [
+        'label' => 'BCC',
+        'instructions' => 'Optional; separate multiple with commas/semicolons.',
+        'conditional_logic' => [[['field' => 'enable_cc_bcc', 'operator' => '==', 'value' => 1]]],
+    ])
     ->addText('email_subject', ['label' => 'Subject', 'default_value' => 'Property evaluation form enquiry'])
     ->addTrueFalse('save_entries_to_db', ['label' => 'Save to DB?', 'ui' => 1, 'default_value' => 1])
 

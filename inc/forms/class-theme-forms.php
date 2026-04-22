@@ -222,6 +222,8 @@ class Theme_Forms {
     $default_subject = $form_name ? "$form_name – new entry" : 'Website form entry';
 
     $cfg_to         = $_POST['_cfg_to']        ?? '';
+    $cfg_enable_cc_bcc = !empty($_POST['_cfg_enable_cc_bcc']) && $_POST['_cfg_enable_cc_bcc'] !== '0';
+    $cfg_cc         = $_POST['_cfg_cc']        ?? '';
     $cfg_bcc        = $_POST['_cfg_bcc']       ?? '';
     $cfg_subject    = sanitize_text_field($_POST['_cfg_subject'] ?? '');
     $cfg_from_name  = wp_strip_all_tags($_POST['_cfg_from_name']  ?? '');
@@ -232,7 +234,8 @@ class Theme_Forms {
 
     $to_list  = $this->parse_emails($cfg_to);
     if (!$to_list) $to_list = $this->parse_emails(get_option('admin_email'));
-    $bcc_list = $this->parse_emails($cfg_bcc);
+    $cc_list  = $cfg_enable_cc_bcc ? $this->parse_emails($cfg_cc) : [];
+    $bcc_list = $cfg_enable_cc_bcc ? $this->parse_emails($cfg_bcc) : [];
 
     $subject    = $cfg_subject ?: $default_subject;
     $from_name  = $cfg_from_name  ?: $opt_from_name;
@@ -243,6 +246,9 @@ class Theme_Forms {
     $headers[] = 'From: ' . sprintf('%s <%s>', $from_name, $from_email);
     if (!empty($fields['email']) && is_email($fields['email'])) {
       $headers[] = 'Reply-To: ' . sanitize_email($fields['email']);
+    }
+    foreach ($cc_list as $cc) {
+      $headers[] = 'Cc: ' . $cc;
     }
     foreach ($bcc_list as $bcc) {
       $headers[] = 'Bcc: ' . $bcc;
@@ -317,12 +323,13 @@ class Theme_Forms {
         'origin_property_address', 'origin-property-address',
       ]);
 
-      if ($query_type !== '') {
+      // Priority: explicit autoresponder subject from block settings, then dynamic fallbacks.
+      if ($auto_subject_cfg !== '') {
+        $auto_subject = $auto_subject_cfg;
+      } elseif ($query_type !== '') {
         $auto_subject = $query_type;
       } elseif ($property_address !== '') {
         $auto_subject = 'New Query on ' . $property_address;
-      } elseif ($auto_subject_cfg !== '') {
-        $auto_subject = $auto_subject_cfg;
       } else {
         $auto_subject = 'Thank you for your message';
       }
