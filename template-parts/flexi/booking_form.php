@@ -83,9 +83,13 @@ if ($form_markup) {
     $hidden_cfg .= '<input type="hidden" name="_cfg_from_email" value="'.esc_attr($cfg_from_email).'">';
 
     if (get_sub_field('enable_autoresponder')) {
+        $auto_logo_id  = (int) (get_sub_field('autoresponder_logo') ?: 0);
+        $auto_logo_url = $auto_logo_id ? wp_get_attachment_image_url($auto_logo_id, 'medium') : '';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_enabled" value="1">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_subject" value="'.esc_attr(get_sub_field('autoresponder_subject') ?: '').'">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_message" value="'.esc_attr(get_sub_field('autoresponder_message') ?: '').'">';
+        $hidden_cfg .= '<input type="hidden" name="_cfg_auto_logo_url" value="'.esc_attr($auto_logo_url).'">';
+        $hidden_cfg .= '<input type="hidden" name="_cfg_auto_footer_text" value="'.esc_attr(get_sub_field('autoresponder_footer_text') ?: '').'">';
     }
 
     $form_markup = str_replace('</form>', ($hidden . $hidden_cfg) . '</form>', $form_markup);
@@ -415,6 +419,12 @@ if ($form_markup) {
     el.setAttribute('required', '');
     el.setAttribute('aria-required', 'true');
   });
+  // Also enforce via common email name fallback if id changes in pasted form markup.
+  const emailByName = form.querySelector('input[name="email"]');
+  if (emailByName) {
+    emailByName.setAttribute('required', '');
+    emailByName.setAttribute('aria-required', 'true');
+  }
 
   const byId = (id) => document.getElementById(id);
   const getErrorEl = (field) => field && byId(field.id + '-error');
@@ -463,6 +473,90 @@ if ($form_markup) {
     byId('query-type'), byId('property-address'), byId('property-type'), byId('property-condition'),
     byId('bedrooms'), byId('bathrooms'), byId('message'), byId('privacy')
   ].filter(Boolean);
+
+  // Add visual required indicator (*) to labels bound to required fields.
+  (function markRequiredLabels() {
+    const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+    requiredFields.forEach((field) => {
+      if (!field.id) return;
+      const label = form.querySelector('label[for="' + field.id + '"]');
+      if (!label || label.querySelector('.required-star')) return;
+      const star = document.createElement('span');
+      star.className = 'required-star text-red-600 ml-1';
+      star.setAttribute('aria-hidden', 'true');
+      star.textContent = '*';
+      label.appendChild(star);
+    });
+  })();
+
+  // Query Type conditional behavior:
+  // - If "Other": hide property detail selectors and relabel Property Address field to "Other".
+  // - Otherwise: show fields and restore Property Address defaults.
+  (function initQueryTypeConditionalUI() {
+    const queryTypeEl = byId('query-type');
+    const addressEl = byId('property-address');
+    const propertyTypeEl = byId('property-type');
+    const conditionEl = byId('property-condition');
+    const bedsEl = byId('bedrooms');
+    const bathsEl = byId('bathrooms');
+    if (!queryTypeEl || !addressEl) return;
+
+    const addressLabel = form.querySelector('label[for="property-address"]');
+    const originalAddressLabel = addressLabel ? addressLabel.textContent.trim() : 'Property address';
+    const originalAddressPlaceholder = addressEl.getAttribute('placeholder') || "Write the property's address";
+
+    const hideField = (el) => {
+      if (!el) return;
+      const wrap = el.closest('.field-container') || el.closest('.flex.flex-col') || el.parentElement;
+      if (!wrap) return;
+      wrap.style.display = 'none';
+      el.dataset.wasRequired = el.hasAttribute('required') ? '1' : '0';
+      el.removeAttribute('required');
+      el.setAttribute('aria-required', 'false');
+      if (el.tagName && el.tagName.toLowerCase() === 'select') el.value = '';
+      clearError(el);
+      if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
+        jQuery(el).niceSelect('update');
+      }
+    };
+
+    const showField = (el) => {
+      if (!el) return;
+      const wrap = el.closest('.field-container') || el.closest('.flex.flex-col') || el.parentElement;
+      if (!wrap) return;
+      wrap.style.display = '';
+      if (el.dataset.wasRequired === '1') {
+        el.setAttribute('required', '');
+        el.setAttribute('aria-required', 'true');
+      }
+      if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
+        jQuery(el).niceSelect('update');
+      }
+    };
+
+    const isOther = () => String(queryTypeEl.value || '').toLowerCase() === 'other';
+
+    const syncUI = () => {
+      if (isOther()) {
+        hideField(propertyTypeEl);
+        hideField(conditionEl);
+        hideField(bedsEl);
+        hideField(bathsEl);
+        if (addressLabel) addressLabel.childNodes[0].nodeValue = 'Other';
+        addressEl.setAttribute('placeholder', 'Tell us what your query is about');
+      } else {
+        showField(propertyTypeEl);
+        showField(conditionEl);
+        showField(bedsEl);
+        showField(bathsEl);
+        if (addressLabel) addressLabel.childNodes[0].nodeValue = originalAddressLabel;
+        addressEl.setAttribute('placeholder', originalAddressPlaceholder);
+      }
+    };
+
+    queryTypeEl.addEventListener('change', syncUI);
+    syncUI();
+  })();
 
   fields.forEach(clearError);
 
