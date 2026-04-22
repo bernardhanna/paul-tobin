@@ -89,10 +89,13 @@ if ($form_markup) {
     if (get_sub_field('enable_autoresponder')) {
         $auto_logo_id  = (int) (get_sub_field('autoresponder_logo') ?: 0);
         $auto_logo_url = $auto_logo_id ? wp_get_attachment_image_url($auto_logo_id, 'medium') : '';
+        $auto_logo_secondary_id  = (int) (get_sub_field('autoresponder_logo_secondary') ?: 0);
+        $auto_logo_secondary_url = $auto_logo_secondary_id ? wp_get_attachment_image_url($auto_logo_secondary_id, 'medium') : '';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_enabled" value="1">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_subject" value="'.esc_attr(get_sub_field('autoresponder_subject') ?: '').'">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_message" value="'.esc_attr(get_sub_field('autoresponder_message') ?: '').'">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_logo_url" value="'.esc_attr($auto_logo_url).'">';
+        $hidden_cfg .= '<input type="hidden" name="_cfg_auto_logo_secondary_url" value="'.esc_attr($auto_logo_secondary_url).'">';
         $hidden_cfg .= '<input type="hidden" name="_cfg_auto_footer_text" value="'.esc_attr(get_sub_field('autoresponder_footer_text') ?: '').'">';
     }
 

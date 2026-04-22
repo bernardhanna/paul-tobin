@@ -305,7 +305,8 @@ class Theme_Forms {
       $auto_subject_cfg = sanitize_text_field($_POST['_cfg_auto_subject'] ?? '');
       $auto_message = wp_kses_post($_POST['_cfg_auto_message'] ?? 'We received your message.');
       $auto_logo_url = esc_url_raw((string) ($_POST['_cfg_auto_logo_url'] ?? ''));
-      $auto_footer_text = sanitize_textarea_field((string) ($_POST['_cfg_auto_footer_text'] ?? ''));
+      $auto_logo_secondary_url = esc_url_raw((string) ($_POST['_cfg_auto_logo_secondary_url'] ?? ''));
+      $auto_footer_text = wp_kses_post((string) ($_POST['_cfg_auto_footer_text'] ?? ''));
 
       $first_name = $this->first_non_empty_field($fields, [
         'first_name', 'first-name', 'firstname', 'first name',
@@ -347,7 +348,14 @@ class Theme_Forms {
       if ($auto_footer_text !== '') {
         $auto_parts[] = sprintf(
           '<div style="margin-top:16px;font-size:13px;line-height:1.5;color:#4b5563;">%s</div>',
-          nl2br(esc_html($auto_footer_text))
+          $auto_footer_text
+        );
+      }
+      if ($auto_logo_secondary_url !== '') {
+        $auto_parts[] = sprintf(
+          '<div style="margin-top:16px;"><img src="%1$s" alt="%2$s" style="max-width:180px;height:auto;display:block;"></div>',
+          esc_url($auto_logo_secondary_url),
+          esc_attr(get_bloginfo('name'))
         );
       }
       $auto_message_final = implode('', $auto_parts);
