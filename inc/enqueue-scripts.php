@@ -100,19 +100,8 @@ wp_add_inline_script(
     wp_enqueue_script('turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, true);
   }
 
-  // Fonts — must match tailwind.config.js fontFamily.primary / .secondary (Montserrat, Playfair).
-  wp_enqueue_style(
-    'matrix-theme-fonts',
-    'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap',
-    [],
-    null
-  );
-  wp_enqueue_style(
-    'great-fonts',
-    'https://fonts.googleapis.com/css2?family=Great+Vibes:wght@400&display=swap',
-    [],
-    null
-  );
+  // Fonts are enqueued centrally in inc/enqueue-fonts.php so they keep working
+  // even when WP Rocket's hosted-Google-Fonts feature is toggled.
 
   // Register optional third-parties
   wp_register_style('font-awesome','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',[],null);
