@@ -68,3 +68,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }).observe(wrapper, { childList: true, subtree: true });
   } catch (e) { }
 })();
+
+// Flex counters (counters_001): must live here — WP Rocket Delay JS defers inline <script> in HTML,
+// so x-data="countersSection()" would run before the global function exists.
+document.addEventListener('alpine:init', () => {
+  const A = window.Alpine;
+  if (!A || typeof A.data !== 'function') return;
+
+  A.data('countersSection', (rawTargets) => {
+    const list = Array.isArray(rawTargets) ? rawTargets.map((n) => parseInt(n, 10) || 0) : [0, 0, 0];
+    const targetNumbers = [0, 1, 2].map((i) => (typeof list[i] === 'number' && !Number.isNaN(list[i]) ? list[i] : 0));
+
+    return {
+      displayNumbers: [0, 0, 0],
+      targetNumbers,
+      animationDuration: 2000,
+
+      startCounters() {
+        this.targetNumbers.forEach((target, index) => {
+          if (target > 0) {
+            this.animateCounter(index, target);
+          }
+        });
+      },
+
+      animateCounter(index, target) {
+        const startTime = Date.now();
+        const startValue = 0;
+        const animate = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / this.animationDuration, 1);
+          const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+          this.displayNumbers[index] = Math.floor(startValue + (target - startValue) * easeOutQuart);
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            this.displayNumbers[index] = target;
+          }
+        };
+        requestAnimationFrame(animate);
+      },
+    };
+  });
+});

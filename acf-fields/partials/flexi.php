@@ -24,6 +24,9 @@ if (function_exists('acf_add_local_field_group')) {
     $flexible_content
         ->setLocation( 'post_type', '!=', 'acf-field-group' ) // show on every real post-type
         ->and(        'post_type', '!=', 'attachment' )      // optional: hide on media edit screen
+        ->and(        'post_type', '!=', 'form_entry' )      // form submissions: own metabox only
+        ->and(        'post_type', '!=', 'team' )            // team profiles: no page builder
+        ->and(        'post_type', '!=', 'testimonial' )     // testimonials: no page builder
         ->addFlexibleContent('flexible_content_blocks', [
             'label' => 'Page Content Blocks',
             'button_label' => 'Add Block',

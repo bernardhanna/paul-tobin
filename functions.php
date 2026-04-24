@@ -39,6 +39,28 @@ function matrix_starter_setup() {
 add_action('after_setup_theme', 'matrix_starter_setup');
 
 /**
+ * Do not expose the WordPress version in the HTML head (reduces fingerprinting).
+ * Runs on init so it wins over plugins that re-hook wp_generator; the_generator
+ * filter is a fallback if the callback still runs.
+ */
+function matrix_starter_remove_wp_generator_head() {
+    remove_action('wp_head', 'wp_generator');
+}
+add_action('init', 'matrix_starter_remove_wp_generator_head', 100);
+
+add_filter(
+    'the_generator',
+    static function ($display, $type) {
+        if (in_array($type, array('html', 'xhtml'), true)) {
+            return '';
+        }
+        return $display;
+    },
+    10,
+    2
+);
+
+/**
  * Menu link attributes (theme_location is the slug)
  */
 add_filter('nav_menu_link_attributes', function ($atts, $item, $args) {
@@ -87,6 +109,8 @@ add_action('acf/init', function () {
 /**
  * Other theme includes
  */
+require_once get_template_directory() . '/inc/wp-rocket-theme-compat.php';
+require_once get_template_directory() . '/inc/admin-menus.php';
 require_once get_template_directory() . '/inc/login-customizations.php';
 require_once get_template_directory() . '/inc/pagination.php';
 require_once get_template_directory() . '/inc/woocommerce.php';

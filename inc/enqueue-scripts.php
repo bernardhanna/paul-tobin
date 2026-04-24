@@ -23,6 +23,23 @@ function matrix_starter_enqueue_scripts() {
   // Ensure jQuery is present early
   wp_enqueue_script('jquery');
 
+  // jQuery Nice Select (used by booking form + other theme selects)
+  wp_register_style(
+    'nice-select-css',
+    'https://cdn.jsdelivr.net/gh/hernansartorio/jquery-nice-select@1.1.0/css/nice-select.css',
+    [],
+    '1.1.0'
+  );
+  wp_register_script(
+    'nice-select-js',
+    'https://cdn.jsdelivr.net/gh/hernansartorio/jquery-nice-select@1.1.0/js/jquery.nice-select.min.js',
+    ['jquery'],
+    '1.1.0',
+    true
+  );
+  wp_enqueue_style('nice-select-css');
+  wp_enqueue_script('nice-select-js');
+
   // Dev/prod asset base
   $is_dev = defined('WP_ENV') && WP_ENV === 'development';
   $base   = get_template_directory_uri();
@@ -85,10 +102,10 @@ wp_add_inline_script(
     wp_enqueue_script('turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, true);
   }
 
-  // Fonts
+  // Fonts — must match tailwind.config.js fontFamily.primary / .secondary (Montserrat, Playfair).
   wp_enqueue_style(
-    'ubuntu',
-    'https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap',
+    'matrix-theme-fonts',
+    'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap',
     [],
     null
   );

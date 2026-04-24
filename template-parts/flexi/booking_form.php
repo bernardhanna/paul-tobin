@@ -106,7 +106,7 @@ if ($form_markup) {
 
 <section
   id="<?php echo esc_attr($section_id); ?>"
-  class="relative flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+  class="relative flex overflow-visible <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
@@ -136,7 +136,7 @@ if ($form_markup) {
           </p>
         <?php endif; ?>
 
-        <div class="p-[2rem] bg-[#EDEDED] max-sm:p-6">
+        <div class="matrix-booking-form-shell p-[2rem] bg-[#EDEDED] max-sm:p-6">
           <?php if ($form_markup): ?>
             <?php
             echo wp_kses(
@@ -405,6 +405,126 @@ if ($form_markup) {
   .accordion-content { overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out; }
   .accordion-content.collapsed { max-height: 0; opacity: 0; }
   .accordion-content.expanded  { max-height: 1000px; opacity: 1; }
+
+  /* Form shell: align with .form-container / .form-input rhythm (text-sm + readable line-height) */
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell form {
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .form-input,
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell input[type="text"],
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell input[type="email"],
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell input[type="tel"],
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell input[type="search"],
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell textarea {
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  /* Nice Select — match .form-input (padding, border, type scale) + full-width list */
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select {
+    float: none;
+    display: block;
+    width: 100%;
+    min-height: calc(0.75rem + 0.75rem + 1.375rem);
+    height: auto;
+    line-height: 1.375rem;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    box-sizing: border-box;
+    border-radius: 0.25rem;
+    border: none;
+    background-color: #fff;
+    color: #64748b;
+    font-family: inherit;
+    font-size: inherit;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select:hover {
+    background-color: #f8fafc;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select.open {
+    background-color: #f1f5f9;
+    box-shadow: none;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select:focus {
+    outline: none;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select:focus-visible {
+    outline: 2px solid rgba(0, 152, 216, 0.65);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select.matrix-ns-invalid {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .current {
+    color: #64748b;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Placeholder / “choose one” row: lighter like native placeholder */
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select:not(.matrix-ns-has-value) .current {
+    color: #9ca3af;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select:after {
+    border-color: #0a1119;
+    right: 1rem;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select.open:after {
+    border-color: #0a1119;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .list {
+    font-family: inherit;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0;
+    box-sizing: border-box;
+    border-radius: 0.25rem;
+    border: none;
+    background-color: #fff;
+    box-shadow: 0 10px 25px rgba(10, 17, 25, 0.12);
+    max-height: min(18rem, 55vh);
+    overflow-y: auto;
+    z-index: 30;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option {
+    font-family: inherit;
+    min-height: 2.75rem;
+    line-height: 1.375rem;
+    padding: 0.625rem 1rem;
+    font-size: inherit;
+    color: #334155;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option:hover,
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option.focus,
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option.selected.focus {
+    background-color: rgba(64, 191, 245, 0.18);
+    color: #0a1119;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option.selected {
+    font-weight: 600;
+    color: #025a70;
+    background-color: rgba(2, 90, 112, 0.08);
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select .option.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .nice-select.disabled {
+    border: none;
+  }
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .field-wrapper,
+  #<?php echo esc_attr($section_id); ?> .matrix-booking-form-shell .relative {
+    position: relative;
+  }
 </style>
 
 <?php if ($needs_leaflet): ?>
@@ -416,17 +536,81 @@ if ($form_markup) {
 <script>
 /* Form validation (unchanged) */
 (function() {
-  const form = document.querySelector('form[role="form"]');
+  const formRoot = document.getElementById('<?php echo esc_js($section_id); ?>');
+  const form =
+    (formRoot && formRoot.querySelector('form')) ||
+    document.querySelector('form[role="form"]') ||
+    document.querySelector('form[data-theme-form]');
   if (!form) return;
+
+  // Keep Nice Select dropdown list same width as trigger (plugin default can shrink .list).
+  const syncNiceSelectListWidths = () => {
+    if (typeof jQuery === 'undefined') return;
+    jQuery(form).find('.nice-select').each(function () {
+      const $n = jQuery(this);
+      const w = $n.outerWidth();
+      if (!w) return;
+      $n.find('.list').css({ width: w, minWidth: w, maxWidth: 'none' });
+    });
+  };
+
+  const syncNiceSelectAriaExpanded = () => {
+    if (typeof jQuery === 'undefined') return;
+    jQuery(form).find('.nice-select').each(function () {
+      this.setAttribute('aria-expanded', this.classList.contains('open') ? 'true' : 'false');
+    });
+  };
+
+  const syncNiceSelectValueState = ($select) => {
+    const el = $select.get(0);
+    const $nice = $select.next('.nice-select');
+    if (!$nice.length) return;
+    const opt = el.options[el.selectedIndex];
+    const real = !!(opt && !opt.disabled && String(opt.value || '').trim() !== '');
+    $nice.toggleClass('matrix-ns-has-value', real);
+  };
+
+  const enhanceNiceSelectA11y = ($select) => {
+    const el = $select.get(0);
+    const sid = el.id || '';
+    const $nice = $select.next('.nice-select');
+    if (!$nice.length) return;
+    const $list = $nice.find('.list');
+    $list.attr('role', 'listbox');
+    $nice.find('.option').attr('role', 'option');
+    let listId = $list.attr('id');
+    if (!listId) {
+      listId = sid ? sid + '-nice-list' : 'ns-list-' + String(Math.random()).slice(2, 10);
+      $list.attr('id', listId);
+    }
+    if (sid) {
+      const $lbl = jQuery(form).find('label[for="' + sid.replace(/"/g, '') + '"]');
+      if ($lbl.length) {
+        if (!$lbl.attr('id')) {
+          $lbl.attr('id', sid + '-label');
+        }
+        $nice.attr('aria-labelledby', $lbl.attr('id'));
+        $nice.removeAttr('aria-label');
+      } else {
+        $nice.attr('aria-label', 'Select an option');
+      }
+    } else {
+      $nice.attr('aria-label', 'Select an option');
+    }
+    $nice.attr({
+      role: 'combobox',
+      'aria-haspopup': 'listbox',
+      'aria-controls': listId,
+      'aria-expanded': 'false',
+    });
+    syncNiceSelectValueState($select);
+  };
 
   // Enhance selected dropdowns with Nice Select if available.
   const initNiceSelect = () => {
     if (typeof jQuery === 'undefined') return false;
     if (!jQuery.fn || typeof jQuery.fn.niceSelect !== 'function') return false;
-
-    const ids = ['query-type', 'property-type', 'property-condition', 'bedrooms', 'bathrooms'];
-    const selectors = ids.map((id) => '#' + id).join(',');
-    const $targets = jQuery(form).find(selectors);
+    const $targets = jQuery(form).find('select:not([multiple]):not(.no-nice-select)');
     if (!$targets.length) return false;
 
     $targets.each(function () {
@@ -437,20 +621,56 @@ if ($form_markup) {
       } else {
         $select.niceSelect('update');
       }
+      enhanceNiceSelectA11y($select);
       const wrapper = this.closest('.relative');
       if (wrapper) wrapper.classList.add('nice-select-ready');
+    });
+
+    requestAnimationFrame(() => {
+      syncNiceSelectListWidths();
+      syncNiceSelectAriaExpanded();
     });
     return true;
   };
 
+  if (form && !form.dataset.matrixNiceListDelegation) {
+    form.dataset.matrixNiceListDelegation = '1';
+    document.addEventListener(
+      'click',
+      () => {
+        window.requestAnimationFrame(() => {
+          if (typeof jQuery === 'undefined' || !form.isConnected) return;
+          syncNiceSelectListWidths();
+          syncNiceSelectAriaExpanded();
+        });
+      },
+      true
+    );
+    window.addEventListener('resize', () => syncNiceSelectListWidths());
+  }
+
+  form.addEventListener('change', (e) => {
+    const t = e.target;
+    if (!t || t.tagName !== 'SELECT' || !form.contains(t) || typeof jQuery === 'undefined') return;
+    const $t = jQuery(t);
+    if (!$t.hasClass('nice-select-initialized')) return;
+    syncNiceSelectValueState($t);
+    $t.niceSelect('update');
+    window.requestAnimationFrame(() => {
+      syncNiceSelectListWidths();
+      syncNiceSelectAriaExpanded();
+    });
+  });
+
   // Try now, then retry briefly for deferred/late-loaded scripts.
   initNiceSelect();
   document.addEventListener('DOMContentLoaded', initNiceSelect);
+  window.addEventListener('load', initNiceSelect);
   let niceSelectRetries = 0;
   const retryTimer = setInterval(() => {
     const ok = initNiceSelect();
     niceSelectRetries += 1;
-    if (ok || niceSelectRetries > 20) clearInterval(retryTimer); // ~4s max
+    if (ok || niceSelectRetries > 50) clearInterval(retryTimer); // ~10s max
   }, 200);
 
   // Enforce mandatory fields for genuine enquiries (even if pasted markup changes).
@@ -470,22 +690,42 @@ if ($form_markup) {
   const byId = (id) => document.getElementById(id);
   const getErrorEl = (field) => field && byId(field.id + '-error');
 
+  const getNiceWrap = (field) => {
+    if (!field || !field.tagName || field.tagName.toLowerCase() !== 'select') return null;
+    const next = field.nextElementSibling;
+    return next && next.classList && next.classList.contains('nice-select') ? next : null;
+  };
+
   const showError = (field, msg) => {
+    if (!field) return;
     const err = getErrorEl(field);
-    if (!err) return;
-    err.textContent = msg || 'This field is required.';
-    err.classList.remove('hidden');
+    if (err) {
+      err.textContent = msg || 'This field is required.';
+      err.classList.remove('hidden');
+    }
     field.setAttribute('aria-invalid', 'true');
     field.classList.add('border-red-600');
+    const nw = getNiceWrap(field);
+    if (nw) {
+      nw.classList.add('matrix-ns-invalid');
+      nw.setAttribute('aria-invalid', 'true');
+    }
   };
 
   const clearError = (field) => {
+    if (!field) return;
     const err = getErrorEl(field);
-    if (!err) return;
-    err.textContent = '';
-    err.classList.add('hidden');
+    if (err) {
+      err.textContent = '';
+      err.classList.add('hidden');
+    }
     field.removeAttribute('aria-invalid');
     field.classList.remove('border-red-600');
+    const nw = getNiceWrap(field);
+    if (nw) {
+      nw.classList.remove('matrix-ns-invalid');
+      nw.removeAttribute('aria-invalid');
+    }
   };
 
   const isEmpty = (v) => v == null || String(v).trim() === '';
@@ -523,7 +763,7 @@ if ($form_markup) {
       const label = form.querySelector('label[for="' + field.id + '"]');
       if (!label || label.querySelector('.required-star')) return;
 
-      // Normalize author-entered stars (e.g. "**") down to plain label text first.
+      // Normalize author-entered stars (e.g. "**") in label text; visual required * is the span below.
       const firstTextNode = Array.from(label.childNodes).find((node) => node.nodeType === 3);
       if (firstTextNode) {
         firstTextNode.textContent = String(firstTextNode.textContent || '').replace(/\s*\*+\s*$/, '');
@@ -550,12 +790,61 @@ if ($form_markup) {
     if (!queryTypeEl || !addressEl) return;
 
     const addressLabel = form.querySelector('label[for="property-address"]');
-    const originalAddressLabel = addressLabel ? addressLabel.textContent.trim() : 'Property address';
+    const originalAddressLabel = 'Property address';
+
+    const setAddressLabelVisibleText = (text) => {
+      if (!addressLabel) return;
+      const star = addressLabel.querySelector('.required-star');
+      const textNode = Array.from(addressLabel.childNodes).find((n) => n.nodeType === 3);
+      if (textNode) {
+        textNode.textContent = star ? String(text).trim() + ' ' : String(text).trim();
+        return;
+      }
+      const firstEl = Array.from(addressLabel.childNodes).find(
+        (n) => n.nodeType === 1 && n !== star
+      );
+      if (firstEl) {
+        firstEl.textContent = String(text).trim();
+        return;
+      }
+      if (star) {
+        addressLabel.insertBefore(document.createTextNode(String(text).trim() + ' '), star);
+        return;
+      }
+      addressLabel.textContent = String(text).trim();
+    };
     const originalAddressPlaceholder = addressEl.getAttribute('placeholder') || "Write the property's address";
+
+    // Hide the whole row (label + control). Labels usually sit above the .relative wrapper that holds
+    // <select> + .nice-select — hiding only the wrapper leaves orphan labels (screenshot issue).
+    const getFieldRow = (el) => {
+      if (!el) return null;
+      const lid = el.id ? String(el.id) : '';
+      if (lid) {
+        const lbl = form.querySelector('label[for="' + lid.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"]');
+        if (lbl) {
+          let n = el;
+          for (let i = 0; i < 12 && n; i++) {
+            n = n.parentElement;
+            if (!n || !form.contains(n)) break;
+            if (n.contains(lbl)) return n;
+          }
+        }
+      }
+      const nice = getNiceWrap(el);
+      const direct = el.parentElement;
+      if (nice && direct && direct.contains(nice)) {
+        return direct;
+      }
+      return el.closest('.field-container')
+        || el.closest('.field-wrapper')
+        || el.closest('.wpcf7-form-control-wrap')
+        || direct;
+    };
 
     const hideField = (el) => {
       if (!el) return;
-      const wrap = el.closest('.field-container') || el.closest('.flex.flex-col') || el.parentElement;
+      const wrap = getFieldRow(el);
       if (!wrap) return;
       wrap.style.display = 'none';
       el.dataset.wasRequired = el.hasAttribute('required') ? '1' : '0';
@@ -564,13 +853,15 @@ if ($form_markup) {
       if (el.tagName && el.tagName.toLowerCase() === 'select') el.value = '';
       clearError(el);
       if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
-        jQuery(el).niceSelect('update');
+        if (jQuery(el).hasClass('nice-select-initialized')) {
+          jQuery(el).niceSelect('update');
+        }
       }
     };
 
     const showField = (el) => {
       if (!el) return;
-      const wrap = el.closest('.field-container') || el.closest('.flex.flex-col') || el.parentElement;
+      const wrap = getFieldRow(el);
       if (!wrap) return;
       wrap.style.display = '';
       if (el.dataset.wasRequired === '1') {
@@ -578,11 +869,24 @@ if ($form_markup) {
         el.setAttribute('aria-required', 'true');
       }
       if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
-        jQuery(el).niceSelect('update');
+        if (jQuery(el).hasClass('nice-select-initialized')) {
+          jQuery(el).niceSelect('update');
+        }
       }
     };
 
-    const isOther = () => String(queryTypeEl.value || '').toLowerCase() === 'other';
+    const isOther = () => {
+      const v = String(queryTypeEl.value || '').toLowerCase().trim();
+      if (v === 'other' || v === 'others') return true;
+      if (/(^|[_-])other($|[_-])/i.test(v)) return true;
+      const opt = queryTypeEl.options[queryTypeEl.selectedIndex];
+      if (!opt) return false;
+      const t = String(opt.textContent || '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+      return t === 'other' || t === 'others' || /^other\b/.test(t);
+    };
 
     const syncUI = () => {
       if (isOther()) {
@@ -590,20 +894,30 @@ if ($form_markup) {
         hideField(conditionEl);
         hideField(bedsEl);
         hideField(bathsEl);
-        if (addressLabel) addressLabel.childNodes[0].nodeValue = 'Other';
+        setAddressLabelVisibleText('Other');
         addressEl.setAttribute('placeholder', 'Tell us what your query is about');
       } else {
         showField(propertyTypeEl);
         showField(conditionEl);
         showField(bedsEl);
         showField(bathsEl);
-        if (addressLabel) addressLabel.childNodes[0].nodeValue = originalAddressLabel;
+        setAddressLabelVisibleText(originalAddressLabel);
         addressEl.setAttribute('placeholder', originalAddressPlaceholder);
       }
     };
 
-    queryTypeEl.addEventListener('change', syncUI);
+    // Native bubble + jQuery delegated change (Nice Select triggers change on the underlying <select>).
+    const onQueryTypeChange = (e) => {
+      const t = e.target;
+      if (t && t.id === 'query-type') syncUI();
+    };
+    form.addEventListener('change', onQueryTypeChange);
+    if (typeof jQuery !== 'undefined') {
+      jQuery(form).on('change.matrixQueryType', '#query-type', syncUI);
+    }
+
     syncUI();
+    window.requestAnimationFrame(syncUI);
   })();
 
   fields.forEach(clearError);

@@ -50,10 +50,13 @@ module.exports = {
     ],
   },
 
+  // Used only by `npm run dev:serve` (proxy). Default `npm run dev` uses `webpack --watch` so
+  // dist/*.js served by WordPress never embeds the dev-server client (avoids error-overlay flashes).
   devServer: {
     static: { directory: path.join(__dirname), watch: true },
     compress: true,
     port: process.env.DEV_SERVER_PORT || 3000,
+    client: false,
     proxy: {
       '/': {
         target: process.env.WP_HOME || 'http://localhost:10054',

@@ -55,14 +55,14 @@ if ($primary_navigation->isNotEmpty()) {
     <!-- LEFT: Primary (first half) — grid col 1, hugs logo -->
     <?php if (!empty($left_menu_items)) : ?>
       <div class="hidden min-w-0 lg:flex lg:justify-end lg:pr-2">
-      <ul class="flex gap-3 items-center leading-loose text-black xl:gap-6 justify-end min-w-0"
+      <ul class="flex gap-3 justify-end items-center min-w-0 leading-loose text-black xl:gap-6"
           aria-label="Primary navigation (left)">
         <?php foreach ($left_menu_items as $index => $item) : ?>
           <li class="relative group shrink-0 <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
             <a href="<?php echo esc_url($item->url); ?>"
-               class="flex items-center gap-1 px-2.5 py-2 rounded-[8px] transition-colors duration-200 xl:px-4
+               class="flex font-[500] items-center gap-1 px-2.5 py-2 rounded-[8px] transition-colors duration-200 xl:px-4
                       <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-sm font-[500] leading-normal xl:text-base whitespace-nowrap">
+                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-sm leading-normal xl:text-base whitespace-nowrap">
               <?php echo esc_html($item->label); ?>
               <?php if (!empty($item->children)) : ?>
                 <span class="ml-[2px]">
@@ -125,7 +125,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
 <?php if (!empty($right_menu_items) || $phone_number || $contact_button) : ?>
   <div class="hidden min-w-0 lg:flex lg:flex-row lg:justify-start lg:items-center lg:gap-3 lg:pl-2 xl:gap-6">
   <?php if (!empty($right_menu_items)) : ?>
-  <ul class="flex gap-3 items-center leading-loose text-black xl:gap-6 justify-start min-w-0"
+  <ul class="flex gap-3 justify-start items-center min-w-0 leading-loose text-black xl:gap-6"
       aria-label="Primary navigation (right)">
     <?php foreach ($right_menu_items as $index => $item) : ?>
       <?php
@@ -188,7 +188,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
         <?php if (!empty($contact_button['url'])) : ?>
           <a href="<?php echo esc_url($contact_button['url']); ?>"
              target="<?php echo esc_attr($contact_button['target'] ?? '_self'); ?>"
-             class="px-3 py-2 text-sm font-semibold text-black rounded btn bg-secondary hover:bg-orange-500 xl:px-4 xl:text-base whitespace-nowrap">
+             class="px-3 py-2 text-sm font-semibold text-black whitespace-nowrap rounded btn bg-secondary hover:bg-orange-500 xl:px-4 xl:text-base">
             <?php echo esc_html($contact_button['title'] ?? 'Contact'); ?>
           </a>
         <?php endif; ?>

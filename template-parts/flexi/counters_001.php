@@ -43,13 +43,20 @@ if (have_rows('counters')) {
         ];
     }
 }
+
+// Targets for Alpine.data('countersSection', …) in app.js (inline scripts break under WP Rocket Delay JS).
+$counter_targets = [0, 0, 0];
+for ($i = 0; $i < 3; $i++) {
+    $counter_targets[$i] = !empty($counters[$i]['number']) ? (int) $counters[$i]['number'] : 0;
+}
+$counter_targets_js = implode(',', array_map('intval', $counter_targets));
 ?>
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
     class="flex overflow-hidden relative pb-9"
     style="background-color: <?php echo esc_attr($background_color); ?>;"
-    x-data="countersSection()"
+    x-data="countersSection([<?php echo esc_attr($counter_targets_js); ?>])"
     x-intersect.once="startCounters()"
 >
     <div class="flex flex-col items-center w-full mx-auto max-w-container max-xl:px-5 py-10 md:py-20 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
@@ -114,46 +121,3 @@ if (have_rows('counters')) {
         <?php endif; ?>
     </div>
 </section>
-
-<script>
-function countersSection() {
-    return {
-        displayNumbers: [0, 0, 0],
-        targetNumbers: [
-            <?php echo !empty($counters[0]) ? intval($counters[0]['number']) : 0; ?>,
-            <?php echo !empty($counters[1]) ? intval($counters[1]['number']) : 0; ?>,
-            <?php echo !empty($counters[2]) ? intval($counters[2]['number']) : 0; ?>
-        ],
-        animationDuration: 2000,
-
-        startCounters() {
-            this.targetNumbers.forEach((target, index) => {
-                if (target > 0) {
-                    this.animateCounter(index, target);
-                }
-            });
-        },
-
-        animateCounter(index, target) {
-            const startTime = Date.now();
-            const startValue = 0;
-
-            const animate = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / this.animationDuration, 1);
-                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-
-                this.displayNumbers[index] = Math.floor(startValue + (target - startValue) * easeOutQuart);
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    this.displayNumbers[index] = target;
-                }
-            };
-
-            requestAnimationFrame(animate);
-        }
-    }
-}
-</script>
