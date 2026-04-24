@@ -87,8 +87,8 @@ $height_classes = 'h-[' . $height_xs . 'px] md:h-[' . $height_md . 'px]';
                 title="<?php echo esc_attr($image_title); ?>"
                 class="w-full <?php echo esc_attr($height_classes); ?> object-cover"
                 decoding="async"
-                loading="lazy"
-                fetchpriority="low"
+                loading="eager"
+                fetchpriority="high"
             />
         <?php endif; ?>
 </section>

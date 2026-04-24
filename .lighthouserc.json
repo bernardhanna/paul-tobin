@@ -1,0 +1,41 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 2,
+      "settings": {
+        "preset": "desktop"
+      },
+      "url": [
+        "http://localhost:10059/",
+        "http://localhost:10059/buy/",
+        "http://localhost:10059/contact-us/",
+        "http://localhost:10059/book-a-valuation/"
+      ]
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": [
+          "warn",
+          {
+            "minScore": 0.8
+          }
+        ],
+        "largest-contentful-paint": [
+          "warn",
+          {
+            "maxNumericValue": 3000
+          }
+        ],
+        "cumulative-layout-shift": [
+          "warn",
+          {
+            "maxNumericValue": 0.1
+          }
+        ]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

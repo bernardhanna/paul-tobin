@@ -130,6 +130,66 @@ function custom_excerpt_more($more) {
 add_filter('excerpt_more', 'custom_excerpt_more');
 
 /**
+ * Remove pasted light font-weight overrides from editor HTML output.
+ * This keeps content text aligned with theme typography defaults.
+ */
+function matrix_strip_editor_light_font_weight($content) {
+    if (!is_string($content) || $content === '') {
+        return $content;
+    }
+
+    // Strip class tokens like: font-300, font_300, font-[300], !font-[300]
+    $content = preg_replace_callback(
+        '/\bclass\s*=\s*(["\'])(.*?)\1/i',
+        static function ($matches) {
+            $quote = $matches[1];
+            $class_value = $matches[2];
+            $classes = preg_split('/\s+/', trim($class_value)) ?: [];
+
+            $filtered = array_values(array_filter($classes, static function ($class_name) {
+                return !preg_match('/^!?font(?:-|_)?(?:\[\s*300\s*\]|300)$/i', $class_name);
+            }));
+
+            if (empty($filtered)) {
+                return '';
+            }
+
+            return 'class=' . $quote . implode(' ', $filtered) . $quote;
+        },
+        $content
+    );
+
+    // Strip inline declarations like: font-weight:300; or font-weight: 300 !important;
+    $content = preg_replace_callback(
+        '/\bstyle\s*=\s*(["\'])(.*?)\1/i',
+        static function ($matches) {
+            $quote = $matches[1];
+            $style_value = $matches[2];
+
+            $declarations = array_filter(array_map('trim', explode(';', $style_value)), static function ($declaration) {
+                return $declaration !== '';
+            });
+
+            $filtered = array_values(array_filter($declarations, static function ($declaration) {
+                return !preg_match('/^font-weight\s*:\s*300(?:\s*!important)?$/i', $declaration);
+            }));
+
+            if (empty($filtered)) {
+                return '';
+            }
+
+            return 'style=' . $quote . implode('; ', $filtered) . ';' . $quote;
+        },
+        $content
+    );
+
+    // Clean up potential double spaces left by attribute removal.
+    return preg_replace('/\s{2,}/', ' ', $content);
+}
+add_filter('the_content', 'matrix_strip_editor_light_font_weight', 20);
+add_filter('acf/format_value/type=wysiwyg', 'matrix_strip_editor_light_font_weight', 20);
+
+/**
  * Extra image sizes & labels
  */
 function my_custom_image_sizes() {

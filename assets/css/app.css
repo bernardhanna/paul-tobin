@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
 html {
   @apply font-primary;
   width: 100%;
@@ -1361,7 +1360,7 @@ body {
 }
 
 .wp_editor p {
-   @apply font-primary text-[16px] font-[300] leading-[26px] tracking-[0] mb-4;
+   @apply font-primary text-[16px] leading-[26px] tracking-[0] mb-4;
 }
 
 /* Image Styling */

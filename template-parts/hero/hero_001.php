@@ -77,18 +77,41 @@ $image_mobile     = '';
 
 // For *md and up*, we render the bg as an absolute layer (not inline style).
 if ($background_type === 'image' && $background_image) {
-    $bg_url   = wp_get_attachment_image_url($background_image, 'full');
     $bg_alt   = get_post_meta($background_image, '_wp_attachment_image_alt', true) ?: 'Background image';
+    $desktop_bg_img = wp_get_attachment_image(
+        $background_image,
+        '2048x2048',
+        false,
+        [
+            'class' => 'w-full h-full object-cover',
+            'alt' => '',
+            'loading' => 'eager',
+            'fetchpriority' => 'high',
+            'decoding' => 'sync',
+            'sizes' => '100vw',
+        ]
+    );
+    $mobile_bg_img = wp_get_attachment_image(
+        $background_image,
+        'large',
+        false,
+        [
+            'class' => 'w-full h-full object-cover min-h-[18.75rem]',
+            'alt' => $bg_alt,
+            'loading' => 'lazy',
+            'decoding' => 'async',
+            'sizes' => '100vw',
+        ]
+    );
     // Desktop/tablet: absolute cover layer (hidden on mobile)
     $image_desktop_bg = '
         <div class="hidden absolute inset-0 md:block" aria-hidden="true">
-            <div class="w-full h-full bg-center bg-cover" style="background-image:url(' . esc_url($bg_url) . ');"></div>
+            ' . $desktop_bg_img . '
         </div>';
     // Mobile (<= md): real <img>, min-height 18.75rem (300px)
     $image_mobile = '
         <div class="relative z-20 w-full md:hidden">
-            <img src="' . esc_url($bg_url) . '" alt="' . esc_attr($bg_alt) . '"
-                 class="w-full h-full object-cover min-h-[18.75rem]" loading="eager" />
+            ' . $mobile_bg_img . '
         </div>';
 }
 
@@ -129,13 +152,13 @@ if ($background_type === 'video') {
         if ($video_url !== '') {
             $video_background = "
                 <div class='hidden absolute inset-0 md:block' aria-hidden='true'>
-                    <video autoplay muted loop playsinline webkit-playsinline preload='auto' class='object-cover absolute inset-0 w-full h-full matrix-hero-bg-video'" . $poster_attr . ">
+                    <video autoplay muted loop playsinline webkit-playsinline preload='metadata' class='object-cover absolute inset-0 w-full h-full matrix-hero-bg-video'" . $poster_attr . ">
                         <source src='" . esc_url($video_url) . "' type='" . esc_attr($video_mime) . "'>
                     </video>
                 </div>";
             $image_mobile = '
                 <div class="relative z-20 w-full md:hidden">
-                    <video autoplay muted loop playsinline webkit-playsinline preload="auto" class="object-cover w-full h-full min-h-[18.75rem] matrix-hero-bg-video" ' . ($poster_url ? 'poster="' . esc_url($poster_url) . '"' : '') . '>
+                    <video autoplay muted loop playsinline webkit-playsinline preload="metadata" class="object-cover w-full h-full min-h-[18.75rem] matrix-hero-bg-video" ' . ($poster_url ? 'poster="' . esc_url($poster_url) . '"' : '') . '>
                         <source src="' . esc_url($video_url) . '" type="' . esc_attr($video_mime) . '">
                     </video>
                 </div>';

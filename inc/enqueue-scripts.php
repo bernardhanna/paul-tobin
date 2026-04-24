@@ -76,15 +76,6 @@ wp_add_inline_script(
   'before'
 );
 
-// Optional one-time debug (remove after verifying)
-wp_add_inline_script(
-  'theme-forms',
-  'console.log("[forms] provider:", window.themeFormsCaptchaProvider,
-               "| reCAP:", window.themeFormsRecaptchaV3,
-               "| turnstile:", window.themeFormsTurnstileSiteKey,
-               "| types:", typeof window.themeFormsCaptchaProvider, typeof window.themeFormsRecaptchaV3, typeof window.themeFormsTurnstileSiteKey);',
-  'after'
-);
   // Load provider-specific API
   if ($provider === 'recaptcha_v3' && $recaptchaKey) {
     wp_enqueue_script('recaptcha', "https://www.google.com/recaptcha/api.js?render={$recaptchaKey}", [], null, true);
@@ -97,7 +88,7 @@ wp_add_inline_script(
   // Fonts
   wp_enqueue_style(
     'ubuntu',
-    'https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap',
+    'https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap',
     [],
     null
   );

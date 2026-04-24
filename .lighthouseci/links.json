@@ -1,0 +1,6 @@
+{
+  "http://localhost:10059/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1776955069866-61814.report.html",
+  "http://localhost:10059/buy/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1776955071164-59648.report.html",
+  "http://localhost:10059/contact-us2/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1776955072362-41743.report.html",
+  "http://localhost:10059/book-a-valuation/": "https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1776955073567-69575.report.html"
+}

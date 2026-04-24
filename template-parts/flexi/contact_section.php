@@ -81,7 +81,9 @@ function cs_image_tag_std($img, $fallback_alt = 'Image', $fallback_title = '') {
     }
     $alt   = !empty($img['alt']) ? $img['alt'] : $fallback_alt;
     $title = !empty($img['title']) ? $img['title'] : $fallback_title;
-    return '<img src="' . esc_url($url) . '" alt="' . esc_attr($alt) . '" title="' . esc_attr($title) . '" loading="lazy" decoding="async" class="object-cover w-full">';
+    $width  = !empty($img['width']) ? (int) $img['width'] : 1200;
+    $height = !empty($img['height']) ? (int) $img['height'] : 800;
+    return '<img src="' . esc_url($url) . '" alt="' . esc_attr($alt) . '" title="' . esc_attr($title) . '" width="' . esc_attr((string) $width) . '" height="' . esc_attr((string) $height) . '" loading="lazy" decoding="async" class="object-cover w-full h-auto">';
 }
 
 function cs_video_local_std($file, $poster = null) {
@@ -102,8 +104,10 @@ function cs_video_youtube_std($url, $poster = null) {
     if (!empty($poster_url)) {
         $alt = isset($poster['alt']) ? $poster['alt'] : 'Video poster';
         $title = isset($poster['title']) ? $poster['title'] : 'Play video';
+        $width  = !empty($poster['width']) ? (int) $poster['width'] : 1200;
+        $height = !empty($poster['height']) ? (int) $poster['height'] : 800;
         return '<a href="' . esc_url($url) . '" target="_blank" rel="noopener" class="block w-full" aria-label="' . esc_attr__('Play video on YouTube', 'textdomain') . '">
-                    <img src="' . esc_url($poster_url) . '" alt="' . esc_attr($alt) . '" title="' . esc_attr($title) . '" class="object-cover w-full" loading="lazy" decoding="async">
+                    <img src="' . esc_url($poster_url) . '" alt="' . esc_attr($alt) . '" title="' . esc_attr($title) . '" width="' . esc_attr((string) $width) . '" height="' . esc_attr((string) $height) . '" class="object-cover w-full h-auto" loading="lazy" decoding="async">
                 </a>';
     }
     $embed = function_exists('wp_oembed_get') ? wp_oembed_get($url, array('width' => 1200)) : '';
@@ -191,10 +195,10 @@ $r_hover_border = '#0098d8';
             </style>
           <?php endif; ?>
 
-          <div class="self-center max-w-full">
+          <div class="self-center max-w-full w-full min-h-[320px]">
             <?php
               if ($l_media === 'calendly') {
-                  echo '<div class="w-full h-full wp_editor">';
+                  echo '<div class="w-full min-h-[700px] wp_editor contact-calendly-wrap">';
                   echo do_shortcode($l_shortcode);
                   echo '</div>';
               } else {
@@ -255,7 +259,7 @@ $r_hover_border = '#0098d8';
             </style>
           <?php endif; ?>
 
-          <div class="self-center max-w-full">
+          <div class="self-center max-w-full w-full min-h-[320px]">
             <?php
               if ($r_media === 'video') {
                   if ($r_vtype === 'local' && $r_local) {
@@ -268,7 +272,7 @@ $r_hover_border = '#0098d8';
               } elseif ($r_media === 'map_jawg') {
                   if ($needs_leaflet) {
                       $map_id = $section_id . '__map';
-                      echo '<div id="' . esc_attr($map_id) . '" class="w-full h-full"></div>';
+                      echo '<div id="' . esc_attr($map_id) . '" class="w-full h-[500px]"></div>';
                       ?>
                       <script>
                         document.addEventListener('DOMContentLoaded', function() {
@@ -306,3 +310,11 @@ $r_hover_border = '#0098d8';
     </div>
   </div>
 </section>
+
+<style>
+  /* Reserve embed space to reduce CLS while Calendly initializes */
+  .contact-calendly-wrap .calendly-inline-widget {
+    min-height: 700px !important;
+    width: 100%;
+  }
+</style>

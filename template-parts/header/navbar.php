@@ -6,6 +6,9 @@ $logo_id       = $theme_logo_id ?: $acf_logo_id;
 
 $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
 $logo_alt = $logo_id ? (get_post_meta($logo_id, '_wp_attachment_image_alt', true) ?: get_bloginfo('name')) : get_bloginfo('name');
+$logo_meta = $logo_id ? wp_get_attachment_image_src($logo_id, 'full') : false;
+$logo_w = (is_array($logo_meta) && !empty($logo_meta[1])) ? (int) $logo_meta[1] : 200;
+$logo_h = (is_array($logo_meta) && !empty($logo_meta[2])) ? (int) $logo_meta[2] : 80;
 
 // Optional: phone + CTA
 $nav_settings   = get_field('navigation_settings_start', 'option') ?: [];
@@ -106,7 +109,13 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     <!-- CENTER: Logo (true center on lg+ via grid) -->
     <a style="z-index: 99999999;" href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center shrink-0 lg:justify-self-center">
       <?php if ($logo_url) : ?>
-        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($logo_alt); ?>" />
+        <img
+          src="<?php echo esc_url($logo_url); ?>"
+          alt="<?php echo esc_attr($logo_alt); ?>"
+          width="<?php echo esc_attr((string) $logo_w); ?>"
+          height="<?php echo esc_attr((string) $logo_h); ?>"
+          decoding="async"
+        />
       <?php else : ?>
         <span><?php echo esc_html(get_bloginfo('name')); ?></span>
       <?php endif; ?>

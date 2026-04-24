@@ -89,7 +89,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
 
         <div class="mx-auto w-full max-w-7xl">
             <?php if (!empty($heading)) : ?>
-                <div class="flex flex-col gap-6 items-center mb-12">
+                <div class="flex flex-col gap-6 items-center">
                     <<?php echo tag_escape($heading_tag); ?>
                         id="<?php echo esc_attr($section_id); ?>-heading"
                         class="text-[2.125rem] font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8"
@@ -195,7 +195,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                                 $title_compare       = trim(preg_replace('/\s+/', ' ', wp_strip_all_tags(html_entity_decode($title_raw, ENT_QUOTES, 'UTF-8'))));
                                 $show_title          = $title_compare !== '' && $title_compare !== $testimonial_compare;
                                 ?>
-                                <div class="flex flex-col w-full min-h-full h-full">
+                                <div class="flex flex-col w-full h-full min-h-full">
                                     <article
                                         class="relative flex flex-col flex-1 min-h-0 h-full p-8 bg-white shadow-sm md:p-10 border border-neutral-200
                                                before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2

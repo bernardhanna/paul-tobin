@@ -105,7 +105,7 @@ if (
 
                     <?php if ($has_left_description) : ?>
                         <div class="pt-4 w-full md:pt-5">
-                            <div class="max-w-[33.5rem] text-left text-[1rem] !font-[300] leading-[1.625rem] text-[#000000] font-primary wp_editor">
+                            <div class="max-w-[33.5rem] text-left text-[1rem] leading-[1.625rem] text-[#000000] font-primary wp_editor">
                                 <?php echo wp_kses_post($left_description); ?>
                             </div>
                         </div>
@@ -115,7 +115,7 @@ if (
                 <!-- Right: Text + CTA -->
                 <div class="w-full">
                     <?php if (!empty($description)) : ?>
-                        <div class="max-w-[33.5rem] text-left text-[1rem] !font-[300] leading-[1.625rem] text-[#000000] font-primary wp_editor">
+                        <div class="max-w-[33.5rem] text-left text-[1rem] leading-[1.625rem] text-[#000000] font-primary wp_editor">
                             <?php echo wp_kses_post($description); ?>
                         </div>
                     <?php endif; ?>

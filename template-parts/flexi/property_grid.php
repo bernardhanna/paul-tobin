@@ -120,6 +120,9 @@ function property_grid_span_classes($index) {
                         $link     = get_permalink($pid);
                         $thumb_id = get_post_thumbnail_id($pid);
                         $img_url  = $thumb_id ? wp_get_attachment_image_url($thumb_id, 'large') : '';
+                        $img_data = $thumb_id ? wp_get_attachment_image_src($thumb_id, 'large') : false;
+                        $img_w    = (is_array($img_data) && !empty($img_data[1])) ? (int) $img_data[1] : 1200;
+                        $img_h    = (is_array($img_data) && !empty($img_data[2])) ? (int) $img_data[2] : 800;
                         $img_alt  = $thumb_id ? (get_post_meta($thumb_id, '_wp_attachment_image_alt', true) ?: $title) : 'Property image';
                         if (!$img_url) {
                             $img_url = 'https://via.placeholder.com/1200x800/e5e7eb/6b7280?text=Property';
@@ -136,8 +139,17 @@ function property_grid_span_classes($index) {
                                 aria-label="<?php echo esc_attr('View ' . $title); ?>"
                             >
                                 <div class="relative flex flex-col justify-end items-start overflow-hidden max-md:h-[18.75rem] h-[31.25rem]">
-                                    <!-- Background image -->
-                                    <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('<?php echo esc_url($img_url); ?>');"></div>
+                                    <?php $is_lcp_candidate = ($i === 0); ?>
+                                    <img
+                                        src="<?php echo esc_url($img_url); ?>"
+                                        alt="<?php echo esc_attr($img_alt); ?>"
+                                        width="<?php echo esc_attr((string) $img_w); ?>"
+                                        height="<?php echo esc_attr((string) $img_h); ?>"
+                                        class="absolute inset-0 w-full h-full object-cover"
+                                        decoding="async"
+                                        loading="<?php echo $is_lcp_candidate ? 'eager' : 'lazy'; ?>"
+                                        fetchpriority="<?php echo $is_lcp_candidate ? 'high' : 'auto'; ?>"
+                                    />
 
                                     <!-- Gradient overlay on hover/focus -->
                                     <div
