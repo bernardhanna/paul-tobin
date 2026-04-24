@@ -606,9 +606,28 @@ if ($form_markup) {
     syncNiceSelectValueState($select);
   };
 
+  // Nice Select triggers jQuery's synthetic "change" on the hidden <select>.
+  // Bridge that back to a native change event so the rest of this form logic
+  // (validation, query-type conditional UI, value-state syncing) keeps working.
+  const bindNiceSelectNativeBridge = () => {
+    if (typeof jQuery === 'undefined') return false;
+    if (form.dataset.matrixNiceSelectNativeBridge === '1') return true;
+
+    form.dataset.matrixNiceSelectNativeBridge = '1';
+    jQuery(form).on('change.matrixNiceSelectNativeBridge', 'select', function (e) {
+      const $select = jQuery(this);
+      if (!$select.hasClass('nice-select-initialized')) return;
+      if (e && e.originalEvent) return;
+      this.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    return true;
+  };
+
   // Enhance selected dropdowns with Nice Select if available.
   const initNiceSelect = () => {
     if (typeof jQuery === 'undefined') return false;
+    bindNiceSelectNativeBridge();
     if (!jQuery.fn || typeof jQuery.fn.niceSelect !== 'function') return false;
     const $targets = jQuery(form).find('select:not([multiple]):not(.no-nice-select)');
     if (!$targets.length) return false;
@@ -906,15 +925,12 @@ if ($form_markup) {
       }
     };
 
-    // Native bubble + jQuery delegated change (Nice Select triggers change on the underlying <select>).
+    // Nice Select changes are bridged back into this same native listener.
     const onQueryTypeChange = (e) => {
       const t = e.target;
       if (t && t.id === 'query-type') syncUI();
     };
     form.addEventListener('change', onQueryTypeChange);
-    if (typeof jQuery !== 'undefined') {
-      jQuery(form).on('change.matrixQueryType', '#query-type', syncUI);
-    }
 
     syncUI();
     window.requestAnimationFrame(syncUI);

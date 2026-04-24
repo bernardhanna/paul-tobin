@@ -18,7 +18,11 @@ function matrix_starter_rocket_js_exclusion_fragments(): array {
     return array(
         'matrix-starter/dist/app\\.js',
         'matrix-starter/inc/forms/js/forms\\.js',
+        // Alpine + Intersect (CDN): entire tag must match — counters use x-intersect; delayed/broken order = frozen 0.
         '@alpinejs/intersect',
+        'alpinejs@3',
+        '/npm/alpinejs',
+        'AlpineIntersect',
         // booking_form.php inline: query-type / nice-select + validation (Delay JS breaks show/hide for "Other").
         'matrixNiceListDelegation',
         'initQueryTypeConditionalUI',

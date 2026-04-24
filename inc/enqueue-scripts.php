@@ -47,14 +47,12 @@ function matrix_starter_enqueue_scripts() {
   $app_js  = $is_dev ? '/wp-content/themes/matrix-starter/dist/app.js'  : $base . '/dist/app.js';
   $app_css = $is_dev ? '/wp-content/themes/matrix-starter/dist/app.css' : $base . '/dist/app.css';
 
-  // Main bundle (footer)
-  wp_enqueue_script('matrix-starter', $app_js, ['jquery'], '1.0.0', true);
+  // Alpine Intersect → theme bundle → Alpine core. Intersect’s CDN registers its plugin on alpine:init; if
+  // Alpine runs first (e.g. WP Rocket Delay JS batch order), that init never sees Intersect and counters stay 0.
+  wp_enqueue_script('alpine-intersect', 'https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js', [], null, true);
+  wp_enqueue_script('matrix-starter', $app_js, ['jquery', 'alpine-intersect'], '1.0.0', true);
   wp_enqueue_style('matrix-starter', $app_css, [], $theme_version);
-
-  // Alpine + Intersect
-  wp_enqueue_script('alpine-intersect','https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js',[],null,true);
-  wp_enqueue_script('alpine','https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js',['alpine-intersect'],null,true);
-  wp_add_inline_script('alpine',"document.addEventListener('alpine:init',()=>{ if (window.Alpine && window.AlpineIntersect) Alpine.plugin(window.AlpineIntersect); });");
+  wp_enqueue_script('alpine', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', ['alpine-intersect', 'matrix-starter'], null, true);
   wp_add_inline_style('matrix-starter', '[x-cloak]{display:none !important;}');
 
   // Theme forms helper

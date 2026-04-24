@@ -69,8 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) { }
 })();
 
-// Flex counters (counters_001): must live here — WP Rocket Delay JS defers inline <script> in HTML,
-// so x-data="countersSection()" would run before the global function exists.
+// Flex counters (counters_001): @alpinejs/intersect CDN already registers on alpine:init; we only register
+// data here. Script order is intersect → this bundle → alpine so Delay JS / deferred batches still run
+// Intersect before Alpine (otherwise alpine:init fires once and x-intersect never exists).
 document.addEventListener('alpine:init', () => {
   const A = window.Alpine;
   if (!A || typeof A.data !== 'function') return;
