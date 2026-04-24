@@ -291,7 +291,7 @@ $section_id = 'gallery-' . uniqid();
                                         src="<?php echo $safe_image_src((string) $image_url); ?>"
                                         alt="<?php echo esc_attr($image_alt); ?>"
                                         class="max-w-full max-h-[80vh] object-cover w-full h-full"
-                                        loading="lazy"
+                                        loading="<?php echo $index < 2 ? 'eager' : 'lazy'; ?>"
                                     />
                                     <?php if ($image_title) : ?>
                                         <figcaption class="hidden mt-4 text-lg text-center text-white">
@@ -411,9 +411,13 @@ $section_id = 'gallery-' . uniqid();
                     modal.classList.add('flex');
 
                     if (ensureSlickInitModal()) {
-                        jQuery(carousel).slick('slickGoTo', slideIndex, true);
-                        jQuery(carousel).slick('setPosition');
-                        jQuery(carousel).slick('slickPlay');
+                        // Wait one paint so slick measures visible modal dimensions.
+                        requestAnimationFrame(function() {
+                            const $carousel = jQuery(carousel);
+                            $carousel.slick('setPosition');
+                            $carousel.slick('slickGoTo', slideIndex, true);
+                            $carousel.slick('slickPlay');
+                        });
                     } else {
                         showSlide(slideIndex);
                     }

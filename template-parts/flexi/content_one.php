@@ -74,7 +74,7 @@ if (
         'property_type' => $property_type_name,
         'bedrooms' => $bedrooms,
         'bathrooms' => $bathrooms,
-    ], home_url('/book-a-consultation/'));
+    ], home_url('/contact-us/'));
 
     $effective_button_link = [
         'url' => $consult_url,

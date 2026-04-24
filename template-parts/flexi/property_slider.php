@@ -68,6 +68,51 @@ if (!function_exists('matrix_property_slider_clean_value')) {
   }
 }
 
+if (!function_exists('matrix_property_slider_property_data_value')) {
+  /**
+   * Read a normalized value from the first property_data flexible-content block.
+   * Supports direct keys (e.g. "size") and extra row labels (e.g. "Bedrooms", "Bathrooms").
+   */
+  function matrix_property_slider_property_data_value(int $property_id, string $key): string {
+    $blocks = get_field('flexible_content_blocks', $property_id);
+    if (!is_array($blocks) || empty($blocks)) {
+      return '';
+    }
+
+    $normalized_key = strtolower(trim($key));
+    foreach ($blocks as $block) {
+      if (!is_array($block)) {
+        continue;
+      }
+      if (($block['acf_fc_layout'] ?? '') !== 'property_data') {
+        continue;
+      }
+
+      // Direct property_data fields (e.g. size).
+      if (isset($block[$normalized_key]) && $block[$normalized_key] !== '') {
+        return matrix_property_slider_clean_value($block[$normalized_key]);
+      }
+
+      // Extra rows, where labels like "Bedrooms"/"Bathrooms" are commonly stored.
+      $rows = $block['extra_rows'] ?? array();
+      if (!is_array($rows)) {
+        continue;
+      }
+      foreach ($rows as $row) {
+        if (!is_array($row)) {
+          continue;
+        }
+        $label = strtolower(trim((string) ($row['label'] ?? '')));
+        if ($label === $normalized_key) {
+          return matrix_property_slider_clean_value($row['value'] ?? '');
+        }
+      }
+    }
+
+    return '';
+  }
+}
+
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
 $slider_id  = $section_id;
@@ -108,15 +153,29 @@ $slider_id  = $section_id;
             $property_link   = get_permalink($property_id);
 
             // Prefer synced post meta (source of truth used by Daft sync), then fallback to ACF field values.
-            $bedrooms_raw    = get_post_meta($property_id, 'bedrooms', true);
+            $bedrooms_raw    = matrix_property_slider_property_data_value($property_id, 'bedrooms');
+            if ($bedrooms_raw === '' || $bedrooms_raw === null) {
+              $bedrooms_raw = get_post_meta($property_id, 'bedrooms', true);
+            }
             if ($bedrooms_raw === '' || $bedrooms_raw === null) {
               $bedrooms_raw = get_field('bedrooms', $property_id);
             }
-            $bathrooms_raw   = get_post_meta($property_id, 'bathrooms', true);
+            $bathrooms_raw   = matrix_property_slider_property_data_value($property_id, 'bathrooms');
+            if ($bathrooms_raw === '' || $bathrooms_raw === null) {
+              $bathrooms_raw = get_post_meta($property_id, 'bathrooms', true);
+            }
             if ($bathrooms_raw === '' || $bathrooms_raw === null) {
               $bathrooms_raw = get_field('bathrooms', $property_id);
             }
-            $area_raw        = get_post_meta($property_id, 'area', true);
+            // Prefer property_data size (matches the "Size" shown on single property pages),
+            // then fallback to legacy/synced area fields.
+            $area_raw        = matrix_property_slider_property_data_value($property_id, 'size');
+            if ($area_raw === '' || $area_raw === null) {
+              $area_raw = get_post_meta($property_id, 'flexible_content_blocks_0_size', true);
+            }
+            if ($area_raw === '' || $area_raw === null) {
+              $area_raw = get_post_meta($property_id, 'area', true);
+            }
             if ($area_raw === '' || $area_raw === null) {
               $area_raw = get_field('area', $property_id);
             }
@@ -173,20 +232,27 @@ $slider_id  = $section_id;
                   </a>
                 </div>
 
-                <div class="property-slider__meta-bar relative z-20 mt-80 flex w-full flex-row flex-wrap items-center justify-between gap-y-3 bg-primary px-5 py-4 max-md:order-1 max-md:mt-0 max-md:max-w-full max-md:items-start md:flex-nowrap md:items-center md:gap-0 md:px-8 md:py-4">
-                  <div class="flex min-w-0 flex-1 flex-row flex-wrap items-center gap-4 text-base font-semibold tracking-normal text-gray-50 max-md:w-1/2 max-md:flex-col max-md:items-start max-md:gap-4 md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
+                <div class="flex relative z-20 flex-row flex-wrap gap-y-3 justify-between items-center px-5 py-4 mt-80 w-full property-slider__meta-bar bg-primary max-md:order-1 max-md:mt-0 max-md:max-w-full max-md:items-start md:flex-nowrap md:items-center md:gap-0 md:px-8 md:py-4">
+                  <div class="flex flex-row flex-wrap flex-1 gap-4 items-center min-w-0 text-base font-semibold tracking-normal text-gray-50 max-md:w-1/2 max-md:items-start max-md:gap-4 md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
                     <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($property_type); ?></span>
 
-                    <div class="flex items-center gap-2 max-md:justify-start" aria-label="Bedrooms">
-                      <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm12-3h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-1.1-.9-2-2-2z"/>
-                      </svg>
+                    <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bedrooms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 20.6V11.8C1 11.2165 1.23178 10.657 1.64436 10.2444C2.05695 9.83179 2.61652 9.60001 3.2 9.60001H20.8C21.3835 9.60001 21.9431 9.83179 22.3556 10.2444C22.7682 10.657 23 11.2165 23 11.8V20.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                    <path d="M3.19995 9.6V5.2C3.19995 4.61652 3.43174 4.05695 3.84432 3.64436C4.2569 3.23178 4.81647 3 5.39995 3H18.6C19.1834 3 19.743 3.23178 20.1556 3.64436C20.5682 4.05695 20.8 4.61652 20.8 5.2V9.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                    <path d="M12 3V9.6" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1 18.4H23" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                       <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bedrooms); ?></span>
                     </div>
 
-                    <div class="flex items-center gap-2 max-md:justify-start" aria-label="Bathrooms">
-                      <svg class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M9 2v1h6V2h2v1h1c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2V5c-1.1 0-.9 2 .9 2h1V2h2zm9 16V8H6v10h12z"/>
+                    <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bathrooms">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M8.77772 5.33333L5.99995 2.55556C5.71501 2.2341 5.31696 2.03508 4.88883 2C3.98106 2 3.22217 2.75889 3.22217 3.66667V17.5556C3.22217 18.1449 3.45629 18.7102 3.87304 19.1269C4.28979 19.5437 4.85502 19.7778 5.44439 19.7778H18.7777C19.3671 19.7778 19.9323 19.5437 20.3491 19.1269C20.7658 18.7102 20.9999 18.1449 20.9999 17.5556V12" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                      <path d="M9.88885 4.22223L7.66663 6.44445" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                      <path d="M1 12H23.2222" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M6.55554 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M17.6666 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                       <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bathrooms); ?></span>
                     </div>
@@ -197,10 +263,10 @@ $slider_id  = $section_id;
                   </div>
 
                   <?php if ($slide_count > 1): ?>
-                  <nav class="property-slider__desktop-nav flex shrink-0 items-center gap-0.5 max-md:hidden" aria-label="Property navigation">
+                  <nav class="flex gap-2 items-center property-slider__desktop-nav shrink-0 max-md:hidden" aria-label="Property navigation">
                     <button
                       type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-[#F9FAFB] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition  focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119] hover:bg-blue mr-2"
                       aria-label="Previous property"
                       data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
                     >
@@ -210,7 +276,7 @@ $slider_id  = $section_id;
                     </button>
                     <button
                       type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-[#F9FAFB] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
                       aria-label="Next property"
                       data-desktop-next="<?php echo esc_attr($slider_id); ?>"
                     >
@@ -275,6 +341,7 @@ $slider_id  = $section_id;
       arrows: false,
       speed: 450,
       cssEase: 'ease-out',
+      adaptiveHeight: true,
       autoplay: true,
       autoplaySpeed: 3000,
       slidesToShow: 1,
@@ -372,9 +439,10 @@ $slider_id  = $section_id;
     background-color: #ffffff !important;
     color: #0A1119 !important;
     border: 1px solid rgba(10, 17, 25, 0.12) !important;
+    outline: none;
   }
   #<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav button:hover {
-    background-color: #F9FAFB !important;
+    background-color: #40BFF5 !important;
     color: #0A1119 !important;
   }
 }

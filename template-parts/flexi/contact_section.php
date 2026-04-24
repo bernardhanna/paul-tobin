@@ -241,16 +241,16 @@ $r_hover_border = '#0098d8';
               class="<?php echo esc_attr($r_btn_class); ?> inline-flex w-full h-[44px] justify-center items-center gap-2 px-8 py-3.5 font-[600] transition-opacity duration-200 border-[0.125rem] group"
               style="background-color: <?php echo esc_attr($r_base_bg); ?>; color: <?php echo esc_attr($r_base_text); ?>; border-color: <?php echo esc_attr($r_base_border); ?>;"
             >
-              <span class="text-[0.875rem] leading-[1.375rem] font-primary group-hover:text-black">
+              <span class="text-[0.875rem] leading-[1.375rem] font-primary">
                 <?php echo esc_html(!empty($r_link['title']) ? $r_link['title'] : 'Request a call'); ?>
               </span>
             </a>
             <style>
               .<?php echo esc_attr($r_btn_class); ?>:hover,
               .<?php echo esc_attr($r_btn_class); ?>:focus {
-                background-color: <?php echo esc_attr($r_hover_bg); ?> !important;
-                color: <?php echo esc_attr($r_hover_text); ?> !important;
-                border-color: <?php echo esc_attr($r_hover_border); ?> !important;
+                background-color: rgb(64 191 245 / var(--tw-bg-opacity, 1)) !important;
+                color: #ffffff !important;
+                border-color: rgb(64 191 245 / var(--tw-bg-opacity, 1)) !important;
               }
               .<?php echo esc_attr($r_btn_class); ?>:hover svg path,
               .<?php echo esc_attr($r_btn_class); ?>:focus svg path {

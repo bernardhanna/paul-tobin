@@ -110,7 +110,7 @@ if ($form_markup) {
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-  <div class="flex flex-col items-center pt-[10rem] pb-20 mx-auto w-full max-w-container max-xl:px-5  max-sm:pb-10">
+  <div class="flex flex-col items-center max-md:pt-[5rem] pt-[10rem] pb-20 mx-auto w-full max-w-container max-xl:px-5  max-sm:pb-10">
 
     <div class="grid grid-cols-1 gap-10 w-full lg:gap-20 lg:grid-cols-2 max-md:gap-16 max-sm:gap-16">
 
@@ -224,7 +224,7 @@ if ($form_markup) {
                 <article class="border-b border-slate-200 <?php echo $idx === 0 ? 'pb-4' : ''; ?>">
                   <header>
                     <button
-                      class="flex justify-between items-center py-4 w-full text-left btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-600"
+                      class="flex justify-between items-center py-4 w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-600"
                       aria-expanded="<?php echo $is_expanded ? 'true' : 'false'; ?>"
                       aria-controls="<?php echo esc_attr($content_id); ?>"
                       id="<?php echo esc_attr($accordion_id); ?>"
@@ -323,7 +323,7 @@ if ($form_markup) {
                             </svg>
                           </div>
                           <div class="py-1">
-                            <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm leading-6 text-slate-950 no-underline hover:underline max-sm:text-xs max-sm:leading-5">
+                            <a href="mailto:<?php echo esc_attr($email); ?>" class="text-sm leading-6 no-underline text-slate-950 hover:underline max-sm:text-xs max-sm:leading-5">
                               <?php echo esc_html($email); ?>
                             </a>
                           </div>
@@ -522,6 +522,13 @@ if ($form_markup) {
       if (!field.id) return;
       const label = form.querySelector('label[for="' + field.id + '"]');
       if (!label || label.querySelector('.required-star')) return;
+
+      // Normalize author-entered stars (e.g. "**") down to plain label text first.
+      const firstTextNode = Array.from(label.childNodes).find((node) => node.nodeType === 3);
+      if (firstTextNode) {
+        firstTextNode.textContent = String(firstTextNode.textContent || '').replace(/\s*\*+\s*$/, '');
+      }
+
       const star = document.createElement('span');
       star.className = 'required-star text-red-600 ml-1';
       star.setAttribute('aria-hidden', 'true');

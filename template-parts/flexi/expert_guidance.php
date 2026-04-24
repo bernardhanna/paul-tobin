@@ -64,7 +64,7 @@ if (have_rows('padding_settings')) {
         <!-- Main Heading Section -->
         <?php if (!empty($heading)): ?>
         <header class="flex flex-col gap-6 items-center self-stretch mb-12">
-            <div class="flex flex-col gap-6 items-center self-stretch">
+            <div class="flex flex-col gap-6 items-center self-stretch max-md:items-start">
                 <<?php echo esc_attr($heading_tag); ?>
                     id="<?php echo esc_attr($section_id); ?>-heading"
                     class="text-[2.125rem] font-semibold tracking-normal leading-10 text-center font-secondary text-primary max-md:text-[2.125rem] max-md:leading-9  max-sm:leading-8 max-md:text-left"

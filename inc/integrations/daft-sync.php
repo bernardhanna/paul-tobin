@@ -2376,7 +2376,7 @@ function matrix_daft_build_consultation_link(int $post_id, string $query_type = 
         'property_type' => $property_type_name,
         'bedrooms' => $bedrooms,
         'bathrooms' => $bathrooms,
-    ], home_url('/book-a-consultation/'));
+    ], home_url('/contact-us/'));
 
     return [
         'url' => $url,
@@ -2433,7 +2433,7 @@ function matrix_daft_sync_content_one_followup_block(int $post_id): array {
         'left_description' => '<p>We can answer questions on viewings, timelines, and the buying process.</p>',
         'button_link' => [
             'title' => 'Book a consultation',
-            'url' => esc_url_raw((string) ($link['url'] ?? home_url('/book-a-consultation/'))),
+            'url' => esc_url_raw((string) ($link['url'] ?? home_url('/contact-us/'))),
             'target' => '_self',
         ],
     ];
@@ -2808,7 +2808,7 @@ function matrix_daft_sync_cta_block(int $post_id): array {
         'background_color' => '#020617',
         'button' => [
             'title' => 'Arrange a viewing',
-            'url' => esc_url_raw((string) ($link['url'] ?? home_url('/book-a-consultation/'))),
+            'url' => esc_url_raw((string) ($link['url'] ?? home_url('/contact-us/'))),
             'target' => '_self',
         ],
     ];

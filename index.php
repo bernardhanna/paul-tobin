@@ -168,6 +168,13 @@ if (!in_array($hero_tag, $allowed_tags, true)) {
               'taxonomy'   => 'category',
               'hide_empty' => true,
             ]);
+            if (!is_wp_error($all_cats)) {
+              $all_cats = array_values(array_filter($all_cats, static function($cat) {
+                return isset($cat->slug) && strtolower((string) $cat->slug) !== 'uncategorized';
+              }));
+            } else {
+              $all_cats = [];
+            }
 
             $current_slug = 'all';
             if (is_tax('category')) {

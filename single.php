@@ -14,7 +14,7 @@ get_header();
         <section class="flex overflow-hidden relative w-full">
             <?php echo wp_get_attachment_image($featured_image_id, 'full', false, [
                 'alt' => esc_attr($featured_image_alt),
-                'class' => 'w-full h-[500px] md:h-[665px] object-cover',
+                'class' => 'w-full max-md:h-auto md:h-[500px] md:h-[665px] object-contain md:object-cover',
                 'loading' => 'lazy',
                 'fetchpriority' => 'low',
                 'decoding' => 'async',

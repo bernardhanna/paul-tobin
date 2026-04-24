@@ -254,11 +254,15 @@ $has_heading     = !empty($heading);
 $has_description = !empty($description);
 $has_button      = !empty($button['url']) && !empty($button['title']);
 $has_content     = $has_heading || $has_description || $has_button;
+
+// If an inner-page hero has only background media (no text/button content),
+// drop the mobile/tablet min-height so we don't leave a large blank block.
+$mobile_min_height_reset_class = (!$is_front_hero && !$has_content) ? 'max-md:min-h-0' : '';
 ?>
 
 <section
     id="<?php echo esc_attr($section_id); ?>"
-    class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+    class="relative flex max-md:flex-col overflow-hidden bg-center bg-no-repeat bg-cover <?php echo esc_attr($height_class); ?> max-md:h-auto <?php echo esc_attr($mobile_min_height_reset_class); ?> <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
     role="region"
     <?php if ($has_heading): ?>
     aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"

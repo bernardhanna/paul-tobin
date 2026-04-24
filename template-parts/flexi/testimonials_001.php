@@ -244,7 +244,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                     <div class="flex gap-4 justify-center mt-6 md:hidden shrink-0">
                         <button
                             aria-label="Previous testimonial"
-                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
+                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark bg-[#0A1119] hover:bg-blue"
                             data-slick-prev="#<?php echo esc_attr($section_id); ?>-slider"
                             type="button"
                         >
@@ -254,7 +254,7 @@ $bg_style = 'background-color: ' . esc_attr($background_color ?: '#F9FAFB') . ';
                         </button>
                         <button
                             aria-label="Next testimonial"
-                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark hover:bg-[#0A1119]"
+                            class="flex justify-center items-center w-10 h-10 transition-colors bg-text-dark bg-[#0A1119] hover:bg-blue"
                             data-slick-next="#<?php echo esc_attr($section_id); ?>-slider"
                             type="button"
                         >

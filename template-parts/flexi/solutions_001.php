@@ -124,7 +124,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                         }
                     ?>
                     <<?php echo $wrapper_tag; ?>
-                        class="group flex flex-col p-8 h-full bg-[#EDEDED] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary max-md:px-5"
+                        class="group justify-between flex flex-col p-8 h-full bg-[#EDEDED] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary max-md:px-5"
                         role="listitem"
                         aria-labelledby="<?php echo esc_attr($card_id); ?>_heading"
                         <?php echo $wrapper_attrs; ?>
@@ -139,7 +139,7 @@ $section_id = 'solutions_' . wp_rand(1000, 9999);
                                     >
                                         <?php echo esc_html($action_word); ?>
                                     </span>
-                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[110%] h-2 relative md:-top-[12px] mx-auto z-0"></div>
+                                    <div style="background-color: <?php echo esc_attr($underline_color); ?>;" class="w-[104%] h-2 relative md:-top-[12px] mx-auto -translate-x-[2%] z-0"></div>
                                 </div>
 
                                 <p>

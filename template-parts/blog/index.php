@@ -181,6 +181,13 @@ $filter_title = $settings['filter_section_title'] ?? 'Filter by';
                   'taxonomy'   => 'category',
                   'hide_empty' => true,
                 ]);
+                if (!is_wp_error($all_cats)) {
+                  $all_cats = array_values(array_filter($all_cats, static function($cat) {
+                    return isset($cat->slug) && strtolower((string) $cat->slug) !== 'uncategorized';
+                  }));
+                } else {
+                  $all_cats = [];
+                }
                 $current_slug  = $category_slug; // you already have this from get_queried_object()
               ?>
               <div class="flex-1 pb-2 text-base shrink min-w-60 max-md:max-w-full">

@@ -71,7 +71,7 @@ if (!$q->have_posts()) {
 // ========== Markup ==========
 $section_id = 'related-posts-' . wp_generate_uuid4();
 ?>
-<section id="<?php echo esc_attr($section_id); ?>" class="flex overflow-hidden relative">
+<section id="<?php echo esc_attr($section_id); ?>" class="flex overflow-hidden relative bg-[#ededed]">
   <div class="flex flex-col items-center py-10 mx-auto w-full lg:py-20 max-w-container max-lg:px-5">
     <div class="box-border flex flex-col gap-8 items-start py-0 w-full">
 
