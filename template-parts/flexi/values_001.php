@@ -11,8 +11,6 @@ $features                = get_sub_field('features');
 
 $background_color        = get_sub_field('background_color');
 $text_color              = get_sub_field('text_color');
-$section_border_radius   = get_sub_field('section_border_radius');
-$image_border_radius     = get_sub_field('image_border_radius');
 
 // Padding classes
 $padding_classes = [];
@@ -56,8 +54,7 @@ if (is_array($image)) {
 }
 
 // Compose classes/styles
-$section_classes        = 'relative flex overflow-hidden'
-    . (!empty($section_border_radius) ? ' ' . $section_border_radius : '');
+$section_classes        = 'relative flex overflow-hidden';
 $inner_wrapper_classes  = 'flex flex-col items-center w-full mx-auto max-w-container py-8 md:py-20 max-xl:px-5 '
     . implode(' ', array_map('esc_attr', $padding_classes));
 
@@ -107,7 +104,7 @@ if (is_array($features)) {
                             alt="<?php echo esc_attr($image_alt); ?>"
                             title="<?php echo esc_attr($image_title); ?>"
                             loading="lazy" decoding="async"
-                            class="w-full h-auto max-w-md lg:max-w-none object-contain lg:object-cover max-h-[480px] <?php echo esc_attr($image_border_radius ?: 'rounded-none'); ?>"
+                            class="w-full h-auto max-w-md lg:max-w-none object-contain lg:object-cover max-h-[480px] rounded-none"
                         />
                     <?php endif; ?>
                     <?php if (!empty($intro_rich_text)) : ?>

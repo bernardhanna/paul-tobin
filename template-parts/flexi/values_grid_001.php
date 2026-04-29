@@ -9,7 +9,6 @@ $features              = get_sub_field('features');
 $background_color      = get_sub_field('background_color');
 $card_background_color = get_sub_field('card_background_color');
 $text_color            = get_sub_field('text_color');
-$section_border_radius = get_sub_field('section_border_radius');
 
 // Padding classes
 $padding_classes = [];
@@ -38,8 +37,7 @@ if (!in_array($heading_tag, $allowed_heading_tags, true)) {
 $section_id = 'section-' . uniqid('', true);
 
 // Compose classes/styles
-$section_classes = 'relative flex overflow-hidden'
-    . (!empty($section_border_radius) ? ' ' . $section_border_radius : '');
+$section_classes = 'relative flex overflow-hidden';
 $inner_wrapper_classes = 'flex flex-col items-center w-full mx-auto max-w-container py-8 md:py-20 max-xl:px-5 '
     . implode(' ', array_map('esc_attr', $padding_classes));
 

@@ -79,30 +79,6 @@ $values_001
         ->addColorPicker('text_color', [
             'label' => 'Text Color',
             'default_value' => '#0F172A', // text-text-dark analogue
-        ])
-        ->addSelect('section_border_radius', [
-            'label' => 'Section Border Radius',
-            'choices' => [
-                'rounded-none' => 'rounded-none',
-                'rounded' => 'rounded',
-                'rounded-md' => 'rounded-md',
-                'rounded-lg' => 'rounded-lg',
-                'rounded-xl' => 'rounded-xl',
-                'rounded-2xl' => 'rounded-2xl',
-            ],
-            'default_value' => 'rounded-none',
-        ])
-        ->addSelect('image_border_radius', [
-            'label' => 'Image Border Radius',
-            'choices' => [
-                'rounded-none' => 'rounded-none',
-                'rounded' => 'rounded',
-                'rounded-md' => 'rounded-md',
-                'rounded-lg' => 'rounded-lg',
-                'rounded-xl' => 'rounded-xl',
-                'rounded-2xl' => 'rounded-2xl',
-            ],
-            'default_value' => 'rounded-none',
         ]);
 
 // ----- LAYOUT TAB
