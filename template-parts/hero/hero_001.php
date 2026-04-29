@@ -73,7 +73,7 @@ $section_id = 'hero_' . uniqid();
 // Sell With Us hero: keep face visible and avoid aggressive crop on xl+.
 $is_sell_with_us = is_page('sell-with-us');
 $desktop_image_class = $is_sell_with_us
-    ? 'w-full h-full object-cover object-top xl:object-contain'
+    ? 'w-full h-full object-cover object-top xxl:object-contain'
     : 'w-full h-full object-cover';
 $mobile_image_class = $is_sell_with_us
     ? 'w-full h-full object-cover object-top min-h-[18.75rem]'
@@ -81,6 +81,9 @@ $mobile_image_class = $is_sell_with_us
 $mobile_media_wrapper_class = $is_sell_with_us
     ? 'relative z-20 w-full md:hidden mt-[5rem]'
     : 'relative z-20 w-full md:hidden';
+$desktop_media_wrapper_class = $is_sell_with_us
+    ? 'hidden absolute inset-x-0 top-[5rem] bottom-0 md:block'
+    : 'hidden absolute inset-0 md:block';
 
 // ---- Background layers (desktop/tablet) ----
 $video_background = '';
@@ -117,7 +120,7 @@ if ($background_type === 'image' && $background_image) {
     );
     // Desktop/tablet: absolute cover layer (hidden on mobile)
     $image_desktop_bg = '
-        <div class="hidden absolute inset-0 md:block" aria-hidden="true">
+        <div class="' . esc_attr($desktop_media_wrapper_class) . '" aria-hidden="true">
             ' . $desktop_bg_img . '
         </div>';
     // Mobile (<= md): real <img>, min-height 18.75rem (300px)
