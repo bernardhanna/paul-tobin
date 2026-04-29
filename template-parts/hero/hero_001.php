@@ -76,10 +76,10 @@ $desktop_image_class = $is_sell_with_us
     ? 'w-full h-full object-cover object-top xxl:object-contain'
     : 'w-full h-full object-cover';
 $mobile_image_class = $is_sell_with_us
-    ? 'w-full h-full object-cover object-top min-h-[18.75rem]'
+    ? 'w-full h-full object-cover object-top min-h-[18.75rem] max-md:mt-[5rem]'
     : 'w-full h-full object-cover min-h-[18.75rem]';
 $mobile_media_wrapper_class = $is_sell_with_us
-    ? 'relative z-20 w-full md:hidden max-md:mt-[5rem]'
+    ? 'relative z-20 w-full md:hidden'
     : 'relative z-20 w-full md:hidden';
 $desktop_media_wrapper_class = 'hidden absolute inset-0 md:block';
 
