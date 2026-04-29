@@ -79,11 +79,9 @@ $mobile_image_class = $is_sell_with_us
     ? 'w-full h-full object-cover object-top min-h-[18.75rem]'
     : 'w-full h-full object-cover min-h-[18.75rem]';
 $mobile_media_wrapper_class = $is_sell_with_us
-    ? 'relative z-20 w-full md:hidden mt-[5rem]'
+    ? 'relative z-20 w-full md:hidden max-md:mt-[5rem]'
     : 'relative z-20 w-full md:hidden';
-$desktop_media_wrapper_class = $is_sell_with_us
-    ? 'hidden absolute inset-x-0 top-[5rem] bottom-0 md:block'
-    : 'hidden absolute inset-0 md:block';
+$desktop_media_wrapper_class = 'hidden absolute inset-0 md:block';
 
 // ---- Background layers (desktop/tablet) ----
 $video_background = '';
