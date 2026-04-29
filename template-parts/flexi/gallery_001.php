@@ -124,7 +124,7 @@ $section_id = 'gallery-' . uniqid();
                             <div class="pr-4">
                                 <button
                                     type="button"
-                                    class="gallery-trigger w-full h-[500px] max-md:h-[400px] max-sm:h-[300px] overflow-hidden relative flex flex-col items-start bg-[#EDEDED] rounded-lg focus:outline-none btn"
+                                    class="gallery-trigger w-full h-[500px] max-md:h-[400px] max-sm:h-[300px] overflow-hidden relative flex flex-col items-start bg-[#EDEDED] rounded-none focus:outline-none btn"
                                     data-gallery-index="<?php echo esc_attr($index); ?>"
                                     aria-label="<?php echo esc_attr($image_alt); ?>"
                                 >
@@ -141,6 +141,14 @@ $section_id = 'gallery-' . uniqid();
 
                     <!-- Scoped styles for this section -->
                     <style>
+                        /* Enforce hard edges for all gallery images/wrappers */
+                        #<?php echo esc_attr($section_id); ?> .gallery-trigger,
+                        #<?php echo esc_attr($section_id); ?> .gallery-trigger img,
+                        #<?php echo esc_attr($section_id); ?> .gallery-trigger > div,
+                        #gallery-modal-<?php echo esc_attr($section_id); ?> .gallery-slide img {
+                            border-radius: 0 !important;
+                        }
+
                         /* Hide left overflow, allow a right peek via padding-right */
                         #<?php echo esc_attr($section_id); ?> .gallery-main-slick .slick-list {
                             overflow: hidden !important;

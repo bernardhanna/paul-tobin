@@ -102,7 +102,7 @@ $values_001
                 'rounded-xl' => 'rounded-xl',
                 'rounded-2xl' => 'rounded-2xl',
             ],
-            'default_value' => 'rounded-lg',
+            'default_value' => 'rounded-none',
         ]);
 
 // ----- LAYOUT TAB

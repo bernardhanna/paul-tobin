@@ -106,7 +106,7 @@ if (have_rows('padding_settings')) {
                 <div class="self-stretch">
                     <?php echo wp_get_attachment_image($left_image, 'full', false, [
                         'alt' => esc_attr($left_image_alt),
-                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] md:rounded',
+                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] rounded-none',
                         'loading' => 'lazy'
                     ]); ?>
                 </div>
@@ -128,7 +128,7 @@ if (have_rows('padding_settings')) {
                 <div class="self-stretch">
                     <?php echo wp_get_attachment_image($right_image, 'full', false, [
                         'alt' => esc_attr($right_image_alt),
-                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] md:rounded',
+                        'class' => 'object-cover w-full h-[220px] max-sm:h-[180px] rounded-none',
                         'loading' => 'lazy'
                     ]); ?>
                 </div>
