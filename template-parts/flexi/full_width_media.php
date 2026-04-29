@@ -164,6 +164,12 @@ $play_icon_url = content_url('uploads/2026/01/play-circle.png');
 $has_playable_video = ($media_type === 'video') && (
     ($video_provider === 'local' && $file_url) || ($video_provider !== 'local' && $iframe_src)
 );
+
+// Do not render an empty block when no media source is configured.
+$has_renderable_media = (($media_type === 'image') && !empty($image_url)) || $has_playable_video;
+if (!$has_renderable_media) {
+    return;
+}
 ?>
 <section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden<?php echo esc_attr($bg_class); ?>">
     <div class="flex flex-col items-center w-full mx-auto max-w-container py-10 lg:py-20 max-lg:px-5<?php echo $padding_class_string; ?>">
