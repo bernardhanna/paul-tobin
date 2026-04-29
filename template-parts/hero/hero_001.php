@@ -78,6 +78,9 @@ $desktop_image_class = $is_sell_with_us
 $mobile_image_class = $is_sell_with_us
     ? 'w-full h-full object-cover object-top min-h-[18.75rem]'
     : 'w-full h-full object-cover min-h-[18.75rem]';
+$mobile_media_wrapper_class = $is_sell_with_us
+    ? 'relative z-20 w-full md:hidden mt-[5rem]'
+    : 'relative z-20 w-full md:hidden';
 
 // ---- Background layers (desktop/tablet) ----
 $video_background = '';
@@ -119,7 +122,7 @@ if ($background_type === 'image' && $background_image) {
         </div>';
     // Mobile (<= md): real <img>, min-height 18.75rem (300px)
     $image_mobile = '
-        <div class="relative z-20 w-full md:hidden">
+        <div class="' . esc_attr($mobile_media_wrapper_class) . '">
             ' . $mobile_bg_img . '
         </div>';
 }
