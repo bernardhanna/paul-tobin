@@ -179,7 +179,7 @@ if (!$has_renderable_media) {
                     src="<?php echo esc_url($image_url); ?>"
                     alt="<?php echo esc_attr($image_alt); ?>"
                     title="<?php echo esc_attr($image_title); ?>"
-                    class="object-cover w-full h-full"
+                    class="object-cover object-top w-full h-full"
                     loading="lazy"
                     decoding="async"
                     fetchpriority="low"
@@ -348,4 +348,17 @@ if (!$has_renderable_media) {
             <?php endif; ?>
         </div>
     </div>
+    <script>
+    (function () {
+      var section = document.getElementById(<?php echo json_encode($section_id); ?>);
+      var mediaWrap = document.getElementById(<?php echo json_encode($media_wrap_id); ?>);
+      if (!section || !mediaWrap) return;
+
+      // Defensive fallback: if no media element rendered, remove empty section.
+      var hasRenderableNode = mediaWrap.querySelector('img, video, iframe');
+      if (!hasRenderableNode) {
+        section.remove();
+      }
+    })();
+    </script>
 </section>
