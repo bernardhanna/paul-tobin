@@ -276,7 +276,7 @@ $section_id = 'gallery-' . uniqid();
                     <!-- Close Button -->
                     <button
                         type="button"
-                        class="flex absolute top-4 right-4 z-10 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 gallery-close hover:bg-blue btn"
+                        class="flex absolute top-4 right-4 z-10 justify-center items-center w-12 h-12 text-white bg-black rounded-none transition-all duration-300 gallery-close hover:bg-blue btn"
                         aria-label="Close gallery"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -314,7 +314,7 @@ $section_id = 'gallery-' . uniqid();
                     <!-- Navigation Arrows -->
                     <button
                         type="button"
-                        class="flex absolute left-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-prev hover:bg-blue btn"
+                        class="flex absolute left-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-none transition-all duration-300 transform -translate-y-1/2 gallery-prev hover:bg-blue btn"
                         aria-label="Previous image"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -324,7 +324,7 @@ $section_id = 'gallery-' . uniqid();
 
                     <button
                         type="button"
-                        class="flex absolute right-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-full transition-all duration-300 transform -translate-y-1/2 gallery-next hover:bg-blue btn"
+                        class="flex absolute right-4 top-1/2 justify-center items-center w-12 h-12 text-white bg-black rounded-none transition-all duration-300 transform -translate-y-1/2 gallery-next hover:bg-blue btn"
                         aria-label="Next image"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -333,7 +333,7 @@ $section_id = 'gallery-' . uniqid();
                     </button>
 
                     <!-- Image Counter -->
-                    <div class="absolute bottom-4 left-1/2 px-4 py-2 text-black rounded-full transform -translate-x-1/2 bg-blue">
+                    <div class="absolute bottom-4 left-1/2 px-4 py-2 text-black rounded-none transform -translate-x-1/2 bg-blue">
                         <span class="gallery-counter" aria-live="polite">1 / <?php echo count($gallery_images); ?></span>
                     </div>
                 </div>
