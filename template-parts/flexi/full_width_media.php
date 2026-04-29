@@ -179,7 +179,7 @@ if (!$has_renderable_media) {
                     src="<?php echo esc_url($image_url); ?>"
                     alt="<?php echo esc_attr($image_alt); ?>"
                     title="<?php echo esc_attr($image_title); ?>"
-                    class="object-cover object-top w-full h-full"
+                    class="object-cover w-full h-full"
                     loading="lazy"
                     decoding="async"
                     fetchpriority="low"

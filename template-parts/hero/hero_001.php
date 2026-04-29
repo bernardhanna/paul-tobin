@@ -70,6 +70,15 @@ if (have_rows('padding_settings')) {
 // Unique ID
 $section_id = 'hero_' . uniqid();
 
+// Sell With Us hero: keep face visible and avoid aggressive crop on xl+.
+$is_sell_with_us = is_page('sell-with-us');
+$desktop_image_class = $is_sell_with_us
+    ? 'w-full h-full object-cover object-top xl:object-contain'
+    : 'w-full h-full object-cover';
+$mobile_image_class = $is_sell_with_us
+    ? 'w-full h-full object-cover object-top min-h-[18.75rem]'
+    : 'w-full h-full object-cover min-h-[18.75rem]';
+
 // ---- Background layers (desktop/tablet) ----
 $video_background = '';
 $image_desktop_bg = '';
@@ -83,7 +92,7 @@ if ($background_type === 'image' && $background_image) {
         '2048x2048',
         false,
         [
-            'class' => 'w-full h-full object-cover',
+            'class' => $desktop_image_class,
             'alt' => '',
             'loading' => 'eager',
             'fetchpriority' => 'high',
@@ -96,7 +105,7 @@ if ($background_type === 'image' && $background_image) {
         'large',
         false,
         [
-            'class' => 'w-full h-full object-cover min-h-[18.75rem]',
+            'class' => $mobile_image_class,
             'alt' => $bg_alt,
             'loading' => 'lazy',
             'decoding' => 'async',
