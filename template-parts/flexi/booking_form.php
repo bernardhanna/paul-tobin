@@ -40,6 +40,9 @@ if (!in_array($find_us_heading_tag, $allowed_tags, true)) { $find_us_heading_tag
 $section_id = 'booking-form-' . wp_generate_uuid4();
 $needs_leaflet = false;
 
+// Contact page-specific top padding tweak.
+$container_top_padding_class = is_page('contact-us') ? 'max-md:pt-[8rem]' : 'max-md:pt-[5rem]';
+
 // =================== FORM PLUMBING INJECTION ======================
 if ($form_markup) {
     $form_markup = str_replace(
@@ -110,7 +113,7 @@ if ($form_markup) {
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
 >
-  <div class="flex flex-col items-center max-md:pt-[5rem] pt-[10rem] pb-20 mx-auto w-full max-w-container max-xl:px-5  max-sm:pb-10">
+  <div class="flex flex-col items-center <?php echo esc_attr($container_top_padding_class); ?> pt-[10rem] pb-20 mx-auto w-full max-w-container max-xl:px-5 max-sm:pb-10">
 
     <div class="grid grid-cols-1 gap-10 w-full lg:gap-20 lg:grid-cols-2 max-md:gap-16 max-sm:gap-16">
 
