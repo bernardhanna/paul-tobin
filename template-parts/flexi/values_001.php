@@ -108,7 +108,7 @@ if (is_array($features)) {
                         />
                     <?php endif; ?>
                     <?php if (!empty($intro_rich_text)) : ?>
-                        <div class="text-black mt-8  max-sm:flex hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor">
+                        <div class="text-black mt-8  max-sm:flex hidden font-primary text-[16px] font-normal leading-[26px] tracking-[0] wp_editor flex-col">
                             <?php echo wp_kses_post($intro_rich_text); ?>
                         </div>
                     <?php endif; ?>
