@@ -833,6 +833,7 @@ if (!is_string($query_type_routing_for_js)) {
   })();
 
   // Query Type conditional behavior:
+  // - Until a query type is chosen, hide everything between Query type and Privacy.
   // - "Other": hide property detail selectors; relabel address.
   // - Flexi-block routing rows can also hide property fields / make last name optional.
   // - from_property=1 listing CTAs always keep type/condition/beds/baths hidden (never re-show).
@@ -843,6 +844,7 @@ if (!is_string($query_type_routing_for_js)) {
     const conditionEl = byId('property-condition');
     const bedsEl = byId('bedrooms');
     const bathsEl = byId('bathrooms');
+    const messageEl = byId('message');
     const lastNameEl = byId('last-name') || byId('lastname') || form.querySelector('[name="last_name"], [name="last-name"], [name="lastname"]');
     if (!queryTypeEl || !addressEl) return;
 
@@ -934,7 +936,9 @@ if (!is_string($query_type_routing_for_js)) {
       const wrap = getFieldRow(el);
       if (!wrap) return;
       wrap.style.display = 'none';
-      el.dataset.wasRequired = el.hasAttribute('required') ? '1' : '0';
+      if (!('wasRequired' in el.dataset)) {
+        el.dataset.wasRequired = el.hasAttribute('required') ? '1' : '0';
+      }
       el.removeAttribute('required');
       el.setAttribute('aria-required', 'false');
       // Don't wipe prefilled listing values when from_property keeps fields hidden.
@@ -980,6 +984,14 @@ if (!is_string($query_type_routing_for_js)) {
       return t === 'other' || t === 'others' || /^other\b/.test(t);
     };
 
+    const hasQueryTypeSelected = () => {
+      const v = String(queryTypeEl.value || '').trim();
+      if (!v) return false;
+      const opt = queryTypeEl.options ? queryTypeEl.options[queryTypeEl.selectedIndex] : null;
+      if (opt && (opt.disabled || opt.getAttribute('data-placeholder') === 'true')) return false;
+      return true;
+    };
+
     const setLastNameOptional = (optional) => {
       if (!lastNameEl) return;
       if (optional) {
@@ -997,6 +1009,26 @@ if (!is_string($query_type_routing_for_js)) {
 
     const syncUI = () => {
       const route = findRoutingRow();
+      const querySelected = hasQueryTypeSelected();
+
+      // Progressive disclosure: keep post–query-type fields hidden until a type is chosen.
+      // Privacy checkbox + submit stay visible (they sit after this block).
+      if (!querySelected) {
+        hideField(addressEl);
+        hideField(propertyTypeEl);
+        hideField(conditionEl);
+        hideField(bedsEl);
+        hideField(bathsEl);
+        hideField(messageEl);
+        setAddressLabelVisibleText(originalAddressLabel);
+        addressEl.setAttribute('placeholder', originalAddressPlaceholder);
+        setLastNameOptional(false);
+        return;
+      }
+
+      showField(addressEl);
+      showField(messageEl);
+
       const hideForRouteOrOther = isOther() || !!(route && route.hide_property_fields);
       const hideProperty = hideForRouteOrOther || isFromProperty;
       const hideOpts = isFromProperty && !hideForRouteOrOther ? { preserveValue: true } : undefined;
@@ -1075,7 +1107,6 @@ if (!is_string($query_type_routing_for_js)) {
     const qTypeEl = byId('query-type');
     const addressEl = byId('property-address');
     const pTypeEl = byId('property-type');
-    const conditionEl = byId('property-condition');
     const bedsEl = byId('bedrooms');
     const bathsEl = byId('bathrooms');
 
@@ -1085,22 +1116,31 @@ if (!is_string($query_type_routing_for_js)) {
       .replace(/\s+/g, ' ')
       .trim();
 
-    const setSelectByValueOrLabel = (el, value, label) => {
-      if (!el) return;
+    const refreshNiceSelect = (el) => {
+      if (!el || typeof jQuery === 'undefined' || !jQuery.fn || typeof jQuery.fn.niceSelect !== 'function') return;
+      const $el = jQuery(el);
+      if ($el.hasClass('nice-select-initialized')) {
+        $el.niceSelect('update');
+      }
+    };
 
-      // If query type was authored as a text input, set directly.
+    const setSelectByValueOrLabel = (el, value, label, opts) => {
+      if (!el) return false;
+
+      const allowCreate = !!(opts && opts.allowCreate);
       const tag = (el.tagName || '').toLowerCase();
       if (tag !== 'select') {
         const fallbackValue = (value || label || '').trim();
         if (fallbackValue !== '') {
           el.value = fallbackValue;
           el.dispatchEvent(new Event('input', { bubbles: true }));
+          return true;
         }
-        return;
+        return false;
       }
 
       const options = Array.from(el.options || []);
-      if (!options.length) return;
+      if (!options.length && !allowCreate) return false;
 
       const wantValue = normalize(value);
       const wantLabel = normalize(label);
@@ -1114,27 +1154,39 @@ if (!is_string($query_type_routing_for_js)) {
       }
       if (!match && (wantValue || wantLabel)) {
         const needle = wantValue || wantLabel;
-        match = options.find(o =>
-          normalize(o.value).includes(needle) || normalize((o.textContent || '').trim()).includes(needle)
-        );
+        // Prefer whole-token / phrase matches; avoid matching short fragments.
+        match = options.find(o => {
+          const ov = normalize(o.value);
+          const ot = normalize((o.textContent || '').trim());
+          return ov === needle || ot === needle || ov.includes(needle) || ot.includes(needle);
+        });
       }
 
-      // Last resort for query-type style selects: pick a call/callback option.
-      if (!match && el.id === 'query-type') {
-        match = options.find(o => {
-          const text = normalize((o.textContent || '').trim());
-          const val = normalize(o.value);
-          return text.includes('call') || text.includes('callback') || val.includes('call') || val.includes('callback');
-        });
+      // Listing CTAs often send request_a_call / book_consultation / arrange_viewing,
+      // which are not in the authored Query type list — inject so auto-select + UI sync work.
+      if (!match && allowCreate && (value || label)) {
+        const opt = document.createElement('option');
+        opt.value = (value || label || 'listing_enquiry').trim();
+        opt.textContent = (label || value || 'Listing enquiry').trim();
+        opt.setAttribute('data-from-property-cta', '1');
+        el.appendChild(opt);
+        match = opt;
+        refreshNiceSelect(el);
       }
 
       if (match && String(match.value).trim() !== '') {
         el.value = match.value;
+        refreshNiceSelect(el);
         el.dispatchEvent(new Event('change', { bubbles: true }));
+        return true;
       }
+      return false;
     };
 
-    if (qTypeEl) setSelectByValueOrLabel(qTypeEl, queryType, queryTypeLabel || 'Request a call');
+    // Prefer the CTA label (e.g. "Request a call") so the select shows the right text.
+    if (qTypeEl) {
+      setSelectByValueOrLabel(qTypeEl, queryType, queryTypeLabel || queryType || 'Request a call', { allowCreate: true });
+    }
     if (addressEl && propertyAddress) {
       addressEl.value = propertyAddress;
       addressEl.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1143,19 +1195,13 @@ if (!is_string($query_type_routing_for_js)) {
     if (bedsEl && bedrooms) setSelectByValueOrLabel(bedsEl, bedrooms, bedrooms);
     if (bathsEl && bathrooms) setSelectByValueOrLabel(bathsEl, bathrooms, bathrooms);
 
-    const hideField = (el) => {
-      if (!el) return;
-      const wrap = el.closest('.field-container') || el.closest('.grid') || el.parentElement;
-      if (!wrap) return;
-      wrap.style.display = 'none';
-      el.removeAttribute('required');
-      el.setAttribute('aria-required', 'false');
-    };
-
-    hideField(pTypeEl);
-    hideField(conditionEl);
-    hideField(bedsEl);
-    hideField(bathsEl);
+    // Re-run query-type UI after prefills (covers cases where change fired before listeners).
+    if (qTypeEl) {
+      qTypeEl.dispatchEvent(new Event('change', { bubbles: true }));
+      window.requestAnimationFrame(() => {
+        qTypeEl.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
 
     // Persist source context into submission/email/DB (non-underscore keys are kept by handler).
     const ensureHidden = (name, value) => {
@@ -1173,6 +1219,7 @@ if (!is_string($query_type_routing_for_js)) {
     ensureHidden('origin_property_url', propertyUrl);
     ensureHidden('origin_property_address', propertyAddress);
     ensureHidden('origin_source', 'property_cta');
+    if (queryTypeLabel) ensureHidden('query_type_label', queryTypeLabel);
   })();
 })();
 

@@ -29,7 +29,127 @@ if ($primary_navigation->isNotEmpty()) {
   $left_menu_items  = array_slice($items, 0, $left_count);
   $right_menu_items = array_slice($items, $left_count);
 }
+
+// Split desktop nav from just over 1200px; hamburger only at 1200px and below.
+$desktop_nav_min = 1201;
 ?>
+
+<style>
+  /*
+   * Theme hamburger CSS includes `lg:hidden` (1084px), which hides the button too early.
+   * These rules own show/hide so mid-width desktops still get a working hamburger.
+   */
+  #site-nav .site-nav-desktop,
+  #site-nav .site-nav-desktop-spacer {
+    display: none !important;
+  }
+  #site-nav .site-nav-mobile-wrap {
+    display: flex !important;
+    align-items: center;
+    margin-left: auto;
+    z-index: 60;
+  }
+  #site-nav .site-nav-mobile-wrap .hamburger {
+    display: inline-block !important;
+    position: relative;
+    z-index: 61;
+  }
+  /* Full-screen flyout must position against the nav bar, not the hamburger wrap. */
+  #site-nav .site-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  #site-nav #site-mobile-nav {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    max-width: 100vw;
+    z-index: 55;
+  }
+  #site-nav .site-nav-logo-link {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: <?php echo (int) $desktop_nav_min; ?>px) {
+    #site-nav .site-nav-mobile-wrap,
+    #site-nav .site-nav-mobile-wrap .hamburger {
+      display: none !important;
+    }
+    #site-nav .site-nav-bar {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: 1rem;
+      max-width: 96rem;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    #site-nav .site-nav-desktop {
+      display: flex !important;
+      min-width: 0;
+      align-items: center;
+    }
+    #site-nav .site-nav-desktop-spacer {
+      display: block !important;
+      min-width: 0;
+    }
+    #site-nav .site-nav-desktop--left {
+      justify-content: flex-end;
+      padding-right: 0.5rem;
+    }
+    #site-nav .site-nav-desktop--right {
+      justify-content: flex-start;
+      padding-left: 0.5rem;
+      gap: 0.75rem;
+    }
+    #site-nav .site-nav-list {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    #site-nav .site-nav-link {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+    #site-nav .site-nav-logo {
+      max-width: 180px !important;
+      max-height: 3.5rem !important;
+    }
+  }
+
+  @media (min-width: 1351px) {
+    #site-nav .site-nav-link {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    #site-nav .site-nav-bar {
+      column-gap: 1.25rem;
+    }
+    #site-nav .site-nav-list {
+      gap: 1rem;
+    }
+    #site-nav .site-nav-link {
+      padding-left: 0.9rem;
+      padding-right: 0.9rem;
+    }
+    #site-nav .site-nav-logo {
+      max-width: 200px !important;
+      max-height: 4rem !important;
+    }
+  }
+</style>
 
 <section
   id="site-nav"
@@ -40,8 +160,7 @@ if ($primary_navigation->isNotEmpty()) {
       this.activeDropdown = (this.activeDropdown === index ? null : index);
     },
     checkWindowSize() {
-      // Keep in sync with Tailwind `xl` (1280): desktop nav only above this width.
-      if (window.innerWidth >= 1280) {
+      if (window.innerWidth >= <?php echo (int) $desktop_nav_min; ?>) {
         this.isOpen = false;
         this.activeDropdown = null;
       }
@@ -51,19 +170,19 @@ if ($primary_navigation->isNotEmpty()) {
   class="py-4 bg-white border-b-2 border-b-[#B6C0CB] border-solid"
   x-effect="isOpen ? document.body.style.overflow = 'hidden' : document.body.style.overflow = ''"
 >
-  <nav class="relative flex justify-between items-center w-full mx-auto max-w-[1280px] px-5 xxl:px-0 xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-center xl:gap-x-2 xxl:gap-x-4 xl:justify-normal">
+  <nav class="site-nav-bar relative w-full mx-auto px-5">
 
-    <!-- LEFT: Primary (first half) — grid col 1, hugs logo -->
+    <!-- LEFT: Primary (first half) -->
     <?php if (!empty($left_menu_items)) : ?>
-      <div class="hidden min-w-0 xl:flex xl:justify-end xl:pr-1 xxl:pr-2">
-      <ul class="flex gap-1.5 justify-end items-center min-w-0 leading-loose text-black xxl:gap-4"
+      <div class="site-nav-desktop site-nav-desktop--left">
+      <ul class="site-nav-list leading-loose text-black"
           aria-label="Primary navigation (left)">
         <?php foreach ($left_menu_items as $index => $item) : ?>
           <li class="relative group shrink-0 <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
             <a href="<?php echo esc_url($item->url); ?>"
-               class="flex font-[500] items-center gap-0.5 px-1.5 py-2 rounded-[8px] transition-colors duration-200 xxl:gap-1 xxl:px-3
+               class="site-nav-link flex font-[500] items-center gap-1 py-2 rounded-[8px] transition-colors duration-200
                       <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-[0.8125rem] leading-normal xxl:text-base whitespace-nowrap">
+                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize leading-normal whitespace-nowrap">
               <?php echo esc_html($item->label); ?>
               <?php if (!empty($item->children)) : ?>
                 <span class="ml-[2px]">
@@ -104,18 +223,18 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
       </ul>
       </div>
     <?php else : ?>
-      <div class="hidden min-w-0 xl:block" aria-hidden="true"></div>
+      <div class="site-nav-desktop-spacer" aria-hidden="true"></div>
     <?php endif; ?>
 
-    <!-- CENTER: Logo (true center on xl+ via grid) -->
-    <a style="z-index: 99999999;" href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center shrink-0 xl:justify-self-center">
+    <!-- CENTER: Logo -->
+    <a style="z-index: 1;" href="<?php echo esc_url(home_url('/')); ?>" class="site-nav-logo-link flex justify-center shrink-0">
       <?php if ($logo_url) : ?>
         <img
           src="<?php echo esc_url($logo_url); ?>"
           alt="<?php echo esc_attr($logo_alt); ?>"
           width="<?php echo esc_attr((string) $logo_w); ?>"
           height="<?php echo esc_attr((string) $logo_h); ?>"
-          class="h-auto w-auto max-h-12 max-w-[9.5rem] xl:max-h-14 xl:max-w-[11rem] xxl:max-h-16 xxl:max-w-[13rem]"
+          class="site-nav-logo h-auto w-auto"
           decoding="async"
         />
       <?php else : ?>
@@ -123,11 +242,11 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
       <?php endif; ?>
     </a>
 
-    <!-- RIGHT: Primary (second half) + optional phone/CTA — grid col 3, hugs logo -->
+    <!-- RIGHT: Primary (second half) + optional phone/CTA -->
 <?php if (!empty($right_menu_items) || $phone_number || $contact_button) : ?>
-  <div class="hidden min-w-0 xl:flex xl:flex-row xl:justify-start xl:items-center xl:gap-1.5 xl:pl-1 xxl:gap-4 xxl:pl-2">
+  <div class="site-nav-desktop site-nav-desktop--right">
   <?php if (!empty($right_menu_items)) : ?>
-  <ul class="flex gap-1.5 justify-start items-center min-w-0 leading-loose text-black xxl:gap-4"
+  <ul class="site-nav-list leading-loose text-black"
       aria-label="Primary navigation (right)">
     <?php foreach ($right_menu_items as $index => $item) : ?>
       <?php
@@ -136,9 +255,9 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
       ?>
       <li class="relative group shrink-0 <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
         <a href="<?php echo esc_url($item->url); ?>"
-           class="flex items-center gap-0.5 px-1.5 py-2 rounded-[8px] transition-colors duration-200 xxl:gap-1 xxl:px-3
+           class="site-nav-link flex items-center gap-1 py-2 rounded-[8px] transition-colors duration-200
                   <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                  group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-[0.8125rem] font-[500] leading-normal xxl:text-base whitespace-nowrap">
+                  group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize font-[500] leading-normal whitespace-nowrap">
           <?php echo esc_html($item->label); ?>
           <?php if (!empty($item->children)) : ?>
             <span class="ml-[2px]">
@@ -180,17 +299,17 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
   <?php endif; ?>
 
     <?php if ($phone_number || $contact_button) : ?>
-      <div class="flex gap-2 items-center border-l border-[#B6C0CB]/60 pl-2 shrink-0 xxl:gap-4 xxl:pl-4">
+      <div class="flex gap-2 items-center border-l border-[#B6C0CB]/60 pl-2 shrink-0">
         <?php if ($phone_number) : ?>
           <a href="tel:<?php echo esc_attr(preg_replace('/[^+\d]/', '', $phone_number)); ?>"
-             class="text-[#1d2838] hover:text-[#025a70] text-[0.8125rem] font-[500] flex items-center xxl:text-base whitespace-nowrap">
+             class="text-[#1d2838] hover:text-[#025a70] text-sm font-[500] flex items-center whitespace-nowrap">
             <?php echo esc_html($phone_number); ?>
           </a>
         <?php endif; ?>
         <?php if (!empty($contact_button['url'])) : ?>
           <a href="<?php echo esc_url($contact_button['url']); ?>"
              target="<?php echo esc_attr($contact_button['target'] ?? '_self'); ?>"
-             class="px-2.5 py-2 text-[0.8125rem] font-semibold text-black whitespace-nowrap rounded btn bg-secondary hover:bg-orange-500 xxl:px-4 xxl:text-base">
+             class="px-3 py-2 text-sm font-semibold text-black whitespace-nowrap rounded btn bg-secondary hover:bg-orange-500">
             <?php echo esc_html($contact_button['title'] ?? 'Contact'); ?>
           </a>
         <?php endif; ?>
@@ -198,17 +317,17 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     <?php endif; ?>
   </div>
 <?php else : ?>
-  <div class="hidden min-w-0 xl:block" aria-hidden="true"></div>
+  <div class="site-nav-desktop-spacer" aria-hidden="true"></div>
 <?php endif; ?>
 
-    <!-- Mobile menu (unchanged structure) -->
-    <?php get_template_part('template-parts/header/navbar/mobile'); ?>
+    <div class="site-nav-mobile-wrap">
+      <?php get_template_part('template-parts/header/navbar/mobile'); ?>
+    </div>
 
   </nav>
 </section>
 
 <script>
-  // Re-enable Headroom on the SAME element as before
   document.addEventListener('DOMContentLoaded', function () {
     if (window.Headroom) {
       var el = document.getElementById('site-nav');
