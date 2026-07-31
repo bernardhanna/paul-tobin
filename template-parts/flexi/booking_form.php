@@ -81,6 +81,28 @@ if ($form_markup) {
     $cfg_from_email= get_sub_field('from_email') ?: '';
     $cfg_enable_cc_bcc = (bool) get_sub_field('enable_cc_bcc');
 
+    // Per–query-type email / field behaviour (editable on this flexi block).
+    $query_type_routing = [];
+    if (have_rows('query_type_email_routing')) {
+        while (have_rows('query_type_email_routing')) {
+            the_row();
+            $match = trim((string) get_sub_field('query_type_match'));
+            if ($match === '') {
+                continue;
+            }
+            $query_type_routing[] = [
+                'match' => $match,
+                'email_to' => trim((string) get_sub_field('routing_email_to')),
+                'hide_property_fields' => (bool) get_sub_field('hide_property_fields'),
+                'last_name_optional' => (bool) get_sub_field('last_name_optional'),
+            ];
+        }
+    }
+    $query_type_routing_json = wp_json_encode($query_type_routing);
+    if (!is_string($query_type_routing_json)) {
+        $query_type_routing_json = '[]';
+    }
+
     $hidden_cfg  = '<input type="hidden" name="_cfg_to" value="'.esc_attr($cfg_to).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_enable_cc_bcc" value="'.($cfg_enable_cc_bcc ? '1' : '0').'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_cc" value="'.esc_attr($cfg_cc).'">';
@@ -88,6 +110,7 @@ if ($form_markup) {
     $hidden_cfg .= '<input type="hidden" name="_cfg_subject" value="'.esc_attr($cfg_subject).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_from_name" value="'.esc_attr($cfg_from_name).'">';
     $hidden_cfg .= '<input type="hidden" name="_cfg_from_email" value="'.esc_attr($cfg_from_email).'">';
+    $hidden_cfg .= '<input type="hidden" name="_cfg_query_type_routing" value="'.esc_attr($query_type_routing_json).'">';
 
     if (get_sub_field('enable_autoresponder')) {
         $auto_logo_id  = (int) (get_sub_field('autoresponder_logo') ?: 0);
@@ -105,6 +128,15 @@ if ($form_markup) {
     $form_markup = str_replace('</form>', ($hidden . $hidden_cfg) . '</form>', $form_markup);
     $form_markup = str_replace('href="#"', 'href="' . esc_url($privacy_policy_url) . '"', $form_markup);
 }
+
+// Expose routing to the section JS (safe even when form_markup is empty).
+if (!isset($query_type_routing)) {
+    $query_type_routing = [];
+}
+$query_type_routing_for_js = wp_json_encode($query_type_routing);
+if (!is_string($query_type_routing_for_js)) {
+    $query_type_routing_for_js = '[]';
+}
 ?>
 
 <section
@@ -112,6 +144,7 @@ if ($form_markup) {
   class="relative flex overflow-visible <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   aria-labelledby="<?php echo esc_attr($section_id); ?>-heading"
+  data-query-type-routing="<?php echo esc_attr($query_type_routing_for_js); ?>"
 >
   <div class="flex flex-col items-center <?php echo esc_attr($container_top_padding_class); ?> pt-[10rem] pb-20 mx-auto w-full max-w-container max-xl:px-5 max-sm:pb-10">
 
@@ -800,8 +833,9 @@ if ($form_markup) {
   })();
 
   // Query Type conditional behavior:
-  // - If "Other": hide property detail selectors and relabel Property Address field to "Other".
-  // - Otherwise: show fields and restore Property Address defaults.
+  // - "Other": hide property detail selectors; relabel address.
+  // - Flexi-block routing rows can also hide property fields / make last name optional.
+  // - from_property=1 listing CTAs always keep type/condition/beds/baths hidden (never re-show).
   (function initQueryTypeConditionalUI() {
     const queryTypeEl = byId('query-type');
     const addressEl = byId('property-address');
@@ -809,7 +843,37 @@ if ($form_markup) {
     const conditionEl = byId('property-condition');
     const bedsEl = byId('bedrooms');
     const bathsEl = byId('bathrooms');
+    const lastNameEl = byId('last-name') || byId('lastname') || form.querySelector('[name="last_name"], [name="last-name"], [name="lastname"]');
     if (!queryTypeEl || !addressEl) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isFromProperty = ['1', 'true', 'yes'].includes((params.get('from_property') || '').toLowerCase());
+
+    let routingRows = [];
+    try {
+      const section = form.closest('[data-query-type-routing]');
+      const raw = section ? section.getAttribute('data-query-type-routing') : '';
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) routingRows = parsed;
+    } catch (e) {
+      routingRows = [];
+    }
+
+    const normalize = (str) => String(str || '')
+      .toLowerCase()
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const findRoutingRow = () => {
+      const v = normalize(queryTypeEl.value);
+      const opt = queryTypeEl.options ? queryTypeEl.options[queryTypeEl.selectedIndex] : null;
+      const label = normalize(opt ? opt.textContent : '');
+      return routingRows.find((row) => {
+        const m = normalize(row && row.match);
+        return m && (m === v || m === label || v.includes(m) || label.includes(m) || m.includes(v) || m.includes(label));
+      }) || null;
+    };
 
     const addressLabel = form.querySelector('label[for="property-address"]');
     const originalAddressLabel = 'Property address';
@@ -864,15 +928,17 @@ if ($form_markup) {
         || direct;
     };
 
-    const hideField = (el) => {
+    const hideField = (el, opts) => {
       if (!el) return;
+      const clearValue = !(opts && opts.preserveValue);
       const wrap = getFieldRow(el);
       if (!wrap) return;
       wrap.style.display = 'none';
       el.dataset.wasRequired = el.hasAttribute('required') ? '1' : '0';
       el.removeAttribute('required');
       el.setAttribute('aria-required', 'false');
-      if (el.tagName && el.tagName.toLowerCase() === 'select') el.value = '';
+      // Don't wipe prefilled listing values when from_property keeps fields hidden.
+      if (clearValue && el.tagName && el.tagName.toLowerCase() === 'select') el.value = '';
       clearError(el);
       if (typeof jQuery !== 'undefined' && jQuery.fn && typeof jQuery.fn.niceSelect === 'function') {
         if (jQuery(el).hasClass('nice-select-initialized')) {
@@ -883,6 +949,10 @@ if ($form_markup) {
 
     const showField = (el) => {
       if (!el) return;
+      // Never re-show when visitor came from a property listing CTA.
+      if (isFromProperty && (el === propertyTypeEl || el === conditionEl || el === bedsEl || el === bathsEl)) {
+        return;
+      }
       const wrap = getFieldRow(el);
       if (!wrap) return;
       wrap.style.display = '';
@@ -910,22 +980,48 @@ if ($form_markup) {
       return t === 'other' || t === 'others' || /^other\b/.test(t);
     };
 
+    const setLastNameOptional = (optional) => {
+      if (!lastNameEl) return;
+      if (optional) {
+        if (!('wasRequired' in lastNameEl.dataset)) {
+          lastNameEl.dataset.wasRequired = lastNameEl.hasAttribute('required') ? '1' : '0';
+        }
+        lastNameEl.removeAttribute('required');
+        lastNameEl.setAttribute('aria-required', 'false');
+        clearError(lastNameEl);
+      } else if (lastNameEl.dataset.wasRequired === '1') {
+        lastNameEl.setAttribute('required', '');
+        lastNameEl.setAttribute('aria-required', 'true');
+      }
+    };
+
     const syncUI = () => {
-      if (isOther()) {
-        hideField(propertyTypeEl);
-        hideField(conditionEl);
-        hideField(bedsEl);
-        hideField(bathsEl);
-        setAddressLabelVisibleText('Other');
-        addressEl.setAttribute('placeholder', 'Tell us what your query is about');
+      const route = findRoutingRow();
+      const hideForRouteOrOther = isOther() || !!(route && route.hide_property_fields);
+      const hideProperty = hideForRouteOrOther || isFromProperty;
+      const hideOpts = isFromProperty && !hideForRouteOrOther ? { preserveValue: true } : undefined;
+
+      if (hideProperty) {
+        hideField(propertyTypeEl, hideOpts);
+        hideField(conditionEl, hideOpts);
+        hideField(bedsEl, hideOpts);
+        hideField(bathsEl, hideOpts);
       } else {
         showField(propertyTypeEl);
         showField(conditionEl);
         showField(bedsEl);
         showField(bathsEl);
+      }
+
+      if (isOther()) {
+        setAddressLabelVisibleText('Other');
+        addressEl.setAttribute('placeholder', 'Tell us what your query is about');
+      } else {
         setAddressLabelVisibleText(originalAddressLabel);
         addressEl.setAttribute('placeholder', originalAddressPlaceholder);
       }
+
+      setLastNameOptional(!!(route && route.last_name_optional));
     };
 
     // Nice Select changes are bridged back into this same native listener.

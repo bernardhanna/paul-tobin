@@ -1,12 +1,14 @@
 <?php
 // =========================================================
-// Flexi Block: Property Slider (full updated)
+// Flexi Block: Property Slider (+ Before & After compare mode)
 // =========================================================
 
 // ACF fields
 $section_heading        = get_sub_field('section_heading');
 $section_heading_tag    = get_sub_field('section_heading_tag') ?: 'h2';
 $background_color       = get_sub_field('background_color') ?: '#FFFFFF';
+$slider_mode            = get_sub_field('slider_mode') ?: 'properties';
+$is_before_after        = ($slider_mode === 'before_after');
 
 $selected_properties    = get_sub_field('selected_properties');
 $auto_select_properties = get_sub_field('auto_select_properties');
@@ -30,28 +32,52 @@ if (have_rows('padding_settings')) {
   }
 }
 
-// Collect properties
-if ($auto_select_properties) {
-  $args = [
-    'post_type'      => 'property',
-    'posts_per_page' => $number_of_properties ?: 5,
-    'post_status'    => 'publish',
-  ];
-  if ($property_order === 'random') {
-    $args['orderby'] = 'rand';
-  } elseif ($property_order === 'oldest') {
-    $args['orderby'] = 'date';
-    $args['order']   = 'ASC';
-  } else {
-    $args['orderby'] = 'date';
-    $args['order']   = 'DESC';
-  }
-  $properties = get_posts($args);
-} else {
-  $properties = is_array($selected_properties) ? $selected_properties : [];
-}
+// Collect slides
+$properties = [];
+$before_after_pairs = [];
 
-$slide_count = is_array($properties) ? count($properties) : 0;
+if ($is_before_after) {
+  if (have_rows('before_after_pairs')) {
+    while (have_rows('before_after_pairs')) {
+      the_row();
+      $before_id = (int) get_sub_field('before_image');
+      $after_id  = (int) get_sub_field('after_image');
+      if (!$before_id || !$after_id) {
+        continue;
+      }
+      $before_after_pairs[] = [
+        'before_id'    => $before_id,
+        'after_id'     => $after_id,
+        'title'        => trim((string) get_sub_field('pair_title')),
+        'caption'      => trim((string) get_sub_field('pair_caption')),
+        'before_label' => trim((string) get_sub_field('before_label')) ?: 'Before',
+        'after_label'  => trim((string) get_sub_field('after_label')) ?: 'After',
+      ];
+    }
+  }
+  $slide_count = count($before_after_pairs);
+} else {
+  if ($auto_select_properties) {
+    $args = [
+      'post_type'      => 'property',
+      'posts_per_page' => $number_of_properties ?: 5,
+      'post_status'    => 'publish',
+    ];
+    if ($property_order === 'random') {
+      $args['orderby'] = 'rand';
+    } elseif ($property_order === 'oldest') {
+      $args['orderby'] = 'date';
+      $args['order']   = 'ASC';
+    } else {
+      $args['orderby'] = 'date';
+      $args['order']   = 'DESC';
+    }
+    $properties = get_posts($args);
+  } else {
+    $properties = is_array($selected_properties) ? $selected_properties : [];
+  }
+  $slide_count = is_array($properties) ? count($properties) : 0;
+}
 
 if (!function_exists('matrix_property_slider_clean_value')) {
   /**
@@ -116,11 +142,14 @@ if (!function_exists('matrix_property_slider_property_data_value')) {
 // Unique IDs
 $section_id = 'property-slider-' . uniqid();
 $slider_id  = $section_id;
+$has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($properties);
 ?>
 
 <section
   id="<?php echo esc_attr($section_id); ?>"
   class="relative bg-white flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
+  style="background-color: <?php echo esc_attr($background_color); ?>;"
+  data-slider-mode="<?php echo esc_attr($is_before_after ? 'before_after' : 'properties'); ?>"
 >
   <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5 max-md:pb-8">
 
@@ -140,184 +169,301 @@ $slider_id  = $section_id;
       </header>
     <?php endif; ?>
 
-    <?php if (!empty($properties)): ?>
+    <?php if ($has_slides): ?>
       <div class="relative mt-12 w-full max-md:mt-5 max-md:max-w-full">
-        <!-- Slider -->
-        <div class="property-slider" role="region" aria-roledescription="carousel" aria-label="Property showcase">
-          <?php foreach ($properties as $property):
-            $property_id     = is_object($property) ? $property->ID : (int) $property;
-            $property_post   = is_object($property) ? $property : get_post($property_id);
-            $property_image  = get_post_thumbnail_id($property_id);
-            $property_title  = get_the_title($property_id);
-            $property_excerpt= trim((string) get_the_excerpt($property_id));
-            $property_link   = get_permalink($property_id);
+        <div class="property-slider" role="region" aria-roledescription="carousel" aria-label="<?php echo esc_attr($is_before_after ? 'Before and after showcase' : 'Property showcase'); ?>">
 
-            // Prefer synced post meta (source of truth used by Daft sync), then fallback to ACF field values.
-            $bedrooms_raw    = matrix_property_slider_property_data_value($property_id, 'bedrooms');
-            if ($bedrooms_raw === '' || $bedrooms_raw === null) {
-              $bedrooms_raw = get_post_meta($property_id, 'bedrooms', true);
-            }
-            if ($bedrooms_raw === '' || $bedrooms_raw === null) {
-              $bedrooms_raw = get_field('bedrooms', $property_id);
-            }
-            $bathrooms_raw   = matrix_property_slider_property_data_value($property_id, 'bathrooms');
-            if ($bathrooms_raw === '' || $bathrooms_raw === null) {
-              $bathrooms_raw = get_post_meta($property_id, 'bathrooms', true);
-            }
-            if ($bathrooms_raw === '' || $bathrooms_raw === null) {
-              $bathrooms_raw = get_field('bathrooms', $property_id);
-            }
-            // Prefer property_data size (matches the "Size" shown on single property pages),
-            // then fallback to legacy/synced area fields.
-            $area_raw        = matrix_property_slider_property_data_value($property_id, 'size');
-            if ($area_raw === '' || $area_raw === null) {
-              $area_raw = get_post_meta($property_id, 'flexible_content_blocks_0_size', true);
-            }
-            if ($area_raw === '' || $area_raw === null) {
-              $area_raw = get_post_meta($property_id, 'area', true);
-            }
-            if ($area_raw === '' || $area_raw === null) {
-              $area_raw = get_field('area', $property_id);
-            }
+          <?php if ($is_before_after): ?>
+            <?php foreach ($before_after_pairs as $index => $pair):
+              $before_alt = get_post_meta($pair['before_id'], '_wp_attachment_image_alt', true) ?: ($pair['title'] ? $pair['title'] . ' — before' : 'Before');
+              $after_alt  = get_post_meta($pair['after_id'], '_wp_attachment_image_alt', true) ?: ($pair['title'] ? $pair['title'] . ' — after' : 'After');
+              $compare_id = $section_id . '-ba-' . $index;
+            ?>
+              <article class="property-slide ba-slide">
+                <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px] max-md:max-w-full justify-between">
 
-            $bedrooms        = matrix_property_slider_clean_value($bedrooms_raw);
-            $bathrooms       = matrix_property_slider_clean_value($bathrooms_raw);
-            $area            = matrix_property_slider_clean_value($area_raw);
-            // Normalize area labels like "Area: 65 m2" -> "65 m2".
-            $area            = preg_replace('/^\s*area\s*:\s*/iu', '', $area);
-
-            $bedrooms        = $bedrooms !== '' ? $bedrooms : '0';
-            $bathrooms       = $bathrooms !== '' ? $bathrooms : '0';
-            $property_types  = get_the_terms($property_id, 'property_type');
-            $property_type   = ($property_types && !is_wp_error($property_types)) ? $property_types[0]->name : 'Residential';
-
-            $image_alt       = $property_image ? (get_post_meta($property_image, '_wp_attachment_image_alt', true) ?: $property_title) : $property_title;
-
-            // Hide excerpt when it only looks like a price/value (e.g. "€1,926,000").
-            $excerpt_plain = preg_replace('/\s+/u', ' ', wp_strip_all_tags($property_excerpt));
-            if ($excerpt_plain && preg_match('/^[€£$]?\s?\d[\d,\.\s]*[kKmM]?\s*$/u', $excerpt_plain)) {
-              $property_excerpt = '';
-            }
-          ?>
-            <article class="property-slide">
-              <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px]  max-md:max-w-full justify-between">
-
-                <?php if ($property_image): ?>
-                  <div class="relative inset-0 w-full h-full max-md:order-0 md:absolute">
-                    <?php echo wp_get_attachment_image($property_image, 'full', false, [
-                      'alt'     => esc_attr($image_alt),
-                      'class'   => 'object-cover w-full h-full',
-                      'loading' => 'lazy'
-                    ]); ?>
-                  </div>
-                <?php endif; ?>
-
-                <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5">
-                  <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
-                    <?php echo esc_html($property_title); ?>
-                  </h4>
-
-                  <?php if ($property_excerpt): ?>
-                    <p class="mt-4 text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
-                      <?php echo esc_html($property_excerpt); ?>
-                    </p>
-                  <?php endif; ?>
-
-                  <a
-                    href="<?php echo esc_url($property_link); ?>"
-                    class="inline-block mt-4 font-primary text-[0.9375rem] font-normal leading-6 tracking-normal underline decoration-auto decoration-solid text-primary underline-offset-auto btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:no-underline"
-                    aria-label="<?php echo esc_attr('Read success story for ' . $property_title); ?>"
+                  <div
+                    class="ba-compare relative inset-0 w-full h-full max-md:order-0 md:absolute md:inset-8 md:w-auto md:h-auto"
+                    data-ba-compare
+                    id="<?php echo esc_attr($compare_id); ?>"
+                    style="--ba-pos: 50%;"
                   >
-                    Read our success story
-                  </a>
-                </div>
+                    <div class="ba-compare__media relative w-full overflow-hidden bg-[#e0e0e0] aspect-[4/3] md:aspect-auto md:h-full md:min-h-[40rem]">
+                      <div class="ba-compare__after absolute inset-0">
+                        <?php echo wp_get_attachment_image($pair['after_id'], 'full', false, [
+                          'alt'           => esc_attr($after_alt),
+                          'class'         => 'object-cover w-full h-full',
+                          'loading'       => $index === 0 ? 'eager' : 'lazy',
+                          'draggable'     => 'false',
+                        ]); ?>
+                        <span class="ba-compare__label ba-compare__label--after"><?php echo esc_html($pair['after_label']); ?></span>
+                      </div>
 
-                <div class="flex relative z-20 flex-row flex-wrap gap-y-3 justify-between items-center px-5 py-4 mt-80 w-full property-slider__meta-bar bg-primary max-md:order-1 max-md:mt-0 max-md:max-w-full max-md:items-start md:flex-nowrap md:items-center md:gap-0 md:px-8 md:py-4">
-                  <div class="flex flex-row flex-wrap flex-1 gap-4 items-center min-w-0 text-base font-semibold tracking-normal text-gray-50 max-md:w-1/2 max-md:items-start max-md:gap-4 md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
-                    <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($property_type); ?></span>
+                      <div class="ba-compare__before absolute inset-0" aria-hidden="true">
+                        <?php echo wp_get_attachment_image($pair['before_id'], 'full', false, [
+                          'alt'       => '',
+                          'class'     => 'object-cover w-full h-full',
+                          'loading'   => $index === 0 ? 'eager' : 'lazy',
+                          'draggable' => 'false',
+                        ]); ?>
+                        <span class="ba-compare__label ba-compare__label--before"><?php echo esc_html($pair['before_label']); ?></span>
+                      </div>
 
-                    <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bedrooms">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M1 20.6V11.8C1 11.2165 1.23178 10.657 1.64436 10.2444C2.05695 9.83179 2.61652 9.60001 3.2 9.60001H20.8C21.3835 9.60001 21.9431 9.83179 22.3556 10.2444C22.7682 10.657 23 11.2165 23 11.8V20.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
-                    <path d="M3.19995 9.6V5.2C3.19995 4.61652 3.43174 4.05695 3.84432 3.64436C4.2569 3.23178 4.81647 3 5.39995 3H18.6C19.1834 3 19.743 3.23178 20.1556 3.64436C20.5682 4.05695 20.8 4.61652 20.8 5.2V9.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
-                    <path d="M12 3V9.6" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M1 18.4H23" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bedrooms); ?></span>
+                      <div class="ba-compare__handle" data-ba-handle>
+                        <div class="ba-compare__line" aria-hidden="true"></div>
+                        <button
+                          type="button"
+                          class="ba-compare__knob"
+                          role="slider"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow="50"
+                          aria-label="<?php echo esc_attr(sprintf('Compare before and after%s', $pair['title'] !== '' ? ': ' . $pair['title'] : '')); ?>"
+                          data-ba-knob
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M9 8L5 12L9 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 8L19 12L15 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-
-                    <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bathrooms">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M8.77772 5.33333L5.99995 2.55556C5.71501 2.2341 5.31696 2.03508 4.88883 2C3.98106 2 3.22217 2.75889 3.22217 3.66667V17.5556C3.22217 18.1449 3.45629 18.7102 3.87304 19.1269C4.28979 19.5437 4.85502 19.7778 5.44439 19.7778H18.7777C19.3671 19.7778 19.9323 19.5437 20.3491 19.1269C20.7658 18.7102 20.9999 18.1449 20.9999 17.5556V12" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
-                      <path d="M9.88885 4.22223L7.66663 6.44445" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
-                      <path d="M1 12H23.2222" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M6.55554 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M17.6666 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bathrooms); ?></span>
-                    </div>
-
-                    <?php if ($area): ?>
-                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($area); ?></span>
-                    <?php endif; ?>
                   </div>
+
+                  <?php if ($pair['title'] !== '' || $pair['caption'] !== ''): ?>
+                    <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5 z-10">
+                      <?php if ($pair['title'] !== ''): ?>
+                        <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
+                          <?php echo esc_html($pair['title']); ?>
+                        </h4>
+                      <?php endif; ?>
+                      <?php if ($pair['caption'] !== ''): ?>
+                        <p class="mt-4 text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
+                          <?php echo esc_html($pair['caption']); ?>
+                        </p>
+                      <?php endif; ?>
+                    </div>
+                  <?php endif; ?>
 
                   <?php if ($slide_count > 1): ?>
-                  <nav class="flex gap-2 items-center property-slider__desktop-nav shrink-0 max-md:hidden" aria-label="Property navigation">
-                    <button
-                      type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition  focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119] hover:bg-blue mr-2"
-                      aria-label="Previous property"
-                      data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
-                    >
-                      <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
-                      aria-label="Next property"
-                      data-desktop-next="<?php echo esc_attr($slider_id); ?>"
-                    >
-                      <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </button>
-                  </nav>
+                    <div class="flex relative z-20 flex-row flex-wrap gap-y-3 justify-end items-center px-5 py-4 mt-auto w-full property-slider__meta-bar bg-primary max-md:order-1 max-md:mt-0 max-md:max-w-full md:px-8 md:py-4">
+                      <nav class="flex gap-2 items-center property-slider__desktop-nav shrink-0 max-md:hidden" aria-label="Before and after navigation">
+                        <button
+                          type="button"
+                          class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119] hover:bg-blue mr-2"
+                          aria-label="Previous project"
+                          data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
+                        >
+                          <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                          aria-label="Next project"
+                          data-desktop-next="<?php echo esc_attr($slider_id); ?>"
+                        >
+                          <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </button>
+                      </nav>
+                      <div class="flex gap-4 md:ml-auto md:hidden max-md:w-full max-md:justify-end">
+                        <button
+                          type="button"
+                          class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
+                          aria-label="Previous project"
+                          data-mobile-prev="<?php echo esc_attr($slider_id); ?>">
+                          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect width="40" height="40" fill="#F9FAFB"/>
+                            <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
+                          aria-label="Next project"
+                          data-mobile-next="<?php echo esc_attr($slider_id); ?>">
+                          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect width="40" height="40" fill="#F9FAFB"/>
+                            <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </article>
+            <?php endforeach; ?>
+
+          <?php else: ?>
+            <?php foreach ($properties as $property):
+              $property_id     = is_object($property) ? $property->ID : (int) $property;
+              $property_image  = get_post_thumbnail_id($property_id);
+              $property_title  = get_the_title($property_id);
+              $property_excerpt= trim((string) get_the_excerpt($property_id));
+              $property_link   = get_permalink($property_id);
+
+              $bedrooms_raw    = matrix_property_slider_property_data_value($property_id, 'bedrooms');
+              if ($bedrooms_raw === '' || $bedrooms_raw === null) {
+                $bedrooms_raw = get_post_meta($property_id, 'bedrooms', true);
+              }
+              if ($bedrooms_raw === '' || $bedrooms_raw === null) {
+                $bedrooms_raw = get_field('bedrooms', $property_id);
+              }
+              $bathrooms_raw   = matrix_property_slider_property_data_value($property_id, 'bathrooms');
+              if ($bathrooms_raw === '' || $bathrooms_raw === null) {
+                $bathrooms_raw = get_post_meta($property_id, 'bathrooms', true);
+              }
+              if ($bathrooms_raw === '' || $bathrooms_raw === null) {
+                $bathrooms_raw = get_field('bathrooms', $property_id);
+              }
+              $area_raw        = matrix_property_slider_property_data_value($property_id, 'size');
+              if ($area_raw === '' || $area_raw === null) {
+                $area_raw = get_post_meta($property_id, 'flexible_content_blocks_0_size', true);
+              }
+              if ($area_raw === '' || $area_raw === null) {
+                $area_raw = get_post_meta($property_id, 'area', true);
+              }
+              if ($area_raw === '' || $area_raw === null) {
+                $area_raw = get_field('area', $property_id);
+              }
+
+              $bedrooms        = matrix_property_slider_clean_value($bedrooms_raw);
+              $bathrooms       = matrix_property_slider_clean_value($bathrooms_raw);
+              $area            = matrix_property_slider_clean_value($area_raw);
+              $area            = preg_replace('/^\s*area\s*:\s*/iu', '', $area);
+
+              $bedrooms        = $bedrooms !== '' ? $bedrooms : '0';
+              $bathrooms       = $bathrooms !== '' ? $bathrooms : '0';
+              $property_types  = get_the_terms($property_id, 'property_type');
+              $property_type   = ($property_types && !is_wp_error($property_types)) ? $property_types[0]->name : 'Residential';
+
+              $image_alt       = $property_image ? (get_post_meta($property_image, '_wp_attachment_image_alt', true) ?: $property_title) : $property_title;
+
+              $excerpt_plain = preg_replace('/\s+/u', ' ', wp_strip_all_tags($property_excerpt));
+              if ($excerpt_plain && preg_match('/^[€£$]?\s?\d[\d,\.\s]*[kKmM]?\s*$/u', $excerpt_plain)) {
+                $property_excerpt = '';
+              }
+            ?>
+              <article class="property-slide">
+                <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px]  max-md:max-w-full justify-between">
+
+                  <?php if ($property_image): ?>
+                    <div class="relative inset-0 w-full h-full max-md:order-0 md:absolute">
+                      <?php echo wp_get_attachment_image($property_image, 'full', false, [
+                        'alt'     => esc_attr($image_alt),
+                        'class'   => 'object-cover w-full h-full',
+                        'loading' => 'lazy'
+                      ]); ?>
+                    </div>
                   <?php endif; ?>
 
-                  <!-- Mobile slide arrows -->
-                  <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
-                    <button
-                      type="button"
-                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
-                      aria-label="Previous property"
-                      data-mobile-prev="<?php echo esc_attr($slider_id); ?>">
-                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <rect width="40" height="40" fill="#F9FAFB"/>
-                        <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </button>
+                  <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5">
+                    <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
+                      <?php echo esc_html($property_title); ?>
+                    </h4>
 
-                    <button
-                      type="button"
-                      class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
-                      aria-label="Next property"
-                      data-mobile-next="<?php echo esc_attr($slider_id); ?>">
-                      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <rect width="40" height="40" fill="#F9FAFB"/>
-                        <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </button>
+                    <?php if ($property_excerpt): ?>
+                      <p class="mt-4 text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
+                        <?php echo esc_html($property_excerpt); ?>
+                      </p>
+                    <?php endif; ?>
+
+                    <a
+                      href="<?php echo esc_url($property_link); ?>"
+                      class="inline-block mt-4 font-primary text-[0.9375rem] font-normal leading-6 tracking-normal underline decoration-auto decoration-solid text-primary underline-offset-auto btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:no-underline"
+                      aria-label="<?php echo esc_attr('Read success story for ' . $property_title); ?>"
+                    >
+                      Read our success story
+                    </a>
                   </div>
-                  <!-- /mobile arrows -->
-                </div>
-              </div>
-            </article>
-          <?php endforeach; ?>
-        </div>
 
+                  <div class="flex relative z-20 flex-row flex-wrap gap-y-3 justify-between items-center px-5 py-4 mt-80 w-full property-slider__meta-bar bg-primary max-md:order-1 max-md:mt-0 max-md:max-w-full max-md:items-start md:flex-nowrap md:items-center md:gap-0 md:px-8 md:py-4">
+                    <div class="flex flex-row flex-wrap flex-1 gap-4 items-center min-w-0 text-base font-semibold tracking-normal text-gray-50 max-md:w-1/2 max-md:items-start max-md:gap-4 md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
+                      <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($property_type); ?></span>
+
+                      <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bedrooms">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 20.6V11.8C1 11.2165 1.23178 10.657 1.64436 10.2444C2.05695 9.83179 2.61652 9.60001 3.2 9.60001H20.8C21.3835 9.60001 21.9431 9.83179 22.3556 10.2444C22.7682 10.657 23 11.2165 23 11.8V20.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                      <path d="M3.19995 9.6V5.2C3.19995 4.61652 3.43174 4.05695 3.84432 3.64436C4.2569 3.23178 4.81647 3 5.39995 3H18.6C19.1834 3 19.743 3.23178 20.1556 3.64436C20.5682 4.05695 20.8 4.61652 20.8 5.2V9.6" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                      <path d="M12 3V9.6" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M1 18.4H23" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                        <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bedrooms); ?></span>
+                      </div>
+
+                      <div class="flex gap-2 items-center max-md:justify-start" aria-label="Bathrooms">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M8.77772 5.33333L5.99995 2.55556C5.71501 2.2341 5.31696 2.03508 4.88883 2C3.98106 2 3.22217 2.75889 3.22217 3.66667V17.5556C3.22217 18.1449 3.45629 18.7102 3.87304 19.1269C4.28979 19.5437 4.85502 19.7778 5.44439 19.7778H18.7777C19.3671 19.7778 19.9323 19.5437 20.3491 19.1269C20.7658 18.7102 20.9999 18.1449 20.9999 17.5556V12" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                        <path d="M9.88885 4.22223L7.66663 6.44445" stroke="#F9FAFB" stroke-width="1.25" stroke-linecap="round"/>
+                        <path d="M1 12H23.2222" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6.55554 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17.6666 19.7778V22" stroke="#F6FAFF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap"><?php echo esc_html($bathrooms); ?></span>
+                      </div>
+
+                      <?php if ($area): ?>
+                        <span class="text-[#F9FAFB] font-primary text-base font-semibold leading-6 tracking-[0.08px] whitespace-nowrap max-md:text-left"><?php echo esc_html($area); ?></span>
+                      <?php endif; ?>
+                    </div>
+
+                    <?php if ($slide_count > 1): ?>
+                    <nav class="flex gap-2 items-center property-slider__desktop-nav shrink-0 max-md:hidden" aria-label="Property navigation">
+                      <button
+                        type="button"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition  focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119] hover:bg-blue mr-2"
+                        aria-label="Previous property"
+                        data-desktop-prev="<?php echo esc_attr($slider_id); ?>"
+                      >
+                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center bg-white text-[#0A1119] shadow-sm ring-1 ring-white/30 transition hover:bg-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A1119]"
+                        aria-label="Next property"
+                        data-desktop-next="<?php echo esc_attr($slider_id); ?>"
+                      >
+                        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
+                    </nav>
+                    <?php endif; ?>
+
+                    <div class="flex gap-4 md:ml-auto md:hidden max-md:w-1/2 max-md:justify-end">
+                      <button
+                        type="button"
+                        class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
+                        aria-label="Previous property"
+                        data-mobile-prev="<?php echo esc_attr($slider_id); ?>">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <rect width="40" height="40" fill="#F9FAFB"/>
+                          <path d="M21.8333 15.3333L17.1666 20L21.8333 24.6667" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 hover:bg-blue"
+                        aria-label="Next property"
+                        data-mobile-next="<?php echo esc_attr($slider_id); ?>">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <rect width="40" height="40" fill="#F9FAFB"/>
+                          <path d="M18.1667 24.6667L22.8334 20L18.1667 15.3333" stroke="#0A1119" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
       </div>
     <?php endif; ?>
   </div>
@@ -325,6 +471,96 @@ $slider_id  = $section_id;
 
 <script>
 (function () {
+  var isBeforeAfter = <?php echo $is_before_after ? 'true' : 'false'; ?>;
+
+  function initBeforeAfterCompare(root) {
+    if (!root) return;
+    var compares = root.querySelectorAll('[data-ba-compare]');
+    compares.forEach(function (compare) {
+      if (compare.dataset.baReady === '1') return;
+      compare.dataset.baReady = '1';
+
+      var media = compare.querySelector('.ba-compare__media');
+      var before = compare.querySelector('.ba-compare__before');
+      var handle = compare.querySelector('[data-ba-handle]');
+      var knob = compare.querySelector('[data-ba-knob]');
+      if (!media || !before || !handle || !knob) return;
+
+      var dragging = false;
+
+      var setPos = function (pct) {
+        pct = Math.max(0, Math.min(100, pct));
+        compare.style.setProperty('--ba-pos', pct + '%');
+        knob.setAttribute('aria-valuenow', String(Math.round(pct)));
+      };
+
+      var posFromClientX = function (clientX) {
+        var rect = media.getBoundingClientRect();
+        if (!rect.width) return 50;
+        return ((clientX - rect.left) / rect.width) * 100;
+      };
+
+      var onPointerDown = function (e) {
+        dragging = true;
+        compare.classList.add('is-dragging');
+        try { knob.setPointerCapture(e.pointerId); } catch (err) {}
+        setPos(posFromClientX(e.clientX));
+        e.preventDefault();
+      };
+      var onPointerMove = function (e) {
+        if (!dragging) return;
+        setPos(posFromClientX(e.clientX));
+      };
+      var onPointerUp = function (e) {
+        if (!dragging) return;
+        dragging = false;
+        compare.classList.remove('is-dragging');
+        try { knob.releasePointerCapture(e.pointerId); } catch (err) {}
+      };
+
+      knob.addEventListener('pointerdown', onPointerDown);
+      knob.addEventListener('pointermove', onPointerMove);
+      knob.addEventListener('pointerup', onPointerUp);
+      knob.addEventListener('pointercancel', onPointerUp);
+
+      // Allow dragging from the line/handle area too.
+      handle.addEventListener('pointerdown', function (e) {
+        if (e.target === knob || knob.contains(e.target)) return;
+        onPointerDown(e);
+      });
+      handle.addEventListener('pointermove', onPointerMove);
+      handle.addEventListener('pointerup', onPointerUp);
+
+      media.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('[data-ba-handle]')) return;
+        onPointerDown(e);
+        // Keep listening on media while dragging.
+      });
+      media.addEventListener('pointermove', onPointerMove);
+      media.addEventListener('pointerup', onPointerUp);
+
+      knob.addEventListener('keydown', function (e) {
+        var now = parseFloat(knob.getAttribute('aria-valuenow') || '50');
+        var step = e.shiftKey ? 10 : 2;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          setPos(now - step);
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          setPos(now + step);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          setPos(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          setPos(100);
+        }
+      });
+
+      setPos(50);
+    });
+  }
+
   function initPropertySliderSlick() {
     if (typeof jQuery === 'undefined' || !jQuery.fn.slick) return;
 
@@ -333,66 +569,72 @@ $slider_id  = $section_id;
       var slideCount = <?php echo (int) $slide_count; ?>;
       var $slider    = $scope.find('.property-slider');
 
+      initBeforeAfterCompare($scope.get(0));
+
       if (!$slider.length || $slider.hasClass('slick-initialized')) return;
       if (slideCount < 2) return;
 
-    var opts = {
-      dots: false,
-      arrows: false,
-      speed: 450,
-      cssEase: 'ease-out',
-      adaptiveHeight: true,
-      autoplay: true,
-      autoplaySpeed: 3000,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      centerMode: false,
-      variableWidth: false,
-      accessibility: true,
-      focusOnSelect: false,
-      pauseOnHover: true,
-      pauseOnFocus: false,
-      swipe: true,
-      touchMove: true,
-      infinite: true,
-      fade: true,
-      waitForAnimate: false
-    };
+      var opts = {
+        dots: false,
+        arrows: false,
+        speed: 450,
+        cssEase: 'ease-out',
+        adaptiveHeight: true,
+        autoplay: !isBeforeAfter,
+        autoplaySpeed: 3000,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        centerMode: false,
+        variableWidth: false,
+        accessibility: true,
+        focusOnSelect: false,
+        pauseOnHover: true,
+        pauseOnFocus: false,
+        // Disable swipe in before/after so the compare drag is not fighting Slick.
+        swipe: !isBeforeAfter,
+        touchMove: !isBeforeAfter,
+        infinite: true,
+        fade: true,
+        waitForAnimate: false
+      };
 
-    $slider.slick(opts);
-
-    $slider.slick('setPosition');
-    $slider.slick('slickPlay');
-    // Kick off first movement quickly, then continue with autoplaySpeed cadence.
-    setTimeout(function () {
-      if ($slider.hasClass('slick-initialized')) {
-        $slider.slick('slickNext');
+      $slider.slick(opts);
+      $slider.slick('setPosition');
+      if (!isBeforeAfter) {
+        $slider.slick('slickPlay');
+        setTimeout(function () {
+          if ($slider.hasClass('slick-initialized')) {
+            $slider.slick('slickNext');
+          }
+        }, 700);
       }
-    }, 700);
 
-    $scope.on('click', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
-      e.preventDefault();
-      $slider.slick('slickPrev');
-    });
-    $scope.on('click', '[data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
-      e.preventDefault();
-      $slider.slick('slickNext');
-    });
-
-    $scope.on('keydown', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
+      $scope.on('click', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"]', function (e) {
         e.preventDefault();
-        $(this).trigger('click');
-      }
-    });
+        $slider.slick('slickPrev');
+      });
+      $scope.on('click', '[data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+        e.preventDefault();
+        $slider.slick('slickNext');
+      });
 
-    $slider.on('afterChange', function (event, slick, currentSlide) {
-      var total = slick.slideCount, num = currentSlide + 1;
-      var $sr = $('<div>', { 'aria-live':'polite', 'aria-atomic':'true', 'class':'sr-only' })
-        .text('Showing property ' + num + ' of ' + total);
-      $('body').append($sr);
-      setTimeout(function(){ $sr.remove(); }, 1000);
-    });
+      $scope.on('keydown', '[data-desktop-prev="<?php echo esc_js($slider_id); ?>"], [data-desktop-next="<?php echo esc_js($slider_id); ?>"], [data-mobile-prev="<?php echo esc_js($slider_id); ?>"], [data-mobile-next="<?php echo esc_js($slider_id); ?>"]', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          $(this).trigger('click');
+        }
+      });
+
+      $slider.on('afterChange', function (event, slick, currentSlide) {
+        var total = slick.slideCount, num = currentSlide + 1;
+        var label = isBeforeAfter ? 'Showing project ' : 'Showing property ';
+        var $sr = $('<div>', { 'aria-live':'polite', 'aria-atomic':'true', 'class':'sr-only' })
+          .text(label + num + ' of ' + total);
+        $('body').append($sr);
+        setTimeout(function(){ $sr.remove(); }, 1000);
+        // Re-init compare widgets cloned by slick if needed.
+        initBeforeAfterCompare($scope.get(0));
+      });
     });
   }
 
@@ -424,7 +666,6 @@ $slider_id  = $section_id;
 #<?php echo esc_attr($section_id); ?> .property-slider .slick-track {
   gap: 0 !important;
 }
-/* Desktop nav: avoid display:none !important from .hidden / theme nav rules beating Tailwind md:flex */
 #<?php echo esc_attr($section_id); ?> .property-slider__desktop-nav {
   display: none;
 }
@@ -445,5 +686,93 @@ $slider_id  = $section_id;
     background-color: #40BFF5 !important;
     color: #0A1119 !important;
   }
+}
+
+/* Before / After compare */
+#<?php echo esc_attr($section_id); ?> .ba-compare__media {
+  touch-action: none;
+  user-select: none;
+  cursor: ew-resize;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__before {
+  clip-path: inset(0 calc(100% - var(--ba-pos, 50%)) 0 0);
+  z-index: 2;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__after {
+  z-index: 1;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__before img,
+#<?php echo esc_attr($section_id); ?> .ba-compare__after img {
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--ba-pos, 50%);
+  z-index: 5;
+  width: 44px;
+  margin-left: -22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  margin-left: -1.5px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(10, 17, 25, 0.15);
+  pointer-events: none;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__knob {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: 3px solid #ffffff;
+  background: #0098d8;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(10, 17, 25, 0.28);
+  cursor: ew-resize;
+  touch-action: none;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__knob:focus {
+  outline: 2px solid #40BFF5;
+  outline-offset: 2px;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare.is-dragging .ba-compare__knob {
+  background: #0a1119;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__label {
+  position: absolute;
+  top: 1rem;
+  z-index: 3;
+  padding: 0.35rem 0.7rem;
+  background: rgba(10, 17, 25, 0.72);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__label--before {
+  left: 1rem;
+}
+#<?php echo esc_attr($section_id); ?> .ba-compare__label--after {
+  right: 1rem;
 }
 </style>

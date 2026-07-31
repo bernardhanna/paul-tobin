@@ -84,6 +84,53 @@ class Theme_Forms {
     return '';
   }
 
+  /**
+   * Match submitted query type against flexi-block routing rows; return override Send To or ''.
+   */
+  private function resolve_query_type_email_to($routing_raw, string $query_type): string {
+    $query_type = trim($query_type);
+    if ($query_type === '' || $routing_raw === '' || $routing_raw === null) {
+      return '';
+    }
+
+    $rows = json_decode(is_string($routing_raw) ? $routing_raw : '', true);
+    if (!is_array($rows) || !$rows) {
+      return '';
+    }
+
+    $normalize = static function ($str): string {
+      $str = strtolower(trim((string) $str));
+      $str = preg_replace('/[_-]+/', ' ', $str);
+      $str = preg_replace('/\s+/', ' ', $str);
+      return is_string($str) ? $str : '';
+    };
+
+    $want = $normalize($query_type);
+    if ($want === '') {
+      return '';
+    }
+
+    foreach ($rows as $row) {
+      if (!is_array($row)) {
+        continue;
+      }
+      $match = $normalize($row['match'] ?? '');
+      $email_to = trim((string) ($row['email_to'] ?? ''));
+      if ($match === '' || $email_to === '') {
+        continue;
+      }
+      if (
+        $match === $want
+        || str_contains($want, $match)
+        || str_contains($match, $want)
+      ) {
+        return $email_to;
+      }
+    }
+
+    return '';
+  }
+
   private function is_ajax(): bool {
     return (isset($_POST['is_ajax']) && $_POST['is_ajax'] === '1')
         || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
@@ -228,6 +275,19 @@ class Theme_Forms {
     $cfg_subject    = sanitize_text_field($_POST['_cfg_subject'] ?? '');
     $cfg_from_name  = wp_strip_all_tags($_POST['_cfg_from_name']  ?? '');
     $cfg_from_email = sanitize_email($_POST['_cfg_from_email'] ?? '');
+
+    // Per–query-type Send To override from flexi block settings.
+    $query_type_for_routing = $this->first_non_empty_field($fields, [
+      'query_type', 'query-type', 'query type',
+      'query_type_label', 'query-type-label', 'query type label',
+    ]);
+    $routed_to = $this->resolve_query_type_email_to(
+      wp_unslash($_POST['_cfg_query_type_routing'] ?? ''),
+      $query_type_for_routing
+    );
+    if ($routed_to !== '') {
+      $cfg_to = $routed_to;
+    }
 
     $opt_from_name  = function_exists('get_field') ? (trim((string) get_field('email_from_name','option') ?: get_bloginfo('name'))) : get_bloginfo('name');
     $opt_from_email = function_exists('get_field') ? sanitize_email(get_field('email_from_address','option')) : '';

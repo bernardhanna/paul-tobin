@@ -150,9 +150,9 @@ $booking_form
     ->addText('from_name', ['label' => 'From Name (override)'])
     ->addEmail('from_email', ['label' => 'From Email (override)'])
     ->addText('email_to', [
-        'label' => 'Send To',
+        'label' => 'Send To (default)',
         'default_value' => get_option('admin_email'),
-        'instructions' => 'Separate multiple with commas or semicolons.',
+        'instructions' => 'Default recipients for all query types. Separate multiple with commas or semicolons. Overridden per query type below when a match is set.',
     ])
     ->addTrueFalse('enable_cc_bcc', [
         'label' => 'Enable CC/BCC?',
@@ -170,6 +170,38 @@ $booking_form
         'conditional_logic' => [[['field' => 'enable_cc_bcc', 'operator' => '==', 'value' => 1]]],
     ])
     ->addText('email_subject', ['label' => 'Subject', 'default_value' => 'Property evaluation form enquiry'])
+    ->addRepeater('query_type_email_routing', [
+        'label' => 'Email by Query Type',
+        'instructions' => 'Optional overrides. Match the Query Type option value or label from the form HTML (e.g. private-client or Private Client). Leave Send To empty to keep the default above. Does not affect the from-property listing field behaviour.',
+        'button_label' => 'Add Query Type Routing',
+        'layout' => 'block',
+        'min' => 0,
+    ])
+        ->addText('query_type_match', [
+            'label' => 'Query Type (value or label)',
+            'instructions' => 'e.g. private-client, Property Valuation, selling',
+            'wrapper' => ['width' => 40],
+        ])
+        ->addText('routing_email_to', [
+            'label' => 'Send To',
+            'instructions' => 'e.g. info@paultobin.ie, paul@paultobin.ie',
+            'wrapper' => ['width' => 60],
+        ])
+        ->addTrueFalse('hide_property_fields', [
+            'label' => 'Hide property detail fields?',
+            'instructions' => 'Hides property type, condition, bedrooms, bathrooms (same as “Other”). Property listing CTAs still hide these via URL.',
+            'ui' => 1,
+            'default_value' => 0,
+            'wrapper' => ['width' => 50],
+        ])
+        ->addTrueFalse('last_name_optional', [
+            'label' => 'Last name optional?',
+            'instructions' => 'Removes required from last name for this query type (e.g. Private Client).',
+            'ui' => 1,
+            'default_value' => 0,
+            'wrapper' => ['width' => 50],
+        ])
+    ->endRepeater()
     ->addTrueFalse('save_entries_to_db', ['label' => 'Save to DB?', 'ui' => 1, 'default_value' => 1])
 
   ->addTab('Autoresponder', ['label' => 'Autoresponder'])

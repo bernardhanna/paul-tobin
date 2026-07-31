@@ -14,7 +14,7 @@ $full_width_media
             'label' => 'Media Type',
             'choices' => [
                 'image' => 'Image',
-                'video' => 'Video',
+                'video' => 'Video / Virtual Tour',
             ],
             'default_value' => 'image',
         ])
@@ -30,11 +30,12 @@ $full_width_media
             ],
         ])
         ->addSelect('video_provider', [
-            'label' => 'Video Provider',
+            'label' => 'Video / Tour Provider',
             'choices' => [
-                'local'   => 'Local (self-hosted)',
-                'youtube' => 'YouTube (URL)',
-                'vimeo'   => 'Vimeo (URL)',
+                'local'      => 'Local (self-hosted)',
+                'youtube'    => 'YouTube (URL)',
+                'vimeo'      => 'Vimeo (URL)',
+                'matterport' => 'Matterport / 3D virtual tour (URL)',
             ],
             'default_value' => 'local',
             'conditional_logic' => [
@@ -57,8 +58,8 @@ $full_width_media
             ],
         ])
         ->addUrl('video_url', [
-            'label' => 'Video URL (YouTube/Vimeo)',
-            'instructions' => 'Paste the full video URL.',
+            'label' => 'Video / Tour URL',
+            'instructions' => 'YouTube/Vimeo page URL, or Matterport share URL (e.g. https://my.matterport.com/show/?m=QFLEZnpPWRA). Paste the URL only — not the full iframe code. Uses the same height settings as other media on this block (default 400px / 500px md).',
             'conditional_logic' => [
                 [
                     ['field' => 'media_type', 'operator' => '==', 'value' => 'video'],
@@ -68,7 +69,7 @@ $full_width_media
         ])
         ->addImage('poster_image', [
             'label' => 'Poster (optional)',
-            'instructions' => 'Shown before playback (and for iframe providers).',
+            'instructions' => 'Shown before playback for YouTube/Vimeo/local. Optional cover image for Matterport tours.',
             'return_format' => 'array',
             'preview_size' => 'medium',
             'library' => 'all',
@@ -80,7 +81,7 @@ $full_width_media
         ])
         ->addNumber('height_xs', [
             'label' => 'Height (base)',
-            'instructions' => 'Height at base breakpoint in px.',
+            'instructions' => 'Height at base breakpoint in px. Matches property media design (default 400).',
             'default_value' => 400,
             'min' => 100,
             'max' => 2000,
@@ -89,7 +90,7 @@ $full_width_media
         ])
         ->addNumber('height_md', [
             'label' => 'Height (md)',
-            'instructions' => 'Height at md breakpoint in px.',
+            'instructions' => 'Height at md breakpoint in px. Matches property media design (default 500).',
             'default_value' => 500,
             'min' => 100,
             'max' => 2000,
@@ -103,6 +104,7 @@ $full_width_media
             'conditional_logic' => [
                 [
                     ['field' => 'media_type', 'operator' => '==', 'value' => 'video'],
+                    ['field' => 'video_provider', 'operator' => '!=', 'value' => 'matterport'],
                 ],
             ],
         ])
@@ -113,6 +115,7 @@ $full_width_media
             'conditional_logic' => [
                 [
                     ['field' => 'media_type', 'operator' => '==', 'value' => 'video'],
+                    ['field' => 'video_provider', 'operator' => '!=', 'value' => 'matterport'],
                 ],
             ],
         ])
@@ -123,6 +126,7 @@ $full_width_media
             'conditional_logic' => [
                 [
                     ['field' => 'media_type', 'operator' => '==', 'value' => 'video'],
+                    ['field' => 'video_provider', 'operator' => '!=', 'value' => 'matterport'],
                 ],
             ],
         ])

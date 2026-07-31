@@ -18,6 +18,8 @@ $year           = trim((string) get_sub_field('year'));
 $uppercase_year = (bool) get_sub_field('uppercase_year');
 $client         = trim((string) get_sub_field('client'));
 $size_html      = get_sub_field('size'); // WYSIWYG
+$asking_price   = trim((string) get_sub_field('asking_price'));
+$sold_price     = trim((string) get_sub_field('sold_price'));
 
 $right_text      = get_sub_field('right_text'); // WYSIWYG
 $read_more_label = get_sub_field('read_more_label');
@@ -140,6 +142,24 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit ullamco laboris nisi ut 
                                             ?>
                                         </div>
                                     <?php endwhile; ?>
+                                <?php endif; ?>
+
+                                <?php if ($asking_price !== ''): ?>
+                                    <div class="text-left text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] text-[#0a1119] font-secondary">
+                                        <?php echo esc_html__('Asking Price', 'your-textdomain'); ?>
+                                    </div>
+                                    <div class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#0a1119] font-primary">
+                                        <?php echo esc_html($asking_price); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($sold_price !== ''): ?>
+                                    <div class="text-left text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] text-[#0a1119] font-secondary">
+                                        <?php echo esc_html__('Sold Price', 'your-textdomain'); ?>
+                                    </div>
+                                    <div class="text-left text-[1rem] font-[400] leading-[1.625rem] text-[#0a1119] font-primary">
+                                        <?php echo esc_html($sold_price); ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>

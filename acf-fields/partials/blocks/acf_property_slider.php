@@ -28,10 +28,31 @@ $property_slider
         ],
         'default_value' => 'h2',
     ])
+    ->addSelect('slider_mode', [
+        'label' => 'Slider Mode',
+        'instructions' => 'Properties = listing cards (optional Daft/auto). Before & After = manual photo pairs with a draggable compare bar (not linked to Daft).',
+        'choices' => [
+            'properties' => 'Properties (listings)',
+            'before_after' => 'Before & After (manual photos)',
+        ],
+        'default_value' => 'properties',
+        'return_format' => 'value',
+    ])
+
+    // --- Properties mode ---
     ->addTrueFalse('auto_select_properties', [
         'label' => 'Auto Select Properties',
-        'instructions' => 'Enable to automatically select properties based on criteria below, or disable to manually select specific properties.',
+        'instructions' => 'Enable to automatically select properties based on criteria below, or disable to manually select specific properties. Not used in Before & After mode.',
         'default_value' => 1,
+        'conditional_logic' => [
+            [
+                [
+                    'field' => 'slider_mode',
+                    'operator' => '==',
+                    'value' => 'properties',
+                ],
+            ],
+        ],
     ])
     ->addNumber('number_of_properties', [
         'label' => 'Number of Properties',
@@ -41,6 +62,11 @@ $property_slider
         'max' => 20,
         'conditional_logic' => [
             [
+                [
+                    'field' => 'slider_mode',
+                    'operator' => '==',
+                    'value' => 'properties',
+                ],
                 [
                     'field' => 'auto_select_properties',
                     'operator' => '==',
@@ -61,6 +87,11 @@ $property_slider
         'conditional_logic' => [
             [
                 [
+                    'field' => 'slider_mode',
+                    'operator' => '==',
+                    'value' => 'properties',
+                ],
+                [
                     'field' => 'auto_select_properties',
                     'operator' => '==',
                     'value' => '1',
@@ -78,6 +109,11 @@ $property_slider
         'conditional_logic' => [
             [
                 [
+                    'field' => 'slider_mode',
+                    'operator' => '==',
+                    'value' => 'properties',
+                ],
+                [
                     'field' => 'auto_select_properties',
                     'operator' => '==',
                     'value' => '0',
@@ -85,6 +121,58 @@ $property_slider
             ],
         ],
     ])
+
+    // --- Before & After mode ---
+    ->addRepeater('before_after_pairs', [
+        'label' => 'Before & After Pairs',
+        'instructions' => 'Upload manual before/after photos. Not linked to Daft. Each pair becomes a slide with a draggable compare bar.',
+        'button_label' => 'Add Before & After Pair',
+        'layout' => 'block',
+        'min' => 0,
+        'conditional_logic' => [
+            [
+                [
+                    'field' => 'slider_mode',
+                    'operator' => '==',
+                    'value' => 'before_after',
+                ],
+            ],
+        ],
+    ])
+        ->addImage('before_image', [
+            'label' => 'Before Image',
+            'return_format' => 'id',
+            'preview_size' => 'medium',
+            'required' => 1,
+            'wrapper' => ['width' => 50],
+        ])
+        ->addImage('after_image', [
+            'label' => 'After Image',
+            'return_format' => 'id',
+            'preview_size' => 'medium',
+            'required' => 1,
+            'wrapper' => ['width' => 50],
+        ])
+        ->addText('pair_title', [
+            'label' => 'Title (optional)',
+            'wrapper' => ['width' => 50],
+        ])
+        ->addTextarea('pair_caption', [
+            'label' => 'Caption (optional)',
+            'rows' => 3,
+            'wrapper' => ['width' => 50],
+        ])
+        ->addText('before_label', [
+            'label' => 'Before label',
+            'default_value' => 'Before',
+            'wrapper' => ['width' => 50],
+        ])
+        ->addText('after_label', [
+            'label' => 'After label',
+            'default_value' => 'After',
+            'wrapper' => ['width' => 50],
+        ])
+    ->endRepeater()
 
     ->addTab('Design', ['label' => 'Design'])
     ->addColorPicker('background_color', [

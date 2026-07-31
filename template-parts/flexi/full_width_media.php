@@ -101,15 +101,38 @@ if (!function_exists('matrix_youtube_embed')) {
         return 'https://www.youtube.com/embed/' . rawurlencode($id) . '?enablejsapi=1&playsinline=1&rel=0';
     }
 }
-if (!function_exists('matrix_vimeo_embed')) {
-    function matrix_vimeo_embed($url) {
-        if (empty($url)) return '';
-        $id = '';
-        if (preg_match('~vimeo\.com/(?:video/)?(\d+)~', $url, $m)) {
-            $id = $m[1];
+if (!function_exists('matrix_matterport_embed')) {
+    /**
+     * Normalize a Matterport share URL / model ID / pasted iframe src into an embed URL.
+     */
+    function matrix_matterport_embed($url) {
+        if (empty($url)) {
+            return '';
         }
-        if (!$id) return '';
-        return 'https://player.vimeo.com/video/' . rawurlencode($id) . '?title=0&byline=0&portrait=0';
+        $url = trim((string) $url);
+
+        // If someone pastes a full iframe snippet, pull the src.
+        if (stripos($url, '<iframe') !== false && preg_match('/\bsrc=["\']([^"\']+)["\']/i', $url, $m)) {
+            $url = html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
+        }
+
+        // Already a Matterport show URL.
+        if (preg_match('~https?://(?:my\.)?matterport\.com/show/\?[^\s"\']*m=([A-Za-z0-9_-]+)~i', $url, $m)) {
+            return 'https://my.matterport.com/show/?m=' . rawurlencode($m[1]);
+        }
+
+        // Bare model ID.
+        if (preg_match('~^[A-Za-z0-9_-]{6,}$~', $url)) {
+            return 'https://my.matterport.com/show/?m=' . rawurlencode($url);
+        }
+
+        // Any other matterport.com URL — allow if host matches.
+        $host = wp_parse_url($url, PHP_URL_HOST);
+        if (is_string($host) && preg_match('~(^|\.)matterport\.com$~i', $host)) {
+            return esc_url_raw($url);
+        }
+
+        return '';
     }
 }
 
@@ -148,11 +171,19 @@ if ($video_provider === 'local' && is_array($video_file)) {
 
 // Iframe embed URL (+ mute param if needed)
 $iframe_src = '';
+$is_matterport = ($media_type === 'video' && $video_provider === 'matterport');
 if ($media_type === 'video' && $video_provider && $video_provider !== 'local' && !empty($video_url)) {
-    if ($video_provider === 'youtube')  $iframe_src = matrix_youtube_embed($video_url);
-    if ($video_provider === 'vimeo')    $iframe_src = matrix_vimeo_embed($video_url);
+    if ($video_provider === 'youtube') {
+        $iframe_src = matrix_youtube_embed($video_url);
+    }
+    if ($video_provider === 'vimeo') {
+        $iframe_src = matrix_vimeo_embed($video_url);
+    }
+    if ($video_provider === 'matterport') {
+        $iframe_src = matrix_matterport_embed($video_url);
+    }
 
-    if ($iframe_src && $muted) {
+    if ($iframe_src && $muted && !$is_matterport) {
         $iframe_src .= (strpos($iframe_src, '?') !== false ? '&' : '?') . 'mute=1';
     }
 }
@@ -164,6 +195,9 @@ $play_icon_url = content_url('uploads/2026/01/play-circle.png');
 $has_playable_video = ($media_type === 'video') && (
     ($video_provider === 'local' && $file_url) || ($video_provider !== 'local' && $iframe_src)
 );
+
+// Matterport is interactive — no play overlay (poster-only optional cover before click-to-reveal).
+$show_play_overlay = $has_playable_video && !$is_matterport;
 
 // Do not render an empty block when no media source is configured.
 $has_renderable_media = (($media_type === 'image') && !empty($image_url)) || $has_playable_video;
@@ -185,7 +219,7 @@ if (!$has_renderable_media) {
                     fetchpriority="low"
                 />
             <?php elseif ($media_type === 'video') : ?>
-                <div class="relative inset-0">
+                <div class="relative inset-0 w-full h-full">
                     <?php if ($video_provider === 'local' && $file_url) : ?>
                         <video
                             id="<?php echo esc_attr($video_id); ?>"
@@ -201,20 +235,21 @@ if (!$has_renderable_media) {
                     <?php elseif (!empty($iframe_src)) : ?>
                         <iframe
                             id="<?php echo esc_attr($iframe_id); ?>"
-                            class="w-full h-full"
+                            class="w-full h-full border-0"
                             src="<?php echo esc_url($iframe_src); ?>"
-                            title="<?php echo esc_attr__('Embedded video', 'your-textdomain'); ?>"
-                            allow="autoplay; fullscreen; picture-in-picture"
+                            title="<?php echo esc_attr($is_matterport ? __('Virtual tour', 'your-textdomain') : __('Embedded video', 'your-textdomain')); ?>"
+                            allow="<?php echo esc_attr($is_matterport ? 'autoplay; fullscreen; web-share; xr-spatial-tracking;' : 'autoplay; fullscreen; picture-in-picture'); ?>"
+                            <?php echo $is_matterport ? 'allowfullscreen' : ''; ?>
                             referrerpolicy="no-referrer-when-downgrade"
                             loading="lazy"
                         ></iframe>
                     <?php else : ?>
                         <div class="flex justify-center items-center w-full h-full">
-                            <p class="text-sm"><?php echo esc_html__('Please add a valid video.', 'your-textdomain'); ?></p>
+                            <p class="text-sm"><?php echo esc_html__('Please add a valid video or virtual tour URL.', 'your-textdomain'); ?></p>
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($has_playable_video) : ?>
+                    <?php if ($show_play_overlay) : ?>
                         <!-- Overlay (poster + fixed play button) -->
                         <button
                             id="<?php echo esc_attr($overlay_id); ?>"
@@ -239,9 +274,42 @@ if (!$has_renderable_media) {
                                 <img src="<?php echo esc_url($play_icon_url); ?>" alt="<?php echo esc_attr__('Play', 'your-textdomain'); ?>" class="w-16 h-16 md:w-20 md:h-20" />
                             </span>
                         </button>
+                    <?php elseif ($is_matterport && $poster_url) : ?>
+                        <button
+                            id="<?php echo esc_attr($overlay_id); ?>"
+                            type="button"
+                            class="flex absolute inset-0 justify-center items-center focus:outline-none"
+                            aria-label="<?php echo esc_attr__('Open virtual tour', 'your-textdomain'); ?>"
+                            data-tour-overlay
+                        >
+                            <img
+                                src="<?php echo esc_url($poster_url); ?>"
+                                alt="<?php echo esc_attr($poster_alt); ?>"
+                                title="<?php echo esc_attr($poster_title); ?>"
+                                class="object-cover absolute inset-0 w-full h-full"
+                                decoding="async"
+                                loading="lazy"
+                                fetchpriority="low"
+                            />
+                            <span class="relative z-10 px-4 py-2 text-sm font-semibold text-white bg-[#0098d8]">
+                                <?php echo esc_html__('View virtual tour', 'your-textdomain'); ?>
+                            </span>
+                        </button>
+                        <script>
+                        (function(){
+                          var overlay = document.getElementById(<?php echo json_encode($overlay_id); ?>);
+                          if (!overlay || overlay.dataset.tourInit === '1') return;
+                          overlay.dataset.tourInit = '1';
+                          overlay.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            overlay.remove();
+                          });
+                        })();
+                        </script>
                     <?php endif; ?>
                 </div>
 
+<?php if ($show_play_overlay) : ?>
 <script>
 (function(){
   var sectionId  = <?php echo json_encode($section_id); ?>;
@@ -345,6 +413,7 @@ if (!$has_renderable_media) {
   }
 })();
 </script>
+<?php endif; ?>
             <?php endif; ?>
         </div>
     </div>

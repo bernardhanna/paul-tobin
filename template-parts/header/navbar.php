@@ -40,7 +40,8 @@ if ($primary_navigation->isNotEmpty()) {
       this.activeDropdown = (this.activeDropdown === index ? null : index);
     },
     checkWindowSize() {
-      if (window.innerWidth > 1084) {
+      // Keep in sync with Tailwind `xl` (1280): desktop nav only above this width.
+      if (window.innerWidth >= 1280) {
         this.isOpen = false;
         this.activeDropdown = null;
       }
@@ -50,19 +51,19 @@ if ($primary_navigation->isNotEmpty()) {
   class="py-4 bg-white border-b-2 border-b-[#B6C0CB] border-solid"
   x-effect="isOpen ? document.body.style.overflow = 'hidden' : document.body.style.overflow = ''"
 >
-  <nav class="relative flex justify-between items-center w-full mx-auto max-w-[1168px] px-5 xl:px-0 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-x-3 xl:gap-x-4 lg:justify-normal">
+  <nav class="relative flex justify-between items-center w-full mx-auto max-w-[1280px] px-5 xxl:px-0 xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-center xl:gap-x-2 xxl:gap-x-4 xl:justify-normal">
 
     <!-- LEFT: Primary (first half) — grid col 1, hugs logo -->
     <?php if (!empty($left_menu_items)) : ?>
-      <div class="hidden min-w-0 lg:flex lg:justify-end lg:pr-2">
-      <ul class="flex gap-3 justify-end items-center min-w-0 leading-loose text-black xl:gap-6"
+      <div class="hidden min-w-0 xl:flex xl:justify-end xl:pr-1 xxl:pr-2">
+      <ul class="flex gap-1.5 justify-end items-center min-w-0 leading-loose text-black xxl:gap-4"
           aria-label="Primary navigation (left)">
         <?php foreach ($left_menu_items as $index => $item) : ?>
           <li class="relative group shrink-0 <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
             <a href="<?php echo esc_url($item->url); ?>"
-               class="flex font-[500] items-center gap-1 px-2.5 py-2 rounded-[8px] transition-colors duration-200 xl:px-4
+               class="flex font-[500] items-center gap-0.5 px-1.5 py-2 rounded-[8px] transition-colors duration-200 xxl:gap-1 xxl:px-3
                       <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-sm leading-normal xl:text-base whitespace-nowrap">
+                      group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-[0.8125rem] leading-normal xxl:text-base whitespace-nowrap">
               <?php echo esc_html($item->label); ?>
               <?php if (!empty($item->children)) : ?>
                 <span class="ml-[2px]">
@@ -103,17 +104,18 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
       </ul>
       </div>
     <?php else : ?>
-      <div class="hidden min-w-0 lg:block" aria-hidden="true"></div>
+      <div class="hidden min-w-0 xl:block" aria-hidden="true"></div>
     <?php endif; ?>
 
-    <!-- CENTER: Logo (true center on lg+ via grid) -->
-    <a style="z-index: 99999999;" href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center shrink-0 lg:justify-self-center">
+    <!-- CENTER: Logo (true center on xl+ via grid) -->
+    <a style="z-index: 99999999;" href="<?php echo esc_url(home_url('/')); ?>" class="flex justify-center shrink-0 xl:justify-self-center">
       <?php if ($logo_url) : ?>
         <img
           src="<?php echo esc_url($logo_url); ?>"
           alt="<?php echo esc_attr($logo_alt); ?>"
           width="<?php echo esc_attr((string) $logo_w); ?>"
           height="<?php echo esc_attr((string) $logo_h); ?>"
+          class="h-auto w-auto max-h-12 max-w-[9.5rem] xl:max-h-14 xl:max-w-[11rem] xxl:max-h-16 xxl:max-w-[13rem]"
           decoding="async"
         />
       <?php else : ?>
@@ -123,9 +125,9 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
 
     <!-- RIGHT: Primary (second half) + optional phone/CTA — grid col 3, hugs logo -->
 <?php if (!empty($right_menu_items) || $phone_number || $contact_button) : ?>
-  <div class="hidden min-w-0 lg:flex lg:flex-row lg:justify-start lg:items-center lg:gap-3 lg:pl-2 xl:gap-6">
+  <div class="hidden min-w-0 xl:flex xl:flex-row xl:justify-start xl:items-center xl:gap-1.5 xl:pl-1 xxl:gap-4 xxl:pl-2">
   <?php if (!empty($right_menu_items)) : ?>
-  <ul class="flex gap-3 justify-start items-center min-w-0 leading-loose text-black xl:gap-6"
+  <ul class="flex gap-1.5 justify-start items-center min-w-0 leading-loose text-black xxl:gap-4"
       aria-label="Primary navigation (right)">
     <?php foreach ($right_menu_items as $index => $item) : ?>
       <?php
@@ -134,9 +136,9 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
       ?>
       <li class="relative group shrink-0 <?php echo esc_attr($item->classes); ?> <?php echo $item->active ? 'current-item' : ''; ?>">
         <a href="<?php echo esc_url($item->url); ?>"
-           class="flex items-center gap-1 px-2.5 py-2 rounded-[8px] transition-colors duration-200 xl:px-4
+           class="flex items-center gap-0.5 px-1.5 py-2 rounded-[8px] transition-colors duration-200 xxl:gap-1 xxl:px-3
                   <?php echo $item->active ? 'bg-[#40BFF5] text-black' : 'text-[#1d2838]'; ?>
-                  group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-sm font-[500] leading-normal xl:text-base whitespace-nowrap">
+                  group-hover:bg-[#40BFF5] group-hover:text-black focus:bg-[#40BFF5] focus:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 capitalize text-[0.8125rem] font-[500] leading-normal xxl:text-base whitespace-nowrap">
           <?php echo esc_html($item->label); ?>
           <?php if (!empty($item->children)) : ?>
             <span class="ml-[2px]">
@@ -178,17 +180,17 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
   <?php endif; ?>
 
     <?php if ($phone_number || $contact_button) : ?>
-      <div class="flex gap-3 items-center border-l border-[#B6C0CB]/60 pl-3 shrink-0 xl:gap-4 xl:pl-4">
+      <div class="flex gap-2 items-center border-l border-[#B6C0CB]/60 pl-2 shrink-0 xxl:gap-4 xxl:pl-4">
         <?php if ($phone_number) : ?>
           <a href="tel:<?php echo esc_attr(preg_replace('/[^+\d]/', '', $phone_number)); ?>"
-             class="text-[#1d2838] hover:text-[#025a70] text-sm font-[500] flex items-center xl:text-base whitespace-nowrap">
+             class="text-[#1d2838] hover:text-[#025a70] text-[0.8125rem] font-[500] flex items-center xxl:text-base whitespace-nowrap">
             <?php echo esc_html($phone_number); ?>
           </a>
         <?php endif; ?>
         <?php if (!empty($contact_button['url'])) : ?>
           <a href="<?php echo esc_url($contact_button['url']); ?>"
              target="<?php echo esc_attr($contact_button['target'] ?? '_self'); ?>"
-             class="px-3 py-2 text-sm font-semibold text-black whitespace-nowrap rounded btn bg-secondary hover:bg-orange-500 xl:px-4 xl:text-base">
+             class="px-2.5 py-2 text-[0.8125rem] font-semibold text-black whitespace-nowrap rounded btn bg-secondary hover:bg-orange-500 xxl:px-4 xxl:text-base">
             <?php echo esc_html($contact_button['title'] ?? 'Contact'); ?>
           </a>
         <?php endif; ?>
@@ -196,7 +198,7 @@ focus-within:opacity-100 focus-within:visible focus-within:translate-y-0"
     <?php endif; ?>
   </div>
 <?php else : ?>
-  <div class="hidden min-w-0 lg:block" aria-hidden="true"></div>
+  <div class="hidden min-w-0 xl:block" aria-hidden="true"></div>
 <?php endif; ?>
 
     <!-- Mobile menu (unchanged structure) -->

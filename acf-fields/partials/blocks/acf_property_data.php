@@ -69,6 +69,16 @@ $property_data
                 'default_value' => 0,
             ])
         ->endRepeater()
+        ->addText('asking_price', [
+            'label' => 'Asking Price',
+            'instructions' => 'e.g., €450,000. Only shown when filled in. Use on sold properties to validate the success story.',
+            'default_value' => '',
+        ])
+        ->addText('sold_price', [
+            'label' => 'Sold Price',
+            'instructions' => 'e.g., €475,000. Only shown when filled in. Use on sold properties to validate the success story.',
+            'default_value' => '',
+        ])
         ->addWysiwyg('right_text', [
             'label' => 'Right Column: Text',
             'instructions' => 'Main paragraph content.',

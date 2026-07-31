@@ -53,7 +53,7 @@ $menu_array = $primary_navigation->toArray();
   <!-- Mobile Hamburger -->
   <button
     :class="{ 'is-active z-50 bg-transparent hover:bg-transparent flex items-center justify-center': isOpen }"
-    class="hamburger <?php echo esc_attr($hamburger_style); ?> lg:hidden"
+    class="hamburger <?php echo esc_attr($hamburger_style); ?> xl:hidden"
     type="button"
     aria-label="<?php echo esc_attr__('Open menu', 'matrix-starter'); ?>"
     aria-controls="site-mobile-nav"
