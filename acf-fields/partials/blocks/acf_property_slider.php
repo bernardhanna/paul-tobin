@@ -135,12 +135,14 @@ $property_slider
             'wrapper' => ['width' => 50],
         ])
         ->addText('before_label', [
-            'label' => 'Before label',
+            'label' => 'Left label',
+            'instructions' => 'Label on the left side of the compare (often “Before”).',
             'default_value' => 'Before',
             'wrapper' => ['width' => 50],
         ])
         ->addText('after_label', [
-            'label' => 'After label',
+            'label' => 'Right label',
+            'instructions' => 'Label on the right side of the compare (often “After”).',
             'default_value' => 'After',
             'wrapper' => ['width' => 50],
         ])
