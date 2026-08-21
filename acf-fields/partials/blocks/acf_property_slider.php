@@ -153,12 +153,21 @@ $property_slider
             'required' => 1,
             'wrapper' => ['width' => 50],
         ])
+        ->addTrueFalse('show_text_card', [
+            'label' => 'Show text card',
+            'instructions' => 'Grey title/caption panel over the compare. Turn off for image-only slides.',
+            'ui' => 1,
+            'default_value' => 1,
+            'wrapper' => ['width' => 100],
+        ])
         ->addText('pair_title', [
             'label' => 'Title (optional)',
+            'instructions' => 'Shown in the text card when “Show text card” is on. Also used for the compare control label.',
             'wrapper' => ['width' => 50],
         ])
         ->addTextarea('pair_caption', [
             'label' => 'Caption (optional)',
+            'instructions' => 'Shown in the text card when “Show text card” is on. Leave blank to hide caption only.',
             'rows' => 3,
             'wrapper' => ['width' => 50],
         ])

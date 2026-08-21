@@ -45,13 +45,20 @@ if ($is_before_after) {
       if (!$before_id || !$after_id) {
         continue;
       }
+      // Default on for older rows that pre-date this field (null/'' => show).
+      $show_text_card_raw = get_sub_field('show_text_card');
+      $show_text_card = ($show_text_card_raw === null || $show_text_card_raw === '')
+        ? true
+        : (bool) $show_text_card_raw;
+
       $before_after_pairs[] = [
-        'before_id'    => $before_id,
-        'after_id'     => $after_id,
-        'title'        => trim((string) get_sub_field('pair_title')),
-        'caption'      => trim((string) get_sub_field('pair_caption')),
-        'before_label' => trim((string) get_sub_field('before_label')) ?: 'Before',
-        'after_label'  => trim((string) get_sub_field('after_label')) ?: 'After',
+        'before_id'      => $before_id,
+        'after_id'       => $after_id,
+        'show_text_card' => $show_text_card,
+        'title'          => trim((string) get_sub_field('pair_title')),
+        'caption'        => trim((string) get_sub_field('pair_caption')),
+        'before_label'   => trim((string) get_sub_field('before_label')) ?: 'Before',
+        'after_label'    => trim((string) get_sub_field('after_label')) ?: 'After',
       ];
     }
   }
@@ -230,7 +237,11 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                     </div>
                   </div>
 
-                  <?php if ($pair['title'] !== '' || $pair['caption'] !== ''): ?>
+                  <?php
+                  $show_ba_text_card = !empty($pair['show_text_card'])
+                    && ($pair['title'] !== '' || $pair['caption'] !== '');
+                  ?>
+                  <?php if ($show_ba_text_card): ?>
                     <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5 z-10">
                       <?php if ($pair['title'] !== ''): ?>
                         <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
