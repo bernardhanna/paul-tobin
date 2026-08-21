@@ -242,14 +242,14 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                     && ($pair['title'] !== '' || $pair['caption'] !== '');
                   ?>
                   <?php if ($show_ba_text_card): ?>
-                    <div class="max-md:order-2 relative p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5 z-10">
+                    <div class="ba-text-card max-md:order-2 relative z-10 p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5<?php echo $slide_count > 1 ? ' ba-text-card--with-nav' : ''; ?>">
                       <?php if ($pair['title'] !== ''): ?>
                         <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
                           <?php echo esc_html($pair['title']); ?>
                         </h4>
                       <?php endif; ?>
                       <?php if ($pair['caption'] !== ''): ?>
-                        <p class="mt-4 text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
+                        <p class="<?php echo $pair['title'] !== '' ? 'mt-4 ' : ''; ?>text-[#434B53] font-primary text-[0.9375rem] font-normal leading-6 tracking-normal">
                           <?php echo esc_html($pair['caption']); ?>
                         </p>
                       <?php endif; ?>
@@ -785,5 +785,19 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
 }
 #<?php echo esc_attr($section_id); ?> .ba-compare__label--after {
   right: 1rem;
+}
+
+/* Optional title/caption card — bottom-left on the compare slide (desktop). */
+@media (min-width: 768px) {
+  #<?php echo esc_attr($section_id); ?> .ba-slide .ba-text-card {
+    position: absolute;
+    left: 2rem;
+    bottom: 2rem;
+    z-index: 10;
+    margin: 0;
+  }
+  #<?php echo esc_attr($section_id); ?> .ba-slide .ba-text-card--with-nav {
+    bottom: 5.5rem; /* clear the bottom nav bar */
+  }
 }
 </style>

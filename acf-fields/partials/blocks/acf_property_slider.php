@@ -30,7 +30,7 @@ $property_slider
     ])
     ->addSelect('slider_mode', [
         'label' => 'Slider Mode',
-        'instructions' => 'Properties = listing cards (optional Daft/auto). Before & After = manual photo pairs with a draggable compare bar (not linked to Daft).',
+        'instructions' => 'Properties = listing cards (optional Daft/auto). Before & After = manual photo pairs with a draggable compare bar (not linked to Daft). Set this to “Before & After” to edit titles, captions, and images.',
         'choices' => [
             'properties' => 'Properties (listings)',
             'before_after' => 'Before & After (manual photos)',
@@ -44,37 +44,20 @@ $property_slider
         'label' => 'Auto Select Properties',
         'instructions' => 'Enable to automatically select properties based on criteria below, or disable to manually select specific properties. Not used in Before & After mode.',
         'default_value' => 1,
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'slider_mode',
-                    'operator' => '==',
-                    'value' => 'properties',
-                ],
-            ],
-        ],
+        'ui' => 1,
     ])
+        ->conditional('slider_mode', '==', 'properties')
+
     ->addNumber('number_of_properties', [
         'label' => 'Number of Properties',
         'instructions' => 'How many properties to display in the slider.',
         'default_value' => 5,
         'min' => 1,
         'max' => 20,
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'slider_mode',
-                    'operator' => '==',
-                    'value' => 'properties',
-                ],
-                [
-                    'field' => 'auto_select_properties',
-                    'operator' => '==',
-                    'value' => '1',
-                ],
-            ],
-        ],
     ])
+        ->conditional('slider_mode', '==', 'properties')
+        ->and('auto_select_properties', '==', '1')
+
     ->addSelect('property_order', [
         'label' => 'Property Order',
         'instructions' => 'Choose how to order the automatically selected properties.',
@@ -84,21 +67,10 @@ $property_slider
             'random' => 'Random Order',
         ],
         'default_value' => 'newest',
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'slider_mode',
-                    'operator' => '==',
-                    'value' => 'properties',
-                ],
-                [
-                    'field' => 'auto_select_properties',
-                    'operator' => '==',
-                    'value' => '1',
-                ],
-            ],
-        ],
     ])
+        ->conditional('slider_mode', '==', 'properties')
+        ->and('auto_select_properties', '==', '1')
+
     ->addPostObject('selected_properties', [
         'label' => 'Select Properties',
         'instructions' => 'Manually select which properties to display in the slider.',
@@ -106,39 +78,19 @@ $property_slider
         'return_format' => 'id',
         'multiple' => 1,
         'allow_null' => 0,
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'slider_mode',
-                    'operator' => '==',
-                    'value' => 'properties',
-                ],
-                [
-                    'field' => 'auto_select_properties',
-                    'operator' => '==',
-                    'value' => '0',
-                ],
-            ],
-        ],
     ])
+        ->conditional('slider_mode', '==', 'properties')
+        ->and('auto_select_properties', '==', '0')
 
     // --- Before & After mode ---
     ->addRepeater('before_after_pairs', [
         'label' => 'Before & After Pairs',
-        'instructions' => 'Upload manual before/after photos. Not linked to Daft. Each pair becomes a slide with a draggable compare bar.',
+        'instructions' => 'Edit each pair’s images, title, and caption here. Title/caption appear bottom-left on the slide when “Show text card” is on.',
         'button_label' => 'Add Before & After Pair',
         'layout' => 'block',
         'min' => 0,
-        'conditional_logic' => [
-            [
-                [
-                    'field' => 'slider_mode',
-                    'operator' => '==',
-                    'value' => 'before_after',
-                ],
-            ],
-        ],
     ])
+        ->conditional('slider_mode', '==', 'before_after')
         ->addImage('before_image', [
             'label' => 'Before Image',
             'return_format' => 'id',
@@ -155,19 +107,19 @@ $property_slider
         ])
         ->addTrueFalse('show_text_card', [
             'label' => 'Show text card',
-            'instructions' => 'Grey title/caption panel over the compare. Turn off for image-only slides.',
+            'instructions' => 'Grey title/caption panel at the bottom-left of the compare. Turn off for image-only slides.',
             'ui' => 1,
             'default_value' => 1,
             'wrapper' => ['width' => 100],
         ])
         ->addText('pair_title', [
             'label' => 'Title (optional)',
-            'instructions' => 'Shown in the text card when “Show text card” is on. Also used for the compare control label.',
+            'instructions' => 'e.g. “Example: living space refresh”. Shown bottom-left when the text card is on.',
             'wrapper' => ['width' => 50],
         ])
         ->addTextarea('pair_caption', [
             'label' => 'Caption (optional)',
-            'instructions' => 'Shown in the text card when “Show text card” is on. Leave blank to hide caption only.',
+            'instructions' => 'Supporting text under the title on the bottom-left card.',
             'rows' => 3,
             'wrapper' => ['width' => 50],
         ])
