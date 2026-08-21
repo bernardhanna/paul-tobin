@@ -56,8 +56,8 @@ if ($is_before_after) {
         $handle_start = 'center';
       }
       $handle_start_pct = match ($handle_start) {
-        'one_third'  => 33.333,
-        'two_thirds' => 66.667,
+        'one_third'  => 33.0,
+        'two_thirds' => 67.0,
         default      => 50.0,
       };
 
@@ -588,8 +588,6 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
           setPos(100);
         }
       });
-
-      setPos(50);
     });
   }
 
