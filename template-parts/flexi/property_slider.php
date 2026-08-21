@@ -51,14 +51,26 @@ if ($is_before_after) {
         ? true
         : (bool) $show_text_card_raw;
 
+      $handle_start = (string) get_sub_field('handle_start_position');
+      if (!in_array($handle_start, ['one_third', 'center', 'two_thirds'], true)) {
+        $handle_start = 'center';
+      }
+      $handle_start_pct = match ($handle_start) {
+        'one_third'  => 33.333,
+        'two_thirds' => 66.667,
+        default      => 50.0,
+      };
+
       $before_after_pairs[] = [
-        'before_id'      => $before_id,
-        'after_id'       => $after_id,
-        'show_text_card' => $show_text_card,
-        'title'          => trim((string) get_sub_field('pair_title')),
-        'caption'        => trim((string) get_sub_field('pair_caption')),
-        'before_label'   => trim((string) get_sub_field('before_label')) ?: 'Before',
-        'after_label'    => trim((string) get_sub_field('after_label')) ?: 'After',
+        'before_id'         => $before_id,
+        'after_id'          => $after_id,
+        'show_text_card'    => $show_text_card,
+        'title'             => trim((string) get_sub_field('pair_title')),
+        'caption'           => trim((string) get_sub_field('pair_caption')),
+        'before_label'      => trim((string) get_sub_field('before_label')) ?: 'Before',
+        'after_label'       => trim((string) get_sub_field('after_label')) ?: 'After',
+        'handle_start'      => $handle_start,
+        'handle_start_pct'  => $handle_start_pct,
       ];
     }
   }
@@ -185,6 +197,10 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
               $before_alt = get_post_meta($pair['before_id'], '_wp_attachment_image_alt', true) ?: ($pair['title'] ? $pair['title'] . ' — before' : 'Before');
               $after_alt  = get_post_meta($pair['after_id'], '_wp_attachment_image_alt', true) ?: ($pair['title'] ? $pair['title'] . ' — after' : 'After');
               $compare_id = $section_id . '-ba-' . $index;
+              $start_pct  = isset($pair['handle_start_pct']) ? (float) $pair['handle_start_pct'] : 50.0;
+              $start_pct  = max(0, min(100, $start_pct));
+              $start_pct_css = rtrim(rtrim(number_format($start_pct, 3, '.', ''), '0'), '.') . '%';
+              $start_pct_aria = (int) round($start_pct);
             ?>
               <article class="property-slide ba-slide">
                 <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px] max-md:max-w-full justify-between">
@@ -192,8 +208,9 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                   <div
                     class="ba-compare relative inset-0 w-full h-full max-md:order-0 md:absolute md:inset-8 md:w-auto md:h-auto"
                     data-ba-compare
+                    data-ba-start="<?php echo esc_attr((string) $start_pct); ?>"
                     id="<?php echo esc_attr($compare_id); ?>"
-                    style="--ba-pos: 50%;"
+                    style="--ba-pos: <?php echo esc_attr($start_pct_css); ?>;"
                   >
                     <div class="ba-compare__media relative w-full overflow-hidden bg-[#e0e0e0] aspect-[4/3] md:aspect-auto md:h-full md:min-h-[40rem]">
                       <div class="ba-compare__after absolute inset-0">
@@ -224,7 +241,7 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                           role="slider"
                           aria-valuemin="0"
                           aria-valuemax="100"
-                          aria-valuenow="50"
+                          aria-valuenow="<?php echo esc_attr((string) $start_pct_aria); ?>"
                           aria-label="<?php echo esc_attr(sprintf('Compare before and after%s', $pair['title'] !== '' ? ': ' . $pair['title'] : '')); ?>"
                           data-ba-knob
                         >
@@ -498,12 +515,16 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
       if (!media || !before || !handle || !knob) return;
 
       var dragging = false;
+      var startPct = parseFloat(compare.getAttribute('data-ba-start') || '50');
+      if (isNaN(startPct)) startPct = 50;
 
       var setPos = function (pct) {
         pct = Math.max(0, Math.min(100, pct));
         compare.style.setProperty('--ba-pos', pct + '%');
         knob.setAttribute('aria-valuenow', String(Math.round(pct)));
       };
+
+      setPos(startPct);
 
       var posFromClientX = function (clientX) {
         var rect = media.getBoundingClientRect();

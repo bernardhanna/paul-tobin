@@ -133,6 +133,18 @@ $property_slider
             'default_value' => 'After',
             'wrapper' => ['width' => 50],
         ])
+        ->addSelect('handle_start_position', [
+            'label' => 'Handle start position',
+            'instructions' => 'Where the compare slider starts before the visitor drags it.',
+            'choices' => [
+                'one_third'  => '1/3',
+                'center'     => 'Center (default)',
+                'two_thirds' => '2/3',
+            ],
+            'default_value' => 'center',
+            'return_format' => 'value',
+            'wrapper' => ['width' => 50],
+        ])
     ->endRepeater()
 
     ->addTab('Design', ['label' => 'Design'])
