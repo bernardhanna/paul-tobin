@@ -9,6 +9,11 @@ $section_heading_tag    = get_sub_field('section_heading_tag') ?: 'h2';
 $background_color       = get_sub_field('background_color') ?: '#FFFFFF';
 $slider_mode            = get_sub_field('slider_mode') ?: 'properties';
 $is_before_after        = ($slider_mode === 'before_after');
+$before_after_layout    = get_sub_field('before_after_layout') ?: 'carousel';
+if (!in_array($before_after_layout, ['carousel', 'grid_2'], true)) {
+  $before_after_layout = 'carousel';
+}
+$is_ba_grid             = ($is_before_after && $before_after_layout === 'grid_2');
 
 $selected_properties    = get_sub_field('selected_properties');
 $auto_select_properties = get_sub_field('auto_select_properties');
@@ -169,6 +174,7 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
   class="relative bg-white flex overflow-hidden <?php echo esc_attr(implode(' ', $padding_classes)); ?>"
   style="background-color: <?php echo esc_attr($background_color); ?>;"
   data-slider-mode="<?php echo esc_attr($is_before_after ? 'before_after' : 'properties'); ?>"
+  data-ba-layout="<?php echo esc_attr($is_before_after ? $before_after_layout : ''); ?>"
 >
   <div class="flex flex-col items-center pt-8  md:py-6 md:pt-[5rem] md:pb-[5rem] mx-auto w-full max-w-container max-xl:px-5 max-md:pb-8">
 
@@ -190,7 +196,12 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
 
     <?php if ($has_slides): ?>
       <div class="relative mt-12 w-full max-md:mt-5 max-md:max-w-full">
-        <div class="property-slider" role="region" aria-roledescription="carousel" aria-label="<?php echo esc_attr($is_before_after ? 'Before and after showcase' : 'Property showcase'); ?>">
+        <div
+          class="property-slider<?php echo $is_ba_grid ? ' ba-grid ba-grid--2' : ''; ?>"
+          role="region"
+          aria-roledescription="<?php echo $is_ba_grid ? 'group' : 'carousel'; ?>"
+          aria-label="<?php echo esc_attr($is_before_after ? 'Before and after showcase' : 'Property showcase'); ?>"
+        >
 
           <?php if ($is_before_after): ?>
             <?php foreach ($before_after_pairs as $index => $pair):
@@ -201,18 +212,27 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
               $start_pct  = max(0, min(100, $start_pct));
               $start_pct_css = rtrim(rtrim(number_format($start_pct, 3, '.', ''), '0'), '.') . '%';
               $start_pct_aria = (int) round($start_pct);
+              $show_ba_text_card = !empty($pair['show_text_card'])
+                && ($pair['title'] !== '' || $pair['caption'] !== '');
+              $show_ba_nav = (!$is_ba_grid && $slide_count > 1);
             ?>
-              <article class="property-slide ba-slide">
-                <div class="flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px] max-md:max-w-full justify-between">
+              <article class="property-slide ba-slide<?php echo $is_ba_grid ? ' ba-slide--grid' : ''; ?>">
+                <div class="<?php echo $is_ba_grid
+                  ? 'ba-slide__inner relative flex flex-col w-full max-md:max-w-full'
+                  : 'flex overflow-hidden relative flex-col p-0 md:p-8 w-full md:min-h-[723px] max-md:max-w-full justify-between'; ?>">
 
                   <div
-                    class="ba-compare relative inset-0 w-full h-full max-md:order-0 md:absolute md:inset-8 md:w-auto md:h-auto"
+                    class="<?php echo $is_ba_grid
+                      ? 'ba-compare relative w-full'
+                      : 'ba-compare relative inset-0 w-full h-full max-md:order-0 md:absolute md:inset-8 md:w-auto md:h-auto'; ?>"
                     data-ba-compare
                     data-ba-start="<?php echo esc_attr((string) $start_pct); ?>"
                     id="<?php echo esc_attr($compare_id); ?>"
                     style="--ba-pos: <?php echo esc_attr($start_pct_css); ?>;"
                   >
-                    <div class="ba-compare__media relative w-full overflow-hidden bg-[#e0e0e0] aspect-[4/3] md:aspect-auto md:h-full md:min-h-[40rem]">
+                    <div class="<?php echo $is_ba_grid
+                      ? 'ba-compare__media relative w-full overflow-hidden bg-[#e0e0e0] aspect-[4/3]'
+                      : 'ba-compare__media relative w-full overflow-hidden bg-[#e0e0e0] aspect-[4/3] md:aspect-auto md:h-full md:min-h-[40rem]'; ?>">
                       <div class="ba-compare__after absolute inset-0">
                         <?php echo wp_get_attachment_image($pair['after_id'], 'full', false, [
                           'alt'           => esc_attr($after_alt),
@@ -251,15 +271,26 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                           </svg>
                         </button>
                       </div>
+
+                      <?php if ($show_ba_text_card && $is_ba_grid): ?>
+                        <div class="ba-text-card ba-text-card--grid absolute left-0 bottom-0 z-10 p-5 md:p-6 max-w-[min(100%,22rem)] text-[0.9375rem] leading-6 bg-[#EDEDED]">
+                          <?php if ($pair['title'] !== ''): ?>
+                            <h4 class="text-[#0A1119] text-[1.125rem] md:text-[1.25rem] font-semibold leading-snug tracking-[-0.16px] font-secondary">
+                              <?php echo esc_html($pair['title']); ?>
+                            </h4>
+                          <?php endif; ?>
+                          <?php if ($pair['caption'] !== ''): ?>
+                            <p class="<?php echo $pair['title'] !== '' ? 'mt-3 ' : ''; ?>text-[#434B53] font-primary text-[0.875rem] md:text-[0.9375rem] font-normal leading-6 tracking-normal">
+                              <?php echo esc_html($pair['caption']); ?>
+                            </p>
+                          <?php endif; ?>
+                        </div>
+                      <?php endif; ?>
                     </div>
                   </div>
 
-                  <?php
-                  $show_ba_text_card = !empty($pair['show_text_card'])
-                    && ($pair['title'] !== '' || $pair['caption'] !== '');
-                  ?>
-                  <?php if ($show_ba_text_card): ?>
-                    <div class="ba-text-card max-md:order-2 relative z-10 p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5<?php echo $slide_count > 1 ? ' ba-text-card--with-nav' : ''; ?>">
+                  <?php if ($show_ba_text_card && !$is_ba_grid): ?>
+                    <div class="ba-text-card max-md:order-2 relative z-10 p-8 max-w-full text-[0.9375rem] leading-6 bg-[#EDEDED] w-full md:w-[417px] max-md:px-5<?php echo $show_ba_nav ? ' ba-text-card--with-nav' : ''; ?>">
                       <?php if ($pair['title'] !== ''): ?>
                         <h4 class="text-[#0A1119] text-[1.375rem] font-semibold leading-[1.75rem] tracking-[-0.16px] font-secondary">
                           <?php echo esc_html($pair['title']); ?>
@@ -273,7 +304,7 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
                     </div>
                   <?php endif; ?>
 
-                  <?php if ($slide_count > 1): ?>
+                  <?php if ($show_ba_nav): ?>
                     <div class="flex relative z-20 flex-row flex-wrap gap-y-3 justify-end items-center px-5 py-4 mt-auto w-full property-slider__meta-bar bg-primary max-md:order-1 max-md:mt-0 max-md:max-w-full md:px-8 md:py-4">
                       <nav class="flex gap-2 items-center property-slider__desktop-nav shrink-0 max-md:hidden" aria-label="Before and after navigation">
                         <button
@@ -500,6 +531,7 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
 <script>
 (function () {
   var isBeforeAfter = <?php echo $is_before_after ? 'true' : 'false'; ?>;
+  var isBaGrid = <?php echo !empty($is_ba_grid) ? 'true' : 'false'; ?>;
 
   function initBeforeAfterCompare(root) {
     if (!root) return;
@@ -600,6 +632,9 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
       var $slider    = $scope.find('.property-slider');
 
       initBeforeAfterCompare($scope.get(0));
+
+      // 2-column grid shows all pairs — do not initialise the carousel.
+      if (isBaGrid) return;
 
       if (!$slider.length || $slider.hasClass('slick-initialized')) return;
       if (slideCount < 2) return;
@@ -716,6 +751,26 @@ $has_slides = $is_before_after ? !empty($before_after_pairs) : !empty($propertie
     background-color: #40BFF5 !important;
     color: #0A1119 !important;
   }
+}
+
+/* Before / After 2-column grid */
+#<?php echo esc_attr($section_id); ?> .ba-grid--2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  #<?php echo esc_attr($section_id); ?> .ba-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+#<?php echo esc_attr($section_id); ?> .ba-grid--2 .ba-slide--grid {
+  width: 100%;
+  min-width: 0;
+}
+#<?php echo esc_attr($section_id); ?> .ba-grid--2 .ba-text-card--grid {
+  max-width: min(100%, 22rem);
 }
 
 /* Before / After compare */

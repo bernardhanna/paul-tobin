@@ -38,6 +38,17 @@ $property_slider
         'default_value' => 'properties',
         'return_format' => 'value',
     ])
+    ->addSelect('before_after_layout', [
+        'label' => 'Before & After layout',
+        'instructions' => 'Carousel = one full-width compare at a time. 2-column grid = two compares side by side per row (add 2+ pairs).',
+        'choices' => [
+            'carousel' => 'Full-width carousel (default)',
+            'grid_2'   => '2-column grid',
+        ],
+        'default_value' => 'carousel',
+        'return_format' => 'value',
+    ])
+        ->conditional('slider_mode', '==', 'before_after')
 
     // --- Properties mode ---
     ->addTrueFalse('auto_select_properties', [
